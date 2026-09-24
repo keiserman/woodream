@@ -14,6 +14,8 @@ interface Props {
   onLoad?: boolean;
   /** Render the clipping box without any animation. */
   disabled?: boolean;
+  /** Extra inline styles (e.g. a background image); merged with the mask settings. */
+  style?: string;
   [attr: string]: unknown;
 }
 
@@ -25,16 +27,18 @@ const {
   delay = 0,
   onLoad = false,
   disabled = false,
+  style,
   ...attrs
 } = Astro.props;
 const maskColor = color === 'beige' ? 'var(--color-dark-beige)' : 'var(--color-bg)';
+const maskStyle = `--mask-color:${maskColor};--reveal-delay:${delay}s`;
 ---
 
 <Tag
   {...attrs}
   class:list={['relative overflow-hidden', className]}
   data-reveal={disabled ? undefined : onLoad ? 'load' : 'scroll'}
-  style={`--mask-color:${maskColor};--reveal-delay:${delay}s`}
+  style={style ? `${maskStyle};${style}` : maskStyle}
 >
   <slot />
   {!disabled && <div class="mask" data-dir={dir} aria-hidden="true" />}
