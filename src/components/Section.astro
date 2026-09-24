@@ -32,7 +32,6 @@ const {
   class: className,
   animate = true,
 } = Astro.props;
-const color = beige ? 'beige' : 'bg';
 ---
 
 <section
@@ -59,12 +58,11 @@ const color = beige ? 'beige' : 'bg';
       ]}
     >
       <div class="flex w-full items-stretch justify-between gap-5 max-md:flex-col">
-        <Reveal disabled={!animate} color={color} class="pb-2.5">
+        <Reveal disabled={!animate} class="pb-2.5">
           <h2 class:list={[headingClass]}><slot name="heading" /></h2>
         </Reveal>
         <Reveal
           disabled={!animate}
-          color={color}
           delay={0.15}
           class:list={['flex items-start justify-end pb-2.5 max-md:w-full max-md:justify-start', introClass]}
         >

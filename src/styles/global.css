@@ -82,29 +82,26 @@
   }
 }
 
-/* ---------- Reveal masks ----------
-   A solid block covers the content and slides away when it enters the viewport.
-   Only hide things when JS is running, so content is never stuck behind a mask. */
-.mask {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  display: none;
-  background-color: var(--mask-color, var(--color-bg));
-  transition: transform 1.2s var(--ease-reveal);
+/* ---------- Reveals ----------
+   [data-reveal] elements start clipped away and wipe into view once they are
+   revealed (see src/scripts/reveal.ts). data-dir names the way the wipe travels,
+   e.g. "up" shows the bottom edge first. Only clip when JS is running, so
+   content is never stuck hidden. */
+.js [data-reveal][data-dir] {
+  transition: clip-path 1.2s var(--ease-reveal);
   transition-delay: var(--reveal-delay, 0s);
 }
-.js .mask {
-  display: block;
+.js [data-reveal][data-dir="up"] {
+  clip-path: inset(100% 0 0 0);
 }
-.js .revealed > .mask[data-dir="up"] {
-  transform: translateY(-101%);
+.js [data-reveal][data-dir="down"] {
+  clip-path: inset(0 0 100% 0);
 }
-.js .revealed > .mask[data-dir="down"] {
-  transform: translateY(101%);
+.js [data-reveal][data-dir="left"] {
+  clip-path: inset(0 0 0 100%);
 }
-.js .revealed > .mask[data-dir="left"] {
-  transform: translateX(-101%);
+.js [data-reveal][data-dir].revealed {
+  clip-path: inset(0);
 }
 
 /* Text that slides up into view from below its clipping parent */
@@ -130,8 +127,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .js .mask {
-    display: none;
+  .js [data-reveal][data-dir] {
+    clip-path: none;
   }
   .js .rise,
   .js .fade-up:not(.revealed) {

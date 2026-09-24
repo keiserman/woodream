@@ -1,5 +1,5 @@
-// Adds `.revealed` to [data-reveal] elements, which slides their mask away
-// (see the .mask rules in global.css). "load" elements reveal right away;
+// Adds `.revealed` to [data-reveal] elements, which wipes them into view
+// (see the "Reveals" rules in global.css). "load" elements reveal right away;
 // "scroll" elements reveal once they enter the viewport.
 
 const reveal = (el: Element) => el.classList.add('revealed');

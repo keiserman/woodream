@@ -1,20 +1,20 @@
 ---
 /**
- * Wraps content in an overflow-hidden box with a solid mask that slides
- * away once the box scrolls into view (see src/scripts/reveal.ts).
+ * Wraps content in an overflow-hidden box that wipes into view with a
+ * clip-path once it scrolls into view (see src/scripts/reveal.ts and the
+ * "Reveals" rules in global.css).
  */
 interface Props {
   as?: string;
   class?: string;
+  /** Direction the wipe travels: "up" shows the bottom edge first. */
   dir?: 'up' | 'down' | 'left';
-  /** Mask color; defaults to the page background. */
-  color?: 'bg' | 'beige';
   delay?: number;
   /** Reveal on page load instead of on scroll. */
   onLoad?: boolean;
   /** Render the clipping box without any animation. */
   disabled?: boolean;
-  /** Extra inline styles (e.g. a background image); merged with the mask settings. */
+  /** Extra inline styles (e.g. a background image); merged with the delay. */
   style?: string;
   [attr: string]: unknown;
 }
@@ -23,23 +23,22 @@ const {
   as: Tag = 'div',
   class: className,
   dir = 'up',
-  color = 'bg',
   delay = 0,
   onLoad = false,
   disabled = false,
   style,
   ...attrs
 } = Astro.props;
-const maskColor = color === 'beige' ? 'var(--color-dark-beige)' : 'var(--color-bg)';
-const maskStyle = `--mask-color:${maskColor};--reveal-delay:${delay}s`;
+const delayStyle = delay ? `--reveal-delay:${delay}s` : '';
+const mergedStyle = [delayStyle, style].filter(Boolean).join(';') || undefined;
 ---
 
 <Tag
   {...attrs}
   class:list={['relative overflow-hidden', className]}
   data-reveal={disabled ? undefined : onLoad ? 'load' : 'scroll'}
-  style={style ? `${maskStyle};${style}` : maskStyle}
+  data-dir={disabled ? undefined : dir}
+  style={mergedStyle}
 >
   <slot />
-  {!disabled && <div class="mask" data-dir={dir} aria-hidden="true" />}
 </Tag>
