@@ -1,0 +1,44 @@
+---
+/**
+ * A bordered list row that fades up on scroll and turns beige on hover.
+ * Used for the process steps, How-we-work items, wood types and approach list.
+ *
+ * Each variant carries its full layout (alignment, gap, padding, breakpoints)
+ * so the responsive rules for every row type live side by side here.
+ */
+type Variant = 'step' | 'feature' | 'wood' | 'approach';
+
+interface Props {
+  variant: Variant;
+  /** Element to render; use "li" inside a list. */
+  as?: 'div' | 'li';
+  class?: string;
+}
+
+const variants: Record<Variant, string> = {
+  // Number + title on the left, text on the right; stacks below 992px.
+  step: 'items-center gap-5 p-10 max-lg:flex-col max-lg:items-start max-lg:gap-[45px] max-md:px-[30px] max-sm:px-5',
+  // Text + button on the left, image on the right; stacks below 480px.
+  feature:
+    'items-center gap-5 p-10 max-lg:gap-[45px] max-md:gap-5 max-md:px-[30px] max-sm:flex-col max-sm:items-start max-sm:px-5',
+  // Description on the left, full-height image on the right; stacks below 480px.
+  wood: 'items-stretch gap-5 p-10 max-lg:gap-[45px] max-md:px-[30px] max-sm:flex-col max-sm:px-5',
+  // Compact row whose hidden text opens on hover or keyboard focus.
+  approach:
+    'items-start gap-[100px] py-7 pr-[15px] pl-[30px] outline-none focus-visible:bg-dark-beige max-lg:gap-[50px] max-sm:gap-5 max-sm:pl-[15px]',
+};
+
+const { variant, as: Tag = 'div', class: className } = Astro.props;
+---
+
+<Tag
+  data-reveal="scroll"
+  tabindex={variant === 'approach' ? 0 : undefined}
+  class:list={[
+    'fade-up group flex justify-between border-t border-black/30 hover:bg-dark-beige',
+    variants[variant],
+    className,
+  ]}
+>
+  <slot />
+</Tag>

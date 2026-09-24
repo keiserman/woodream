@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import ListRow from '../components/ListRow.astro';
 import Button from '../components/Button.astro';
 import ImageBanner from '../components/ImageBanner.astro';
 import PageHero from '../components/PageHero.astro';
@@ -169,10 +170,7 @@ const img = 'inline-block max-w-full align-middle';
     <div class="w-full">
       {
         woods.map((wood) => (
-          <div
-            data-reveal="scroll"
-            class="fade-up group flex items-stretch justify-between gap-5 max-lg:gap-[45px] border-t border-black/30 p-10 hover:bg-dark-beige max-md:px-[30px] max-sm:flex-col max-sm:px-5"
-          >
+          <ListRow variant="wood">
             <div class="flex w-3/5 flex-col items-start justify-start gap-[30px] max-sm:w-full">
               <h3 class="text-[30px]">{wood.name}</h3>
               <p>
@@ -196,7 +194,7 @@ const img = 'inline-block max-w-full align-middle';
                 class="absolute inset-0 z-0 size-full object-cover"
               />
             </div>
-          </div>
+          </ListRow>
         ))
       }
     </div>
@@ -212,11 +210,7 @@ const img = 'inline-block max-w-full align-middle';
     <ul class="w-3/4 self-end max-md:w-full">
       {
         approach.map((item) => (
-          <li
-            data-reveal="scroll"
-            tabindex="0"
-            class="fade-up group flex items-start justify-between gap-[100px] border-t border-black/30 py-7 pr-[15px] pl-[30px] outline-none hover:bg-dark-beige focus-visible:bg-dark-beige max-lg:gap-[50px] max-sm:gap-5 max-sm:pl-[15px]"
-          >
+          <ListRow as="li" variant="approach">
             <div>
               <div>{item.title}</div>
               <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out group-hover:grid-rows-[1fr] group-focus-within:grid-rows-[1fr]">
@@ -230,7 +224,7 @@ const img = 'inline-block max-w-full align-middle';
                 <path d="M7.5 7.5h10.5v10.5M18 7.5 6.5 19" stroke="currentColor" stroke-width="2.2" />
               </svg>
             </div>
-          </li>
+          </ListRow>
         ))
       }
     </ul>

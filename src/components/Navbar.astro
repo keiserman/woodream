@@ -1,14 +1,10 @@
 ---
 import Button from './Button.astro';
+import { isCurrentPage, navLinks } from '../data/site';
 
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/gallery', label: 'Gallery' },
-];
-
-const current = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isCurrent = (href: string) => href === current;
+const isCurrent = (href: string) => isCurrentPage(Astro.url, href);
+// On desktop, Contact is the button on the right instead of a menu link.
+const mobileOnly = (href: string) => href === '/contact';
 ---
 
 <header
@@ -26,13 +22,14 @@ const isCurrent = (href: string) => href === current;
       class="flex gap-[50px] max-md:invisible max-md:absolute max-md:inset-x-0 max-md:top-full max-md:mt-px max-md:-translate-y-4 max-md:flex-col max-md:gap-0 max-md:bg-bg max-md:px-5 max-md:pb-5 max-md:opacity-0 max-md:transition-all max-md:duration-500 max-sm:pb-[30px] max-md:[.nav-open_&]:visible max-md:[.nav-open_&]:translate-y-0 max-md:[.nav-open_&]:opacity-100"
     >
       {
-        links.map((link) => (
+        navLinks.map((link) => (
           <a
             href={link.href}
             aria-current={isCurrent(link.href) ? 'page' : undefined}
             class:list={[
               'text-[15px] font-medium text-grey uppercase transition-all duration-300 hover:text-black',
               'max-md:block max-md:border-b max-md:border-section-border max-md:py-5 max-md:text-[20px]',
+              mobileOnly(link.href) && 'hidden',
               isCurrent(link.href) &&
                 'text-black underline underline-offset-2 hover:underline-offset-[5px] max-lg:no-underline',
             ]}
@@ -41,12 +38,6 @@ const isCurrent = (href: string) => href === current;
           </a>
         ))
       }
-      <a
-        href="/contact"
-        class="hidden text-grey uppercase hover:text-black max-md:block max-md:border-b max-md:border-section-border max-md:py-5 max-md:text-[20px]"
-      >
-        Contact
-      </a>
     </nav>
 
     <button

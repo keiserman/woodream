@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import ListRow from '../components/ListRow.astro';
 import Button from '../components/Button.astro';
 import ImageBanner from '../components/ImageBanner.astro';
 import PageHero from '../components/PageHero.astro';
@@ -144,13 +145,13 @@ const standards = [
     <ol class="w-full">
       {
         steps.map((step, i) => (
-          <li data-reveal="scroll" class="fade-up flex items-center justify-between gap-5 border-t border-black/30 p-10 hover:bg-dark-beige max-lg:flex-col max-lg:items-start max-lg:gap-[45px] max-md:px-[30px] max-sm:px-5">
+          <ListRow as="li" variant="step">
             <div class="flex w-[43%] items-center justify-start gap-40 xl:gap-[180px] max-lg:w-auto max-lg:gap-[100px] max-sm:gap-5">
               <div class="min-w-[9%] max-sm:min-w-0">{String(i + 1).padStart(2, '0')}</div>
               <div>{step.title}</div>
             </div>
             <div class="w-[45%] max-lg:w-full">{step.text}</div>
-          </li>
+          </ListRow>
         ))
       }
     </ol>
@@ -185,7 +186,7 @@ const standards = [
     <div class="w-full">
       {
         standards.map((item) => (
-          <div data-reveal="scroll" class="fade-up flex items-center justify-between gap-5 max-lg:gap-[45px] max-md:gap-5 border-t border-black/30 p-10 hover:bg-dark-beige max-md:px-[30px] max-sm:flex-col max-sm:items-start max-sm:px-5">
+          <ListRow variant="feature">
             <div class="flex w-1/2 flex-col items-start justify-start gap-[30px] max-sm:w-full">
               <div class="text-[30px]">{item.title}</div>
               <div>{item.text}</div>
@@ -199,7 +200,7 @@ const standards = [
               format="avif"
               class="w-1/2 max-w-[362px] max-sm:w-full"
             />
-          </div>
+          </ListRow>
         ))
       }
     </div>

@@ -3,6 +3,7 @@ import type { ImageMetadata } from 'astro';
 import { backgroundUrl } from '../lib/images';
 import Reveal from './Reveal.astro';
 import readyImage from '../assets/images/footer/ready.avif';
+import { contact, emailHref, isCurrentPage, legalLinks, navLinks, phoneHref, site } from '../data/site';
 
 export interface FooterBanner {
   image: ImageMetadata;
@@ -20,19 +21,7 @@ const { banner = { image: readyImage, text: 'Ready<br />When you are' } } = Astr
 const bannerImage = await backgroundUrl(banner.image, 2400);
 const tabletHeight = banner.tabletHeight === 350 ? 'max-lg:min-h-[350px]' : 'max-lg:min-h-[400px]';
 
-const nav = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/gallery', label: 'Gallery' },
-  { href: '/contact', label: 'Contact' },
-];
-const legal = [
-  { href: '/legal/privacy-policy', label: 'Privacy Policy' },
-  { href: '/legal/terms-of-use', label: 'Terms of Use' },
-  { href: '/legal/cookie-settings', label: 'Cookie Settings' },
-];
-
-const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href: string) => isCurrentPage(Astro.url, href);
 const year = new Date().getFullYear();
 ---
 
@@ -54,20 +43,20 @@ const year = new Date().getFullYear();
     <div class="relative z-1 flex w-full max-w-(--container-site) flex-col items-start gap-5">
       <div class="flex w-full items-stretch justify-between gap-5 max-lg:flex-col max-lg:gap-10">
         <div>
-          <a href="tel:7327574094" class="text-[25px] text-black hover:text-grey">732-757-4094<br /></a><a
-            href="mailto:Info@woodreamhome.com"
-            class="text-[25px] text-black hover:text-grey">Info@woodreamhome.com</a
+          <a href={phoneHref} class="text-[25px] text-black hover:text-grey">{contact.phone}<br /></a><a
+            href={emailHref}
+            class="text-[25px] text-black hover:text-grey">{contact.email}</a
           >
         </div>
         <div class="flex gap-7 max-sm:flex-col">
           {
-            nav.map((link) => (
+            navLinks.map((link) => (
               <a
                 href={link.href}
-                aria-current={link.href === current ? 'page' : undefined}
+                aria-current={isCurrent(link.href) ? 'page' : undefined}
                 class:list={[
                   'transition-all duration-300 hover:text-black',
-                  link.href === current
+                  isCurrent(link.href)
                     ? 'text-black underline decoration-1 underline-offset-4 hover:underline-offset-[9px]'
                     : 'text-grey',
                 ]}
@@ -118,7 +107,7 @@ const year = new Date().getFullYear();
     >
       <div class="flex gap-6 text-[17px] max-sm:flex-col">
         {
-          legal.map((link) => (
+          legalLinks.map((link) => (
             <a
               href={link.href}
               class="text-black underline decoration-1 underline-offset-4 transition-all duration-300 hover:underline-offset-8"
@@ -128,7 +117,7 @@ const year = new Date().getFullYear();
           ))
         }
       </div>
-      <div class="text-[18px]">© {year} Woodream. All rights reserved.</div>
+      <div class="text-[18px]">© {year} {site.name}. All rights reserved.</div>
     </div>
   </section>
 </footer>
