@@ -1,0 +1,16 @@
+# /gallery/desks — photos are listed in display order.
+name: Desks
+# Position on the Gallery page and in the category tabs.
+order: 1
+# Position in the homepage gallery slider.
+homeOrder: 1
+cover: ./photos/367A7717.jpg
+photos:
+  - ./photos/367A7416.jpg
+  - ./photos/367A7451.jpg
+  - ./photos/367A7472.jpg
+  - ./photos/367A7717.jpg
+  - ./photos/367A7768.jpg
+  - ./photos/367A7827.jpg
+  - ./photos/367A7830.jpg
+  - ./photos/367A7864.jpg

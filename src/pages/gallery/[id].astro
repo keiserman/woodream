@@ -1,0 +1,86 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { getImage, Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import Lightbox from '../../components/Lightbox.astro';
+import PageHero from '../../components/PageHero.astro';
+import { galleryIntro } from '../../data/site';
+
+export async function getStaticPaths() {
+  const categories = (await getCollection('gallery')).sort((a, b) => a.data.order - b.data.order);
+  return categories.map((entry) => ({ params: { id: entry.id }, props: { entry, categories } }));
+}
+
+interface Props {
+  entry: CollectionEntry<'gallery'>;
+  categories: CollectionEntry<'gallery'>[];
+}
+
+const { entry, categories } = Astro.props;
+const { name } = entry.data;
+
+// Each photo gets a grid thumbnail (via <Image>) and a large version for the lightbox.
+const photos = await Promise.all(
+  entry.data.photos.map(async (src, i) => ({
+    src,
+    alt: `${name} by Woodream, photo ${i + 1}`,
+    large: (await getImage({ src, format: 'avif', width: Math.min(2000, src.width) })).src,
+  })),
+);
+---
+
+<Layout title={`${name} | Woodream`} description={galleryIntro}>
+  <PageHero line1={name} size="compact">
+    {galleryIntro}
+
+    <div slot="below" class="w-full">
+      <nav aria-label="Gallery categories" class="mt-5 w-full border-t border-section-border pt-5 pb-[60px]">
+        <ul class="flex flex-wrap gap-2.5">
+          {
+            categories.map((category) => {
+              const current = category.id === entry.id;
+              return (
+                <li>
+                  <a
+                    href={`/gallery/${category.id}`}
+                    aria-current={current ? 'page' : undefined}
+                    class:list={[
+                      'flex gap-2.5 border-b-2 border-transparent text-[15px] uppercase hover:text-black',
+                      current ? 'text-black underline underline-offset-4' : 'text-black/40',
+                    ]}
+                  >
+                    <span>{category.data.name}</span>
+                    <svg width="9" height="17" viewBox="0 0 9 17" fill="none" aria-hidden="true" class="self-center">
+                      <path d="M1 16L8 1" stroke="black" stroke-opacity="0.4" />
+                    </svg>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      <ul class="grid w-full grid-cols-3 gap-10 max-lg:gap-5 max-md:grid-cols-2">
+        {
+          photos.map((photo) => (
+            <li>
+              <a href={photo.large} data-lightbox class="block">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  widths={[400, 800, 1200]}
+                  sizes="(max-width: 767px) 50vw, 33vw"
+                  format="avif"
+                  class="h-[300px] w-full object-cover max-lg:h-[250px] max-sm:h-[150px]"
+                />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </PageHero>
+
+  <Lightbox />
+</Layout>

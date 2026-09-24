@@ -1,20 +1,24 @@
 import { defineCollection } from 'astro:content';
-import { file } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-// Each collection is a YAML list in src/content/. Entries are shown in `order`,
-// and image paths are relative to the YAML file.
+// Collections live in src/content/. Entries are shown in `order`, and image
+// paths are relative to the YAML file that references them.
 
+// One YAML file per category in src/content/gallery/; the file name is the
+// URL slug (/gallery/<slug>). Photos live in src/content/gallery/photos/ and
+// can be shared between categories.
 const gallery = defineCollection({
-  loader: file('src/content/gallery.yaml'),
+  loader: glob({ pattern: '*.yaml', base: './src/content/gallery' }),
   schema: ({ image }) =>
     z.object({
       name: z.string(),
-      /** Position on the Gallery page. */
+      /** Position on the Gallery page and in the category tabs. */
       order: z.number(),
       /** Position in the homepage gallery slider. */
       homeOrder: z.number(),
       cover: image(),
+      photos: z.array(image()).min(1),
     }),
 });
 

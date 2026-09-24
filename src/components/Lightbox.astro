@@ -1,0 +1,112 @@
+---
+/**
+ * Full-screen photo viewer. Any link with a `data-lightbox` attribute opens its
+ * href here instead of navigating; links on the page form one set you can step
+ * through. Without JavaScript the links still open the image directly.
+ */
+---
+
+<dialog
+  id="lightbox"
+  aria-label="Photo viewer"
+  class="m-0 h-dvh max-h-none w-screen max-w-none bg-transparent p-0 text-white backdrop:bg-black/90"
+>
+  <div class="relative flex h-full w-full items-center justify-center p-5 md:px-24">
+    <img data-lightbox-image alt="" class="max-h-[85vh] max-w-full object-contain select-none" />
+
+    <button
+      type="button"
+      data-lightbox-close
+      aria-label="Close"
+      class="absolute top-5 right-5 flex size-11 cursor-pointer items-center justify-center"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="1.5"></path>
+      </svg>
+    </button>
+    <button
+      type="button"
+      data-lightbox-prev
+      aria-label="Previous photo"
+      class="absolute left-2 flex size-11 cursor-pointer items-center justify-center disabled:invisible md:left-8"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M15 4 7 12l8 8" stroke="currentColor" stroke-width="1.5"></path>
+      </svg>
+    </button>
+    <button
+      type="button"
+      data-lightbox-next
+      aria-label="Next photo"
+      class="absolute right-2 flex size-11 cursor-pointer items-center justify-center disabled:invisible md:right-8"
+    >
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="m9 4 8 8-8 8" stroke="currentColor" stroke-width="1.5"></path>
+      </svg>
+    </button>
+
+    <p data-lightbox-counter class="absolute bottom-5 text-[15px] tabular-nums" aria-live="polite"></p>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('lightbox') as HTMLDialogElement;
+  const image = dialog.querySelector<HTMLImageElement>('[data-lightbox-image]')!;
+  const counter = dialog.querySelector<HTMLElement>('[data-lightbox-counter]')!;
+  const prev = dialog.querySelector<HTMLButtonElement>('[data-lightbox-prev]')!;
+  const next = dialog.querySelector<HTMLButtonElement>('[data-lightbox-next]')!;
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('a[data-lightbox]')];
+  let index = 0;
+
+  const show = (i: number) => {
+    index = Math.max(0, Math.min(i, links.length - 1));
+    const link = links[index];
+    image.src = link.href;
+    image.alt = link.querySelector('img')?.alt ?? '';
+    counter.textContent = `${index + 1} / ${links.length}`;
+    prev.disabled = index === 0;
+    next.disabled = index === links.length - 1;
+    // Warm up the neighbours so stepping through feels instant.
+    for (const n of [index - 1, index + 1]) if (links[n]) new Image().src = links[n].href;
+  };
+
+  links.forEach((link, i) =>
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      show(i);
+      dialog.showModal();
+      document.documentElement.style.overflow = 'hidden';
+    }),
+  );
+
+  dialog.addEventListener('close', () => {
+    document.documentElement.style.overflow = '';
+    links[index]?.focus();
+  });
+  dialog.querySelector('[data-lightbox-close]')!.addEventListener('click', () => dialog.close());
+  prev.addEventListener('click', () => show(index - 1));
+  next.addEventListener('click', () => show(index + 1));
+
+  // Close when clicking the dark area around the photo.
+  dialog.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    if (target === dialog || target === dialog.firstElementChild) dialog.close();
+  });
+
+  dialog.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') show(index - 1);
+    if (event.key === 'ArrowRight') show(index + 1);
+  });
+
+  // Swipe on touch screens
+  let startX: number | null = null;
+  dialog.addEventListener('pointerdown', (event) => {
+    if (event.pointerType !== 'mouse') startX = event.clientX;
+  });
+  dialog.addEventListener('pointerup', (event) => {
+    if (startX == null) return;
+    const dx = event.clientX - startX;
+    startX = null;
+    if (Math.abs(dx) > 40) show(index + (dx < 0 ? 1 : -1));
+  });
+</script>

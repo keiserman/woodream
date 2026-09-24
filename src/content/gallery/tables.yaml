@@ -1,0 +1,28 @@
+# /gallery/tables — photos are listed in display order.
+name: Tables
+# Position on the Gallery page and in the category tabs.
+order: 2
+# Position in the homepage gallery slider.
+homeOrder: 3
+cover: ./photos/367A7576.jpg
+photos:
+  - ./photos/367A7809.jpg
+  - ./photos/367A7827.jpg
+  - ./photos/367A7830.jpg
+  - ./photos/367A7852.jpg
+  - ./photos/367A7864.jpg
+  - ./photos/367A7416.jpg
+  - ./photos/367A7451.jpg
+  - ./photos/367A7472.jpg
+  - ./photos/367A7522.jpg
+  - ./photos/367A7544.jpg
+  - ./photos/367A7556.jpg
+  - ./photos/367A7567.jpg
+  - ./photos/367A7576.jpg
+  - ./photos/367A7590.jpg
+  - ./photos/367A7633.jpg
+  - ./photos/367A7704.jpg
+  - ./photos/367A7707.jpg
+  - ./photos/367A7717.jpg
+  - ./photos/367A7757.jpg
+  - ./photos/367A7768.jpg

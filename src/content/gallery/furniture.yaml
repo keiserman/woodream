@@ -1,0 +1,23 @@
+# /gallery/furniture — photos are listed in display order.
+name: Furniture
+# Position on the Gallery page and in the category tabs.
+order: 3
+# Position in the homepage gallery slider.
+homeOrder: 4
+cover: ./photos/367A7615.jpg
+photos:
+  - ./photos/367A7670.jpg
+  - ./photos/367A7680.jpg
+  - ./photos/367A7689.jpg
+  - ./photos/367A7696.jpg
+  - ./photos/367A7707.jpg
+  - ./photos/367A7790.jpg
+  - ./photos/367A7800.jpg
+  - ./photos/367A7809.jpg
+  - ./photos/367A7864.jpg
+  - ./photos/367A7881.jpg
+  - ./photos/367A7498.jpg
+  - ./photos/367A7602.jpg
+  - ./photos/367A7615.jpg
+  - ./photos/367A7651.jpg
+  - ./photos/367A7664.jpg

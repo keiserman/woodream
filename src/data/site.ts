@@ -8,6 +8,10 @@ export const site = {
     'Built by hand. Backed by heart. Woodream creates timeless, custom millwork for homes and sacred spaces.',
 };
 
+/** Intro shown on the Gallery page and every gallery category page. */
+export const galleryIntro =
+  'Every piece we make is crafted in-house, designed, built, and finished by the same hands that first heard your idea.';
+
 export const contact = {
   phone: '732-757-4094',
   email: 'Info@woodreamhome.com',

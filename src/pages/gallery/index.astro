@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import Button from '../../components/Button.astro';
 import PageHero from '../../components/PageHero.astro';
 import { backgroundUrl } from '../../lib/images';
+import { galleryIntro } from '../../data/site';
 
 const categories = await Promise.all(
   (await getCollection('gallery'))
@@ -42,11 +43,10 @@ for (let i = 0; i < categories.length; i += 2) rows.push(categories.slice(i, i +
 
 <Layout
   title="Gallery | Woodream"
-  description="Every piece we make is crafted in-house, designed, built, and finished by the same hands that first heard your idea."
+  description={galleryIntro}
 >
   <PageHero line1="our gallery" size="compact">
-    Every piece we make is crafted in-house, designed, built, and finished by the same hands that first heard your
-    idea.
+    {galleryIntro}
 
     <ul
       slot="below"

@@ -1,0 +1,18 @@
+# /gallery/studies — photos are listed in display order.
+name: Studies
+# Position on the Gallery page and in the category tabs.
+order: 4
+# Position in the homepage gallery slider.
+homeOrder: 2
+cover: ./photos/367A7864.jpg
+photos:
+  - ./photos/367A7472.jpg
+  - ./photos/367A7704.jpg
+  - ./photos/367A7768.jpg
+  - ./photos/367A7790.jpg
+  - ./photos/367A7800.jpg
+  - ./photos/367A7830.jpg
+  - ./photos/367A7852.jpg
+  - ./photos/367A7416.jpg
+  - ./photos/367A7864.jpg
+  - ./photos/367A7451.jpg
