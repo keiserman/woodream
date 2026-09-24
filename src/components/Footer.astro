@@ -1,6 +1,23 @@
 ---
 import Reveal from './Reveal.astro';
 
+export interface FooterBanner {
+  image: string;
+  /** Caption HTML (may contain <br />). */
+  text: string;
+  /** Height at tablet width; the About variant is shorter. */
+  tabletHeight?: 350 | 400;
+}
+
+interface Props {
+  banner?: FooterBanner;
+}
+
+const {
+  banner = { image: '/images/footer.avif', text: 'Ready<br />When you are' },
+} = Astro.props;
+const tabletHeight = banner.tabletHeight === 350 ? 'max-lg:min-h-[350px]' : 'max-lg:min-h-[400px]';
+
 const nav = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
@@ -20,10 +37,14 @@ const year = new Date().getFullYear();
 <footer class="relative">
   <Reveal
     dir="down"
-    class="flex min-h-[400px] items-center justify-center bg-[url(/images/footer.avif)] bg-cover bg-center p-5 text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:min-h-[400px] max-lg:text-[35px] max-sm:min-h-[300px] max-sm:text-[30px]"
+    class:list={[
+      'flex min-h-[400px] items-center justify-center bg-cover bg-center p-5 text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:text-[35px] max-sm:min-h-[300px] max-sm:text-[30px]',
+      tabletHeight,
+    ]}
+    style={`background-image:url(${banner.image})`}
   >
     <div class="overflow-hidden">
-      <div class="rise text-center" style="--reveal-delay:0.3s">Ready<br />When you are</div>
+      <div class="rise text-center" style="--reveal-delay:0.3s" set:html={banner.text} />
     </div>
   </Reveal>
 

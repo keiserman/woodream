@@ -1,0 +1,27 @@
+---
+import Reveal from './Reveal.astro';
+
+/**
+ * Big two-line page title with an intro paragraph on the right.
+ * The second title line is indented (pass it as `line2`).
+ */
+interface Props {
+  line1: string;
+  line2: string;
+}
+
+const { line1, line2 } = Astro.props;
+---
+
+<section class="relative flex items-center justify-center px-site pt-[250px] pb-[35px] max-lg:pt-[200px] max-md:pt-[150px]">
+  <div
+    class="relative z-1 flex w-full max-w-(--container-site) flex-row items-end justify-between gap-5 max-lg:flex-col max-lg:items-start"
+  >
+    <Reveal onLoad delay={0.2} class="w-[73%] pb-2.5 xl:w-auto max-lg:w-auto">
+      <h1>{line1}<br /><span class="pl-[130px] max-md:pl-[60px] max-sm:pl-0">{line2}</span></h1>
+    </Reveal>
+    <Reveal onLoad delay={0.45} class="w-[41%] pb-2.5 xl:w-[35%] max-lg:w-[77%] max-md:w-auto">
+      <p class="mb-[5px] text-[20px]"><slot /></p>
+    </Reveal>
+  </div>
+</section>

@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Button from '../components/Button.astro';
+import ImageBanner from '../components/ImageBanner.astro';
+import PageHero from '../components/PageHero.astro';
 import Reveal from '../components/Reveal.astro';
 import Section from '../components/Section.astro';
 import Slider from '../components/Slider.astro';
@@ -63,40 +65,11 @@ const standards = [
 ---
 
 <Layout>
-  <!-- Hero -->
-  <section class="relative flex items-center justify-center px-site pt-[250px] pb-[35px] max-lg:pt-[200px] max-md:pt-[150px]">
-    <div
-      class="relative z-1 flex w-full max-w-(--container-site) flex-row items-end justify-between gap-5 max-lg:flex-col max-lg:items-start"
-    >
-      <Reveal onLoad delay={0.2} class="w-[73%] pb-2.5 xl:w-auto max-lg:w-auto">
-        <h1>the custom<br /><span class="pl-[130px] max-md:pl-[60px] max-sm:pl-0">experience.</span></h1>
-      </Reveal>
-      <Reveal onLoad delay={0.45} class="w-[41%] pb-2.5 xl:w-[35%] max-lg:w-[77%] max-md:w-auto">
-        <p class="mb-[5px] text-[20px]">
-          At Woodream, custom goes beyond the outcome. It’s how we begin, build, and finish.
-        </p>
-      </Reveal>
-    </div>
-  </section>
+  <PageHero line1="the custom" line2="experience.">
+    At Woodream, custom goes beyond the outcome. It’s how we begin, build, and finish.
+  </PageHero>
 
-  <!-- Full-bleed image -->
-  <Reveal
-    as="section"
-    onLoad
-    dir="down"
-    delay={0.3}
-    data-cursor-area
-    class="flex min-h-[400px] items-end justify-center bg-[url(/images/home-hero.avif)] bg-cover bg-center px-site pt-20 pb-[45px] text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:min-h-[350px] max-sm:min-h-[300px]"
-  >
-    <div class="relative z-1 flex w-full max-w-(--container-site) flex-col items-start">
-      <div class="overflow-hidden">
-        <div class="rise max-lg:text-[35px] max-sm:text-[30px]" style="--reveal-delay:0.9s">
-          Millwork <br />made for you.
-        </div>
-      </div>
-    </div>
-    <div class="fake-cursor" aria-hidden="true"><span class="fake-cursor-label">scroll down</span></div>
-  </Reveal>
+  <ImageBanner image="/images/home-hero.avif">Millwork <br />made for you.</ImageBanner>
 
   <!-- About -->
   <Section
@@ -222,7 +195,7 @@ const standards = [
     <div class="w-full">
       {
         standards.map((item) => (
-          <div data-reveal="scroll" class="fade-up flex items-center justify-between gap-5 border-t border-black/30 p-10 hover:bg-dark-beige max-md:px-[30px] max-sm:flex-col max-sm:items-start max-sm:px-5">
+          <div data-reveal="scroll" class="fade-up flex items-center justify-between gap-5 max-lg:gap-[45px] max-md:gap-5 border-t border-black/30 p-10 hover:bg-dark-beige max-md:px-[30px] max-sm:flex-col max-sm:items-start max-sm:px-5">
             <div class="flex w-1/2 flex-col items-start justify-start gap-[30px] max-sm:w-full">
               <div class="text-[30px]">{item.title}</div>
               <div>{item.text}</div>

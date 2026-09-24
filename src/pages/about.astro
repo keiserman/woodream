@@ -1,0 +1,256 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import ImageBanner from '../components/ImageBanner.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+
+const stats = [
+  { value: 12, suffix: '', label: 'Years of experience' },
+  { value: 160, suffix: '+', label: 'Custom projects completed' },
+  { value: 50, suffix: '+', label: 'Returning clients' },
+  { value: 10, suffix: '', label: 'Week turnaround' },
+];
+
+const woods = [
+  {
+    name: 'Maple',
+    text: 'Light in tone and smooth in texture, maple offers a clean, understated beauty. Its pale surface and subtle grain create a refined backdrop that suits modern and minimal spaces. Durable for everyday use, it holds up well for years, though it can appear simpler and less distinctive than richer woods.',
+    seen: 'kitchen cabinets, cutting boards, children’s furniture.',
+    image: '/images/wood-maple.png',
+    hover: '/images/wood-maple-hover.png',
+  },
+  {
+    name: 'White Oak',
+    text: 'Known for its strength and timeless appeal, white oak carries a warm, natural character. With visible grain and golden-to-neutral hues, it brings both durability and elegance — a classic choice that balances contemporary and traditional styles. Exceptionally long-lasting, it’s a wood that can serve for generations.',
+    seen: 'hardwood flooring, wine and whiskey barrels, Craftsman furniture.',
+    image: '/images/wood-white-oak.png',
+    hover: '/images/wood-white-oak-hover.png',
+  },
+  {
+    name: 'Walnut',
+    text: 'Rich and distinctive, walnut is prized for its deep tones and flowing grain. Its natural luxury makes every piece feel substantial and sophisticated, transforming furniture into a focal point of the home. Strong yet refined, walnut endures beautifully over time, developing a graceful patina that adds to its legacy.',
+    seen: 'luxury dining and conference tables, executive desks, grand pianos and guitars.',
+    image: '/images/wood-walnut.png',
+    hover: '/images/wood-walnut-hover.png',
+  },
+];
+
+const approach = [
+  {
+    title: 'Bespoke solutions for every space',
+    text: 'No two homes—and no two clients—are the same. Every piece we create is designed around your space, your style, and the way you actually live.',
+  },
+  {
+    title: 'Completely in-house team, no middlemen',
+    text: 'From first sketch to final polish, everything happens under our roof. That means total control over quality, timelines, and the little details that matter most.',
+  },
+  {
+    title: '100% transparent pricing',
+    text: 'No surprises, no fine print. We’ll walk you through every cost up front so you know exactly what you’re getting and why.',
+  },
+  {
+    title: 'Personal communication and updates at every step',
+    text: 'You’ll never wonder where your project stands. We check in, share progress, and keep you involved—because it’s your vision we’re building.',
+  },
+  {
+    title: 'Commitment to quality and lasting craftsmanship',
+    text: 'We build with care, precision, and materials that stand the test of time—pieces you’ll be proud of today and decades from now.',
+  },
+];
+
+// Webflow renders images inline-block, which adds a few px of line box under each one.
+const img = 'inline-block max-w-full align-middle';
+---
+
+<Layout
+  title="About | Woodream"
+  description="At Woodream your vision is crafted in-house by the same hands that first heard your idea. With us there is no outsourcing, no detail lost along the way and no dream too big."
+  footerBanner={{ image: '/images/footer-2.avif', text: 'live the dream.', tabletHeight: 350 }}
+>
+  <PageHero line1="If you can" line2="dream it.">
+    At Woodream your vision is crafted in-house by the same hands that first heard your idea. With us there is no
+    outsourcing, no detail lost along the way and no dream too big.
+  </PageHero>
+
+  <ImageBanner image="/images/about-hero.avif">In-house.<br />For you.</ImageBanner>
+
+  <!-- Stats -->
+  <section class="relative flex items-center justify-center px-site py-20">
+    <div class="relative z-1 w-full max-w-(--container-site)">
+      <dl class="grid w-full grid-cols-4 gap-5 max-md:grid-cols-2">
+        {
+          stats.map((stat) => (
+            <div class="flex w-full flex-col-reverse gap-[5px] border-t border-section-border pt-5">
+              <dt class="max-lg:text-[20px] max-sm:text-[18px]">{stat.label}</dt>
+              <dd class="text-[80px] leading-none xl:text-[110px] max-lg:text-[70px] max-sm:text-[50px]">
+                <span data-count-to={stat.value}>{stat.value}</span>{stat.suffix}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- About us -->
+  <Section
+    tab="About us"
+    heading="Built around you"
+    headingClass="max-w-[338px] max-md:max-w-none"
+    intro="Some see lumber, but our dream team sees limitless possibility. Every project begins in our workshop, where precision, focus, and true care shape each detail. This is where the magic happens."
+    gap="tight"
+  >
+    <!-- Empty spacer row, as in the original layout -->
+    <div class="pb-2.5" aria-hidden="true"></div>
+    <div class="flex w-full items-end justify-center gap-5 max-sm:flex-col">
+      <div class="relative w-3/5 max-sm:w-full">
+        <div class="relative overflow-hidden pb-2.5">
+          <img
+            src="/images/about-workshop-1.avif"
+            alt="Woodream craftsmen at work in the workshop"
+            width="1388"
+            height="1774"
+            loading="lazy"
+            class={img}
+          />
+        </div>
+        <div class="relative overflow-hidden pb-2.5">
+          Woodwork is what we do. Making it yours is why we do it. Everything you see here was crafted start to finish
+          in our workshop by a team that knows every inch of your plan and project.
+        </div>
+      </div>
+      <div class="flex w-2/5 flex-col items-center justify-end gap-[50px] max-sm:w-full">
+        <div class="relative overflow-hidden pb-2.5">
+          <img
+            src="/images/about-workshop-2.avif"
+            alt="Detail of custom woodwork"
+            width="674"
+            height="974"
+            loading="lazy"
+            class={img}
+          />
+        </div>
+        <div class="min-h-[75px] max-sm:hidden"></div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Design methodology -->
+  <Section
+    tab="Design Methodology"
+    heading="Etched in time."
+    headingClass="max-w-[338px] max-md:max-w-none"
+    introClass="w-[66%]"
+    intro="At Woodream, we craft spaces that blend purpose with beauty. Every detail is carefully considered and contributes to the whole. Ideas evolve into carefully chosen materials—oak for durability, walnut for rich color, and maple for a smooth finish—and from there your vision comes to life.<br /><br />Our premium-grade stains and finishes protect and enhance the natural beauty of the wood, and expert craftsmanship ensures a flawless finish. The result is something you’ll love and live with for a lifetime."
+  >
+    <div class="flex w-full items-stretch justify-between gap-5 max-sm:flex-col">
+      <div class="flex w-[45%] flex-col gap-[50px] max-sm:w-full">
+        <div class="relative overflow-hidden pb-2.5">
+          <img
+            src="/images/about-method-1.avif"
+            alt="Custom millwork in a finished room"
+            width="914"
+            height="1140"
+            loading="lazy"
+            class={img}
+          />
+        </div>
+      </div>
+      <div class="flex w-[55%] flex-col gap-10 max-sm:w-full">
+        <div class="relative overflow-hidden pb-2.5">
+          <img
+            src="/images/about-method-2.avif"
+            alt="Wood finish detail"
+            width="1154"
+            height="822"
+            loading="lazy"
+            class={img}
+          />
+        </div>
+      </div>
+    </div>
+    <Button href="/gallery" class="-mt-[50px] max-lg:-mt-[25px]">View Gallery</Button>
+  </Section>
+
+  <!-- Wood selection -->
+  <Section
+    tab="Wood Selection"
+    heading="Crafted from the finest woods."
+    headingClass="max-w-[338px] max-md:max-w-none"
+    intro="Our woods are selected not just for their look, but for how they live with you — durable, versatile, and timeless."
+  >
+    <div class="w-full">
+      {
+        woods.map((wood) => (
+          <div
+            data-reveal="scroll"
+            class="fade-up group flex items-stretch justify-between gap-5 max-lg:gap-[45px] border-t border-black/30 p-10 hover:bg-dark-beige max-md:px-[30px] max-sm:flex-col max-sm:px-5"
+          >
+            <div class="flex w-3/5 flex-col items-start justify-start gap-[30px] max-sm:w-full">
+              <h3 class="text-[30px]">{wood.name}</h3>
+              <p>
+                {wood.text}
+                <br />
+                <br />
+                <span class="underline">Where you’ve seen it: &nbsp;{wood.seen}</span>
+              </p>
+            </div>
+            <div class="relative w-2/5 max-sm:w-full">
+              <img
+                src={wood.image}
+                alt={`${wood.name} wood sample`}
+                width="362"
+                height="258"
+                loading="lazy"
+                class="relative z-1 size-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+              />
+              <img
+                src={wood.hover}
+                alt=""
+                width="362"
+                height="258"
+                loading="lazy"
+                class="absolute inset-0 z-0 size-full object-cover"
+              />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Our approach -->
+  <Section
+    tab="Our Approach"
+    heading="Design with you in mind."
+    headingClass="max-w-[338px] max-md:max-w-none"
+    intro="Our priority is to exceed your expectations. Not just in the final result but throughout the entire process."
+  >
+    <ul class="w-3/4 self-end max-md:w-full">
+      {
+        approach.map((item) => (
+          <li
+            data-reveal="scroll"
+            tabindex="0"
+            class="fade-up group flex items-start justify-between gap-[100px] border-t border-black/30 py-7 pr-[15px] pl-[30px] outline-none hover:bg-dark-beige focus-visible:bg-dark-beige max-lg:gap-[50px] max-sm:gap-5 max-sm:pl-[15px]"
+          >
+            <div>
+              <div>{item.title}</div>
+              <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out group-hover:grid-rows-[1fr] group-focus-within:grid-rows-[1fr]">
+                <div class="overflow-hidden">
+                  <p class="pt-[30px] text-[18px]">{item.text}</p>
+                </div>
+              </div>
+            </div>
+            <div class="shrink-0 transition-transform duration-500 ease-out group-hover:rotate-90 group-focus-within:rotate-90">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="inline align-baseline">
+                <path d="M7.5 7.5h10.5v10.5M18 7.5 6.5 19" stroke="currentColor" stroke-width="2.2" />
+              </svg>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+</Layout>

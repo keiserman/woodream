@@ -1,0 +1,29 @@
+---
+import Reveal from './Reveal.astro';
+
+/** Full-bleed photo under the hero, with a caption and a "scroll down" cursor. */
+interface Props {
+  image: string;
+}
+
+const { image } = Astro.props;
+---
+
+<Reveal
+  as="section"
+  onLoad
+  dir="down"
+  delay={0.3}
+  data-cursor-area
+  class="flex min-h-[400px] items-end justify-center bg-cover bg-center px-site pt-20 pb-[45px] text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:min-h-[350px] max-sm:min-h-[300px]"
+  style={`background-image:url(${image})`}
+>
+  <div class="relative z-1 flex w-full max-w-(--container-site) flex-col items-start">
+    <div class="overflow-hidden">
+      <div class="rise max-lg:text-[35px] max-sm:text-[30px]" style="--reveal-delay:0.9s">
+        <slot />
+      </div>
+    </div>
+  </div>
+  <div class="fake-cursor" aria-hidden="true"><span class="fake-cursor-label">scroll down</span></div>
+</Reveal>

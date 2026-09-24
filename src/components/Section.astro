@@ -9,15 +9,30 @@ interface Props {
   tab: string;
   /** Heading HTML (may contain <br />). */
   heading: string;
+  /** Intro HTML (may contain <br />). */
   intro: string;
   headingClass?: string;
+  /** Width of the intro column; defaults to half the row. */
+  introClass?: string;
+  /** Space between the heading row and the content below it. */
+  gap?: 'default' | 'tight';
   beige?: boolean;
   class?: string;
   /** The original site only animates headings on beige sections. */
   animate?: boolean;
 }
 
-const { tab, heading, intro, headingClass, beige = false, class: className, animate = beige } = Astro.props;
+const {
+  tab,
+  heading,
+  intro,
+  headingClass,
+  introClass = 'w-1/2',
+  gap = 'default',
+  beige = false,
+  class: className,
+  animate = beige,
+} = Astro.props;
 const color = beige ? 'beige' : 'bg';
 ---
 
@@ -39,7 +54,10 @@ const color = beige ? 'beige' : 'bg';
     </div>
 
     <div
-      class="flex w-3/4 flex-col items-start justify-start gap-[100px] border-t border-section-border pt-5 max-lg:w-4/5 max-lg:gap-y-[75px] max-md:w-full max-md:gap-[50px]"
+      class:list={[
+        'flex w-3/4 flex-col items-start justify-start border-t border-section-border pt-5 max-lg:w-4/5 max-md:w-full',
+        gap === 'tight' ? 'gap-[30px]' : 'gap-[100px] max-lg:gap-y-[75px] max-md:gap-[50px]',
+      ]}
     >
       <div class="flex w-full items-stretch justify-between gap-5 max-md:flex-col">
         <Reveal disabled={!animate} color={color} class="pb-2.5">
@@ -49,9 +67,9 @@ const color = beige ? 'beige' : 'bg';
           disabled={!animate}
           color={color}
           delay={0.15}
-          class="flex w-1/2 items-start justify-end pb-2.5 max-md:w-full max-md:justify-start"
+          class:list={['flex items-start justify-end pb-2.5 max-md:w-full max-md:justify-start', introClass]}
         >
-          <div class="2xl:w-auto 2xl:max-w-[550px]">{intro}</div>
+          <div class="2xl:w-auto 2xl:max-w-[550px]" set:html={intro} />
         </Reveal>
       </div>
 
