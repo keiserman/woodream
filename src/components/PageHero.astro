@@ -2,26 +2,52 @@
 import Reveal from './Reveal.astro';
 
 /**
- * Big two-line page title with an intro paragraph on the right.
- * The second title line is indented (pass it as `line2`).
+ * Big page title with an intro paragraph on the right.
+ * With `line2`, the title wraps onto an indented second line.
+ * Content in the "below" slot (e.g. the gallery grid) renders under the title row.
  */
 interface Props {
   line1: string;
-  line2: string;
+  line2?: string;
+  /** "compact" is the single-line 80px title used on the Gallery page. */
+  size?: 'large' | 'compact';
 }
 
-const { line1, line2 } = Astro.props;
+const { line1, line2, size = 'large' } = Astro.props;
+const hasBelow = Astro.slots.has('below');
 ---
 
-<section class="relative flex items-center justify-center px-site pt-[250px] pb-[35px] max-lg:pt-[200px] max-md:pt-[150px]">
+<section
+  class:list={[
+    'relative flex items-center justify-center px-site pt-[250px] max-lg:pt-[200px] max-md:pt-[150px]',
+    hasBelow ? 'flex-col pb-20' : 'pb-[35px]',
+  ]}
+>
   <div
     class="relative z-1 flex w-full max-w-(--container-site) flex-row items-end justify-between gap-5 max-lg:flex-col max-lg:items-start"
   >
     <Reveal onLoad delay={0.2} class="w-[73%] pb-2.5 xl:w-auto max-lg:w-auto">
-      <h1>{line1}<br /><span class="pl-[130px] max-md:pl-[60px] max-sm:pl-0">{line2}</span></h1>
+      <h1 class:list={[size === 'compact' && 'text-[80px] max-md:text-[60px] max-sm:text-[40px]']}>
+        {line1}{
+          line2 && (
+            <>
+              <br />
+              <span class="pl-[130px] max-md:pl-[60px] max-sm:pl-0">{line2}</span>
+            </>
+          )
+        }
+      </h1>
     </Reveal>
     <Reveal onLoad delay={0.45} class="w-[41%] pb-2.5 xl:w-[35%] max-lg:w-[77%] max-md:w-auto">
       <p class="mb-[5px] text-[20px]"><slot /></p>
     </Reveal>
   </div>
+
+  {
+    hasBelow && (
+      <div class="relative z-1 flex w-full max-w-(--container-site) flex-col items-start gap-5">
+        <slot name="below" />
+      </div>
+    )
+  }
 </section>

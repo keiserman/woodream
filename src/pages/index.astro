@@ -19,11 +19,13 @@ import howWeWork3 from '../assets/images/home/how-we-work-3.avif';
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
 const galleries = await Promise.all(
-  (await getCollection('gallery')).sort(byOrder).map(async (entry) => ({
-    ...entry.data,
-    href: `/gallery/${entry.id}`,
-    cover: await backgroundUrl(entry.data.cover, 900),
-  })),
+  (await getCollection('gallery'))
+    .sort((a, b) => a.data.homeOrder - b.data.homeOrder)
+    .map(async (entry) => ({
+      ...entry.data,
+      href: `/gallery/${entry.id}`,
+      cover: await backgroundUrl(entry.data.cover, 900),
+    })),
 );
 const steps = (await getCollection('processSteps')).sort(byOrder).map((entry) => entry.data);
 const testimonials = (await getCollection('testimonials')).sort(byOrder).map((entry) => entry.data.quote);

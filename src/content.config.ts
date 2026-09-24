@@ -10,7 +10,10 @@ const gallery = defineCollection({
   schema: ({ image }) =>
     z.object({
       name: z.string(),
+      /** Position on the Gallery page. */
       order: z.number(),
+      /** Position in the homepage gallery slider. */
+      homeOrder: z.number(),
       cover: image(),
     }),
 });

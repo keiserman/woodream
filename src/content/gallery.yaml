@@ -1,20 +1,26 @@
 # Gallery categories. `id` is the URL slug (/gallery/<id>).
+# `order` is the position on the Gallery page; `homeOrder` is the position in
+# the homepage slider.
 - id: desks
   name: Desks
   order: 1
+  homeOrder: 1
   cover: ../assets/images/gallery/desks.jpg
-
-- id: studies
-  name: Studies
-  order: 2
-  cover: ../assets/images/gallery/studies.jpg
 
 - id: tables
   name: Tables
-  order: 3
+  order: 2
+  homeOrder: 3
   cover: ../assets/images/gallery/tables.jpg
 
 - id: furniture
   name: Furniture
-  order: 4
+  order: 3
+  homeOrder: 4
   cover: ../assets/images/gallery/furniture.jpg
+
+- id: studies
+  name: Studies
+  order: 4
+  homeOrder: 2
+  cover: ../assets/images/gallery/studies.jpg
