@@ -15,6 +15,14 @@ export const contact = {
   whatsapp: '17327574094',
 };
 
+/**
+ * Where the footer contact form posts to. Any service that accepts a form POST
+ * and answers JSON works (Formspree, Web3Forms, Basin…), e.g.
+ * 'https://formspree.io/f/abcdwxyz'. Leave empty until one is set up; the form
+ * then shows its error message instead of pretending to send.
+ */
+export const formEndpoint = '';
+
 export const phoneHref = `tel:${contact.phone.replace(/\D/g, '')}`;
 export const emailHref = `mailto:${contact.email}`;
 export const whatsappHref = `https://wa.me/${contact.whatsapp}`;

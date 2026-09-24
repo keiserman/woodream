@@ -3,14 +3,15 @@ import Reveal from './Reveal.astro';
 
 /**
  * Standard content section: a small "tab" label on the left (25%)
- * and a heading + intro row followed by slotted content on the right (75%).
+ * and a heading + intro row followed by the default slot on the right (75%).
+ *
+ * Slots:
+ *   heading – the <h2> contents
+ *   intro   – the paragraph beside the heading
+ *   default – everything below the heading row
  */
 interface Props {
   tab: string;
-  /** Heading HTML (may contain <br />). */
-  heading: string;
-  /** Intro HTML (may contain <br />). */
-  intro: string;
   headingClass?: string;
   /** Width of the intro column; defaults to half the row. */
   introClass?: string;
@@ -18,20 +19,18 @@ interface Props {
   gap?: 'default' | 'tight';
   beige?: boolean;
   class?: string;
-  /** The original site only animates headings on beige sections. */
+  /** Slide the heading and intro in when they scroll into view. */
   animate?: boolean;
 }
 
 const {
   tab,
-  heading,
-  intro,
   headingClass,
   introClass = 'w-1/2',
   gap = 'default',
   beige = false,
   class: className,
-  animate = beige,
+  animate = true,
 } = Astro.props;
 const color = beige ? 'beige' : 'bg';
 ---
@@ -61,7 +60,7 @@ const color = beige ? 'beige' : 'bg';
     >
       <div class="flex w-full items-stretch justify-between gap-5 max-md:flex-col">
         <Reveal disabled={!animate} color={color} class="pb-2.5">
-          <h2 class:list={[headingClass]} set:html={heading} />
+          <h2 class:list={[headingClass]}><slot name="heading" /></h2>
         </Reveal>
         <Reveal
           disabled={!animate}
@@ -69,7 +68,7 @@ const color = beige ? 'beige' : 'bg';
           delay={0.15}
           class:list={['flex items-start justify-end pb-2.5 max-md:w-full max-md:justify-start', introClass]}
         >
-          <div class="2xl:w-auto 2xl:max-w-[550px]" set:html={intro} />
+          <div class="2xl:w-auto 2xl:max-w-[550px]"><slot name="intro" /></div>
         </Reveal>
       </div>
 

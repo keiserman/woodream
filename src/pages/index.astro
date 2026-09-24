@@ -64,10 +64,10 @@ const standards = [
   <!-- About -->
   <Section
     tab="About us"
-    heading="Built by hand, backed by heart"
     headingClass="max-w-[338px] max-md:max-w-none"
-    intro="We deliver luxury and elevated design, with a personal touch that makes you feel at home."
   >
+    <Fragment slot="heading">Built by hand, backed by heart</Fragment>
+    <Fragment slot="intro">We deliver luxury and elevated design, with a personal touch that makes you feel at home.</Fragment>
     <div class="flex w-full items-stretch justify-between gap-5 max-sm:flex-col">
       <div class="flex w-2/5 flex-col gap-[50px] max-sm:w-full">
         <div class="relative overflow-hidden pb-2.5">
@@ -77,7 +77,7 @@ const standards = [
             widths={[240, 480, 800]}
             sizes="(max-width: 479px) 100vw, 240px"
             format="avif"
-            class="inline-block w-[240px] align-middle max-sm:w-full"
+            class="w-[240px] max-sm:w-full"
           />
         </div>
         <div class="relative flex flex-col gap-[30px] overflow-hidden pb-2.5">
@@ -105,10 +105,10 @@ const standards = [
   <Section
     beige
     tab="Gallery"
-    heading="Woodream makes the dream work."
     headingClass="max-w-[393px]"
-    intro="Take your vision further with custom millwork."
   >
+    <Fragment slot="heading">Woodream makes the dream work.</Fragment>
+    <Fragment slot="intro">Take your vision further with custom millwork.</Fragment>
     <Slider count={galleries.length} label="Gallery categories" class="-mb-[50px] flex-col max-lg:mb-0">
       {
         galleries.map((item, i) => (
@@ -139,9 +139,9 @@ const standards = [
   <!-- Process -->
   <Section
     tab="Our Process"
-    heading="Built around you."
-    intro="We’re in the business of making your dreams come true."
   >
+    <Fragment slot="heading">Built around you.</Fragment>
+    <Fragment slot="intro">We’re in the business of making your dreams come true.</Fragment>
     <ol class="w-full">
       {
         steps.map((step, i) => (
@@ -162,10 +162,10 @@ const standards = [
   <Section
     beige
     tab="What our clients say about us"
-    heading="Nailed. <br />Every time."
-    intro="Hear firsthand how precision, passion, and seamless service set Woodream apart."
-    class="pb-[120px] max-md:pb-[100px]"
+    class="pb-[220px] max-lg:pb-[195px] max-md:pb-[150px]"
   >
+    <Fragment slot="heading">Nailed. <br />Every time.</Fragment>
+    <Fragment slot="intro">Hear firsthand how precision, passion, and seamless service set Woodream apart.</Fragment>
     <Slider count={testimonials.length} label="Client testimonials" floatingBar class="pb-10">
       {
         testimonials.map((quote) => (
@@ -177,12 +177,15 @@ const standards = [
         ))
       }
     </Slider>
-    <!-- Empty row: the original has an embed here that adds one more gap below the slider. -->
-    <div aria-hidden="true"></div>
   </Section>
 
   <!-- How we work -->
-  <Section tab="How we work" heading="Craftsmanship <br />+ Care" headingClass="max-w-[338px] max-md:max-w-none" intro="The Woodream standard.">
+  <Section
+    tab="How we work"
+    headingClass="max-w-[338px] max-md:max-w-none"
+  >
+    <Fragment slot="heading">Craftsmanship <br />+ Care</Fragment>
+    <Fragment slot="intro">The Woodream standard.</Fragment>
     <div class="w-full">
       {
         standards.map((item) => (
