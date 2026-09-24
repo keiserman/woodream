@@ -3,18 +3,12 @@ import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Button from '../../components/Button.astro';
 import PageHero from '../../components/PageHero.astro';
-import { backgroundUrl } from '../../lib/images';
+import BackgroundImage from '../../components/BackgroundImage.astro';
 import { galleryIntro } from '../../data/site';
 
-const categories = await Promise.all(
-  (await getCollection('gallery'))
-    .sort((a, b) => a.data.order - b.data.order)
-    .map(async (entry) => ({
-      name: entry.data.name,
-      href: `/gallery/${entry.id}`,
-      cover: await backgroundUrl(entry.data.cover, 1200),
-    })),
-);
+const categories = (await getCollection('gallery'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({ name: entry.data.name, href: `/gallery/${entry.id}`, cover: entry.data.cover }));
 
 // Staggered layout: cards sit two per row and cycle through these four
 // positions (short + tall, then offset up + offset down).
@@ -63,9 +57,13 @@ for (let i = 0; i < categories.length; i += 2) rows.push(categories.slice(i, i +
                     href={category.href}
                     data-cursor-area
                     aria-label={`Explore ${category.name}`}
-                    class:list={['relative block w-full overflow-hidden bg-cover bg-center', position.image]}
-                    style={`background-image:url(${category.cover})`}
+                    class:list={['relative block w-full overflow-hidden', position.image]}
                   >
+                    <BackgroundImage
+                      src={category.cover}
+                      widths={[400, 800, 1200, 1600]}
+                      sizes="(max-width: 479px) 100vw, 50vw"
+                    />
                     <div class="fake-cursor size-[125px] min-h-[125px] min-w-[125px]" aria-hidden="true">
                       <span class="fake-cursor-label">Explore more</span>
                     </div>

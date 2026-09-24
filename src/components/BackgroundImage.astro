@@ -1,0 +1,37 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+/**
+ * A photo that fills its (positioned) parent like `background-size: cover`,
+ * but rendered with <Image> so it gets responsive sizes, lazy loading and alt text.
+ * Content that should sit on top needs `relative` (or another position) so it
+ * paints above the image.
+ */
+interface Props {
+  src: ImageMetadata;
+  /** Leave empty when the photo is decorative or the parent already has a label. */
+  alt?: string;
+  /** Candidate widths; any wider than the source photo are dropped. */
+  widths: number[];
+  sizes: string;
+  /** Load right away with high priority (for photos visible on first paint). */
+  priority?: boolean;
+}
+
+const { src, alt = '', widths, sizes, priority = false } = Astro.props;
+// Never upscale: swap any too-wide candidates for the source's own width.
+const usable = widths.filter((w) => w < src.width);
+if (usable.length < widths.length) usable.push(src.width);
+---
+
+<Image
+  src={src}
+  alt={alt}
+  widths={usable}
+  sizes={sizes}
+  format="avif"
+  loading={priority ? 'eager' : 'lazy'}
+  fetchpriority={priority ? 'high' : 'auto'}
+  class="pointer-events-none absolute inset-0 size-full object-cover"
+/>

@@ -9,7 +9,7 @@ import PageHero from '../components/PageHero.astro';
 import Reveal from '../components/Reveal.astro';
 import Section from '../components/Section.astro';
 import Slider from '../components/Slider.astro';
-import { backgroundUrl } from '../lib/images';
+import BackgroundImage from '../components/BackgroundImage.astro';
 import heroImage from '../assets/images/home/hero.avif';
 import aboutImage from '../assets/images/home/about-1.avif';
 import aboutBackground from '../assets/images/home/about-2.avif';
@@ -18,18 +18,11 @@ import howWeWork2 from '../assets/images/home/how-we-work-2.avif';
 import howWeWork3 from '../assets/images/home/how-we-work-3.avif';
 
 const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
-const galleries = await Promise.all(
-  (await getCollection('gallery'))
-    .sort((a, b) => a.data.homeOrder - b.data.homeOrder)
-    .map(async (entry) => ({
-      ...entry.data,
-      href: `/gallery/${entry.id}`,
-      cover: await backgroundUrl(entry.data.cover, 900),
-    })),
-);
+const galleries = (await getCollection('gallery'))
+  .sort((a, b) => a.data.homeOrder - b.data.homeOrder)
+  .map((entry) => ({ ...entry.data, href: `/gallery/${entry.id}` }));
 const steps = (await getCollection('processSteps')).sort(byOrder).map((entry) => entry.data);
 const testimonials = (await getCollection('testimonials')).sort(byOrder).map((entry) => entry.data.quote);
-const aboutBackgroundUrl = await backgroundUrl(aboutBackground, 1400);
 
 const perks = [
   { title: 'Accessible Pricing', note: 'No middleman markup.' },
@@ -93,12 +86,13 @@ const standards = [
           }
         </div>
       </div>
-      <div
-        role="img"
-        aria-label="Woodream custom interior"
-        class="relative w-3/5 bg-cover bg-center max-sm:min-h-[300px] max-sm:w-full"
-        style={`background-image:url(${aboutBackgroundUrl})`}
-      >
+      <div class="relative w-3/5 max-sm:min-h-[300px] max-sm:w-full">
+        <BackgroundImage
+          src={aboutBackground}
+          alt="Woodream custom interior"
+          widths={[400, 800, 1200]}
+          sizes="(max-width: 479px) 100vw, 45vw"
+        />
       </div>
     </div>
   </Section>
@@ -122,9 +116,13 @@ const standards = [
                   href={item.href}
                   data-cursor-area
                   aria-label={`Explore ${item.name}`}
-                  class="relative block h-[500px] w-full bg-cover bg-center"
-                  style={`background-image:url(${item.cover})`}
+                  class="relative block h-[500px] w-full"
                 >
+                  <BackgroundImage
+                    src={item.cover}
+                    widths={[400, 800, 1200]}
+                    sizes="(max-width: 479px) 100vw, (max-width: 991px) 50vw, 360px"
+                  />
                   <div class="fake-cursor size-[125px] min-h-[125px] min-w-[125px]" aria-hidden="true">
                     <span class="fake-cursor-label">Explore more</span>
                   </div>

@@ -1,6 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
-import { backgroundUrl } from '../lib/images';
+import BackgroundImage from './BackgroundImage.astro';
 import Reveal from './Reveal.astro';
 import readyImage from '../assets/images/footer/ready.avif';
 import {
@@ -27,7 +27,6 @@ interface Props {
 }
 
 const { banner = { image: readyImage, text: 'Ready<br />When you are' } } = Astro.props;
-const bannerImage = await backgroundUrl(banner.image, 2400);
 const tabletHeight = banner.tabletHeight === 350 ? 'max-lg:min-h-[350px]' : 'max-lg:min-h-[400px]';
 
 const isCurrent = (href: string) => isCurrentPage(Astro.url, href);
@@ -38,12 +37,12 @@ const year = new Date().getFullYear();
   <Reveal
     dir="down"
     class:list={[
-      'flex min-h-[400px] items-center justify-center bg-cover bg-center p-5 text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:text-[35px] max-sm:min-h-[300px] max-sm:text-[30px]',
+      'flex min-h-[400px] items-center justify-center p-5 text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:text-[35px] max-sm:min-h-[300px] max-sm:text-[30px]',
       tabletHeight,
     ]}
-    style={`background-image:url(${bannerImage})`}
   >
-    <div class="overflow-hidden">
+    <BackgroundImage src={banner.image} widths={[640, 960, 1280, 1920, 2400]} sizes="100vw" />
+    <div class="relative overflow-hidden">
       <div class="rise text-center" style="--reveal-delay:0.3s" set:html={banner.text} />
     </div>
   </Reveal>
