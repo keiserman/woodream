@@ -1,0 +1,237 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import Reveal from '../components/Reveal.astro';
+import Section from '../components/Section.astro';
+import Slider from '../components/Slider.astro';
+
+const perks = [
+  { title: 'Accessible Pricing', note: 'No middleman markup.' },
+  { title: 'Limitless design options', note: 'No dream too big.' },
+  { title: 'Uncompromising quality', note: 'Built to last.' },
+];
+
+const galleries = [
+  { name: 'Desks', href: '/gallery/desks', image: '/images/gallery-desks.jpg' },
+  { name: 'Studies', href: '/gallery/studies', image: '/images/gallery-studies.jpg' },
+  { name: 'Tables', href: '/gallery/tables', image: '/images/gallery-tables.jpg' },
+  { name: 'Furniture', href: '/gallery/furniture', image: '/images/gallery-furniture.jpg' },
+];
+
+const steps = [
+  { title: 'Contact', text: 'Reach out. Your call is important to us and we’ll answer it with care.' },
+  {
+    title: 'Customize',
+    text: 'Together we’ll discuss your vision, review your space renders, and brainstorm woodwork options.',
+  },
+  {
+    title: 'Confirm',
+    text: 'You’ll receive a quote within 24 hours, and we come measure your space once it’s signed.',
+  },
+  { title: 'Create', text: 'Your project comes to life in our woodshop. Standard turnaround time is under ten weeks.' },
+  {
+    title: 'Complete',
+    text: 'We handle the installation with precision and care, ensuring everything fits perfectly.',
+  },
+  { title: 'Connected', text: 'We are honored by your trust, and we stand behind every detail of our work.' },
+];
+
+const testimonials = [
+  'You can tell right away that this isn’t just about building furniture for them. They want to know who you are, how you live, and exactly what you have in mind. They find out what matters to you and then they make it matter to them, too.',
+  'When I worked with Woodream, it honestly felt like I was their only project. Every call, every meeting, they gave me their full attention. Then I walked into the shop one day and saw a dozen other pieces in progress—and realized just how many people they make feel that way.',
+  'We’d been hunting for the perfect dining table for months—stores, online, you name it. Nothing felt right, and the few we liked were way out of budget. Finally, we decided to have Woodream make it custom. Best decision ever. Not only is it exactly what we wanted, it’s more beautiful than anything we saw in the stores… and it ended up costing less.',
+  'As a designer, I’m picky—sometimes too picky. I had a very specific vision for my client’s study, and with Woodream doing everything in-house, there were no lost details, no miscommunications. What I pictured in my head is exactly what showed up in the room.',
+];
+
+const standards = [
+  {
+    title: 'On call',
+    text: 'You’ll always reach someone who knows your project and is ready to help.',
+    image: '/images/hww-1.avif',
+  },
+  {
+    title: 'On point',
+    text: 'Your vision matters. We make sure the final result reflects it exactly.',
+    image: '/images/hww-2.avif',
+  },
+  {
+    title: 'On record',
+    text: 'You can count on us for accessible pricing and transparent turnaround times.',
+    image: '/images/hww-3.avif',
+  },
+];
+---
+
+<Layout>
+  <!-- Hero -->
+  <section class="relative flex items-center justify-center px-site pt-[250px] pb-[35px] max-lg:pt-[200px] max-md:pt-[150px]">
+    <div
+      class="relative z-1 flex w-full max-w-(--container-site) flex-row items-end justify-between gap-5 max-lg:flex-col max-lg:items-start"
+    >
+      <Reveal onLoad delay={0.2} class="w-[73%] pb-2.5 xl:w-auto max-lg:w-auto">
+        <h1>the custom<br /><span class="pl-[130px] max-md:pl-[60px] max-sm:pl-0">experience.</span></h1>
+      </Reveal>
+      <Reveal onLoad delay={0.45} class="w-[41%] pb-2.5 xl:w-[35%] max-lg:w-[77%] max-md:w-auto">
+        <p class="mb-[5px] text-[20px]">
+          At Woodream, custom goes beyond the outcome. It’s how we begin, build, and finish.
+        </p>
+      </Reveal>
+    </div>
+  </section>
+
+  <!-- Full-bleed image -->
+  <Reveal
+    as="section"
+    onLoad
+    dir="down"
+    delay={0.3}
+    data-cursor-area
+    class="flex min-h-[400px] items-end justify-center bg-[url(/images/home-hero.avif)] bg-cover bg-center px-site pt-20 pb-[45px] text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:min-h-[350px] max-sm:min-h-[300px]"
+  >
+    <div class="relative z-1 flex w-full max-w-(--container-site) flex-col items-start">
+      <div class="overflow-hidden">
+        <div class="rise max-lg:text-[35px] max-sm:text-[30px]" style="--reveal-delay:0.9s">
+          Millwork <br />made for you.
+        </div>
+      </div>
+    </div>
+    <div class="fake-cursor" aria-hidden="true"><span class="fake-cursor-label">scroll down</span></div>
+  </Reveal>
+
+  <!-- About -->
+  <Section
+    tab="About us"
+    heading="Built by hand, backed by heart"
+    headingClass="max-w-[338px] max-md:max-w-none"
+    intro="We deliver luxury and elevated design, with a personal touch that makes you feel at home."
+  >
+    <div class="flex w-full items-stretch justify-between gap-5 max-sm:flex-col">
+      <div class="flex w-2/5 flex-col gap-[50px] max-sm:w-full">
+        <div class="relative overflow-hidden pb-2.5">
+          <img
+            src="/images/about-1.avif"
+            alt="Custom millwork detail"
+            width="914"
+            height="900"
+            loading="lazy"
+            class="inline-block w-[240px] align-middle max-sm:w-full"
+          />
+        </div>
+        <div class="relative flex flex-col gap-[30px] overflow-hidden pb-2.5">
+          {
+            perks.map((perk) => (
+              <div>
+                <div>{perk.title}</div>
+                <div class="text-[21px]">{perk.note}</div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <div
+        role="img"
+        aria-label="Woodream custom interior"
+        class="relative w-3/5 bg-[url(/images/about-2.avif)] bg-cover bg-center max-sm:min-h-[300px] max-sm:w-full"
+      >
+      </div>
+    </div>
+  </Section>
+
+  <!-- Gallery -->
+  <Section
+    beige
+    tab="Gallery"
+    heading="Woodream makes the dream work."
+    headingClass="max-w-[393px]"
+    intro="Take your vision further with custom millwork."
+  >
+    <Slider count={galleries.length} label="Gallery categories" class="-mb-[50px] flex-col max-lg:mb-0">
+      {
+        galleries.map((item, i) => (
+          <div class="w-full shrink-0">
+            <div class="mr-5">
+              <Reveal dir="left" color="beige" delay={i * 0.1} class="flex w-full flex-col items-end">
+                <p class="mb-2.5">{item.name}</p>
+                <a
+                  href={item.href}
+                  data-cursor-area
+                  aria-label={`Explore ${item.name}`}
+                  class="relative block h-[500px] w-full bg-cover bg-center"
+                  style={`background-image:url(${item.image})`}
+                >
+                  <div class="fake-cursor size-[125px] min-h-[125px] min-w-[125px]" aria-hidden="true">
+                    <span class="fake-cursor-label">Explore more</span>
+                  </div>
+                </a>
+              </Reveal>
+            </div>
+          </div>
+        ))
+      }
+    </Slider>
+    <Button href="/gallery">View Gallery</Button>
+  </Section>
+
+  <!-- Process -->
+  <Section
+    tab="Our Process"
+    heading="Built around you."
+    intro="We’re in the business of making your dreams come true."
+  >
+    <ol class="w-full">
+      {
+        steps.map((step, i) => (
+          <li data-reveal="scroll" class="fade-up flex items-center justify-between gap-5 border-t border-black/30 p-10 hover:bg-dark-beige max-lg:flex-col max-lg:items-start max-lg:gap-[45px] max-md:px-[30px] max-sm:px-5">
+            <div class="flex w-[43%] items-center justify-start gap-40 xl:gap-[180px] max-lg:w-auto max-lg:gap-[100px] max-sm:gap-5">
+              <div class="min-w-[9%] max-sm:min-w-0">{String(i + 1).padStart(2, '0')}</div>
+              <div>{step.title}</div>
+            </div>
+            <div class="w-[45%] max-lg:w-full">{step.text}</div>
+          </li>
+        ))
+      }
+    </ol>
+    <Button href="/contact">Get started</Button>
+  </Section>
+
+  <!-- Testimonials -->
+  <Section
+    beige
+    tab="What our clients say about us"
+    heading="Nailed. <br />Every time."
+    intro="Hear firsthand how precision, passion, and seamless service set Woodream apart."
+    class="pb-[120px] max-md:pb-[100px]"
+  >
+    <Slider count={testimonials.length} label="Client testimonials" floatingBar class="pb-10">
+      {
+        testimonials.map((quote) => (
+          <div class="w-full shrink-0">
+            <blockquote class="mr-5 h-full rounded-[20px] bg-bg p-10 text-[20px] leading-[1.3] max-md:p-[30px]">
+              {quote}
+            </blockquote>
+          </div>
+        ))
+      }
+    </Slider>
+    <!-- Empty row: the original has an embed here that adds one more gap below the slider. -->
+    <div aria-hidden="true"></div>
+  </Section>
+
+  <!-- How we work -->
+  <Section tab="How we work" heading="Craftsmanship <br />+ Care" headingClass="max-w-[338px] max-md:max-w-none" intro="The Woodream standard.">
+    <div class="w-full">
+      {
+        standards.map((item) => (
+          <div data-reveal="scroll" class="fade-up flex items-center justify-between gap-5 border-t border-black/30 p-10 hover:bg-dark-beige max-md:px-[30px] max-sm:flex-col max-sm:items-start max-sm:px-5">
+            <div class="flex w-1/2 flex-col items-start justify-start gap-[30px] max-sm:w-full">
+              <div class="text-[30px]">{item.title}</div>
+              <div>{item.text}</div>
+              <Button href="/contact" class="pt-10">Learn more</Button>
+            </div>
+            <img src={item.image} alt="" width="724" height="410" loading="lazy" class="w-1/2 max-w-[362px] max-sm:w-full" />
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+</Layout>

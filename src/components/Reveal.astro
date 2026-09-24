@@ -1,0 +1,41 @@
+---
+/**
+ * Wraps content in an overflow-hidden box with a solid mask that slides
+ * away once the box scrolls into view (see src/scripts/reveal.ts).
+ */
+interface Props {
+  as?: string;
+  class?: string;
+  dir?: 'up' | 'down' | 'left';
+  /** Mask color; defaults to the page background. */
+  color?: 'bg' | 'beige';
+  delay?: number;
+  /** Reveal on page load instead of on scroll. */
+  onLoad?: boolean;
+  /** Render the clipping box without any animation. */
+  disabled?: boolean;
+  [attr: string]: unknown;
+}
+
+const {
+  as: Tag = 'div',
+  class: className,
+  dir = 'up',
+  color = 'bg',
+  delay = 0,
+  onLoad = false,
+  disabled = false,
+  ...attrs
+} = Astro.props;
+const maskColor = color === 'beige' ? 'var(--color-dark-beige)' : 'var(--color-bg)';
+---
+
+<Tag
+  {...attrs}
+  class:list={['relative overflow-hidden', className]}
+  data-reveal={disabled ? undefined : onLoad ? 'load' : 'scroll'}
+  style={`--mask-color:${maskColor};--reveal-delay:${delay}s`}
+>
+  <slot />
+  {!disabled && <div class="mask" data-dir={dir} aria-hidden="true" />}
+</Tag>

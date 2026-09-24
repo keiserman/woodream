@@ -1,0 +1,111 @@
+---
+import Reveal from './Reveal.astro';
+
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/contact', label: 'Contact' },
+];
+const legal = [
+  { href: '/legal/privacy-policy', label: 'Privacy Policy' },
+  { href: '/legal/terms-of-use', label: 'Terms of Use' },
+  { href: '/legal/cookie-settings', label: 'Cookie Settings' },
+];
+
+const current = Astro.url.pathname.replace(/\/$/, '') || '/';
+const year = new Date().getFullYear();
+---
+
+<footer class="relative">
+  <Reveal
+    dir="down"
+    class="flex min-h-[400px] items-center justify-center bg-[url(/images/footer.avif)] bg-cover bg-center p-5 text-[45px] leading-none text-white uppercase xl:min-h-[500px] max-lg:min-h-[400px] max-lg:text-[35px] max-sm:min-h-[300px] max-sm:text-[30px]"
+  >
+    <div class="overflow-hidden">
+      <div class="rise text-center" style="--reveal-delay:0.3s">Ready<br />When you are</div>
+    </div>
+  </Reveal>
+
+  <section class="relative flex flex-col items-center justify-center px-site pt-[50px] pb-2.5">
+    <div class="relative z-1 flex w-full max-w-(--container-site) flex-col items-start gap-5">
+      <div class="flex w-full items-stretch justify-between gap-5 max-lg:flex-col max-lg:gap-10">
+        <div>
+          <a href="tel:7327574094" class="text-[25px] text-black hover:text-grey">732-757-4094<br /></a><a
+            href="mailto:Info@woodreamhome.com"
+            class="text-[25px] text-black hover:text-grey">Info@woodreamhome.com</a
+          >
+        </div>
+        <div class="flex gap-7 max-sm:flex-col">
+          {
+            nav.map((link) => (
+              <a
+                href={link.href}
+                aria-current={link.href === current ? 'page' : undefined}
+                class:list={[
+                  'transition-all duration-300 hover:text-black',
+                  link.href === current
+                    ? 'text-black underline decoration-1 underline-offset-4 hover:underline-offset-[9px]'
+                    : 'text-grey',
+                ]}
+              >
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div
+        class="flex w-full items-end justify-between gap-5 pt-[60px] pb-[50px] max-sm:flex-col max-sm:items-start max-sm:pt-0"
+      >
+        <div class="w-full max-w-[239px] max-md:max-w-[150px]">
+          <img src="/images/webclip.png" alt="Woodream" width="256" height="256" loading="lazy" class="w-full" />
+        </div>
+
+        <div class="relative z-1 flex w-[32%] flex-col gap-[22px] max-lg:w-2/5 max-md:w-3/5 max-sm:w-full">
+          <!-- TODO: point this at a real form handler (Webflow Forms no longer applies). -->
+          <form id="footer-form" name="email-form" method="post" class="flex flex-col items-start gap-2.5 text-left">
+            <label for="footer-email" class="sr-only">Email</label>
+            <input
+              id="footer-email"
+              name="Email"
+              type="email"
+              required
+              maxlength="256"
+              placeholder="Your email."
+              class="block h-[38px] min-h-10 w-full leading-[1.42857] border-[0.8px] border-black/40 bg-transparent px-3 py-2 text-[18px] text-black outline-none placeholder:text-[#3d1d074d] focus:border-black"
+            />
+            <label for="footer-message" class="sr-only">Message</label>
+            <textarea
+              id="footer-message"
+              name="Message"
+              maxlength="5000"
+              placeholder="How can we help you?"
+              class="block h-[170px] min-h-10 w-full leading-[1.42857] border-[0.8px] border-black/40 bg-transparent px-3 py-2 text-[18px] text-black outline-none placeholder:text-[#3d1d074d] focus:border-black"
+            ></textarea>
+            <input type="submit" value="Contact us" class="btn cursor-pointer" />
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="relative z-1 flex w-full max-w-(--container-site) items-start justify-between gap-5 max-md:flex-col"
+    >
+      <div class="flex gap-6 text-[17px] max-sm:flex-col">
+        {
+          legal.map((link) => (
+            <a
+              href={link.href}
+              class="text-black underline decoration-1 underline-offset-4 transition-all duration-300 hover:underline-offset-8"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </div>
+      <div class="text-[18px]">© {year} Woodream. All rights reserved.</div>
+    </div>
+  </section>
+</footer>

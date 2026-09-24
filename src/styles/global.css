@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "PP Mori";
+  src: url("/fonts/PPMori-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "PP Neue Montreal";
+  src: url("/fonts/PPNeueMontreal-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Breakpoints mirror Webflow's: 480 / 768 / 992 / 1280 / 1440.
+   The original site is desktop-first, so most responsive rules use max-* variants. */
+@theme {
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+
+  --color-bg: #f5f2e9;
+  --color-dark-beige: #e3dacf;
+  --color-grey: #565656;
+  --color-accent: #96725b;
+  --color-section-border: #0003;
+
+  --font-sans: "PP Neue Montreal", Arial, sans-serif;
+  --font-display: "PP Mori", Arial, sans-serif;
+
+  --spacing-site: 1.25rem;
+  --container-site: 90rem;
+
+  --ease-reveal: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --animate-nav-in: nav-in 1s var(--ease-reveal) 0.4s backwards;
+  @keyframes nav-in {
+    from {
+      transform: translateY(-100%);
+    }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-bg font-sans text-[23px] text-black antialiased;
+    /* A percentage line-height is inherited as the computed 23px, like the original site. */
+    line-height: 100%;
+  }
+
+  h1 {
+    @apply font-display text-[70px] leading-none font-normal uppercase xl:text-[100px] 2xl:text-[110px] max-md:text-[60px] max-sm:text-[40px];
+  }
+
+  h2 {
+    @apply pb-[5px] font-display text-[40px] leading-none font-normal xl:text-[47px] max-lg:text-[40px] max-sm:text-[35px];
+  }
+}
+
+@layer components {
+  /* Underlined text button used for every CTA on the site */
+  .btn {
+    @apply flex items-center justify-center gap-5 border-b border-black bg-transparent p-0 text-[0.9375rem] leading-none font-normal text-black uppercase no-underline transition-all duration-300 hover:-mb-[0.3125rem] hover:pb-[0.3125rem];
+  }
+
+  /* Circular "cursor follower" label shown over images */
+  .fake-cursor {
+    @apply pointer-events-none absolute top-0 left-0 z-20 flex size-[175px] min-h-[175px] min-w-[175px] items-center justify-center rounded-full border border-white opacity-0 transition-opacity duration-200 will-change-transform max-lg:hidden;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-on > .fake-cursor {
+    @apply opacity-100;
+  }
+  .fake-cursor-label {
+    @apply flex items-center justify-center border-b border-white text-[15px] leading-none text-white uppercase;
+  }
+}
+
+/* ---------- Reveal masks ----------
+   A solid block covers the content and slides away when it enters the viewport.
+   Only hide things when JS is running, so content is never stuck behind a mask. */
+.mask {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  background-color: var(--mask-color, var(--color-bg));
+  transition: transform 1.2s var(--ease-reveal);
+  transition-delay: var(--reveal-delay, 0s);
+}
+.js .mask {
+  display: block;
+}
+.js .revealed > .mask[data-dir="up"] {
+  transform: translateY(-101%);
+}
+.js .revealed > .mask[data-dir="down"] {
+  transform: translateY(101%);
+}
+.js .revealed > .mask[data-dir="left"] {
+  transform: translateX(-101%);
+}
+
+/* Text that slides up into view from below its clipping parent */
+.js .rise {
+  transform: translateY(105%);
+  transition: transform 1.2s var(--ease-reveal);
+  transition-delay: var(--reveal-delay, 0s);
+}
+.js .revealed .rise {
+  transform: none;
+}
+
+/* List rows that fade up 20px as they scroll in (also carries the hover background fade) */
+.fade-up {
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease,
+    background-color 0.75s;
+}
+.js .fade-up:not(.revealed) {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .mask {
+    display: none;
+  }
+  .js .rise,
+  .js .fade-up:not(.revealed) {
+    opacity: 1;
+    transform: none;
+  }
+}

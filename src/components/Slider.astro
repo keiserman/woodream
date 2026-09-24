@@ -1,0 +1,63 @@
+---
+/**
+ * Horizontal slider with PREV / NEXT buttons and a segmented progress bar.
+ * The viewport is narrower than the row and overflows visibly, so the next
+ * slides peek in from the right (the parent section clips them).
+ */
+interface Props {
+  count: number;
+  label: string;
+  class?: string;
+  /** Pin the progress bar below the slider instead of flowing under it. */
+  floatingBar?: boolean;
+}
+
+const { count, label, class: className, floatingBar = false } = Astro.props;
+---
+
+<div
+  data-slider
+  role="region"
+  aria-roledescription="carousel"
+  aria-label={label}
+  class:list={['relative flex w-full gap-5', className]}
+>
+  <div data-slider-viewport class="w-2/5 touch-pan-y xl:w-[35%] max-lg:w-1/2 max-sm:w-full">
+    <div data-slider-track class="flex h-full transition-transform duration-500 ease-in-out">
+      <slot />
+    </div>
+  </div>
+
+  <button
+    type="button"
+    data-slider-prev
+    class="btn absolute right-[75px] -bottom-[65px] cursor-pointer max-lg:-bottom-[91px] max-md:-bottom-[66px] max-sm:right-[50px]"
+  >
+    Prev
+  </button>
+  <button
+    type="button"
+    data-slider-next
+    class="btn absolute right-0 -bottom-[65px] cursor-pointer max-lg:-bottom-[91px] max-md:-bottom-[66px]"
+  >
+    Next
+  </button>
+
+  <div
+    class:list={[
+      'inset-x-0 flex h-10 w-full items-center pt-2.5',
+      floatingBar ? 'absolute -bottom-10' : 'relative',
+    ]}
+  >
+    {
+      Array.from({ length: count }, (_, i) => (
+        <button
+          type="button"
+          data-slider-dot
+          aria-label={`Go to slide ${i + 1}`}
+          class:list={['h-1 flex-1 cursor-pointer', i === 0 ? 'bg-black' : 'bg-[#c8c8c8]']}
+        />
+      ))
+    }
+  </div>
+</div>

@@ -1,0 +1,61 @@
+---
+import Reveal from './Reveal.astro';
+
+/**
+ * Standard content section: a small "tab" label on the left (25%)
+ * and a heading + intro row followed by slotted content on the right (75%).
+ */
+interface Props {
+  tab: string;
+  /** Heading HTML (may contain <br />). */
+  heading: string;
+  intro: string;
+  headingClass?: string;
+  beige?: boolean;
+  class?: string;
+  /** The original site only animates headings on beige sections. */
+  animate?: boolean;
+}
+
+const { tab, heading, intro, headingClass, beige = false, class: className, animate = beige } = Astro.props;
+const color = beige ? 'beige' : 'bg';
+---
+
+<section
+  class:list={[
+    'relative flex items-center justify-center px-site py-20',
+    beige && 'overflow-hidden bg-dark-beige',
+    className,
+  ]}
+>
+  <div
+    class="relative z-1 flex w-full max-w-(--container-site) flex-row items-start justify-between gap-5 max-md:flex-col"
+  >
+    <div class="w-1/4 border-t border-section-border pt-5 max-lg:w-1/5 max-md:w-full">
+      <div class="flex max-w-[135px] items-start justify-start gap-2.5 text-[20px] max-md:max-w-none">
+        <div class="mt-[5px] min-h-2.5 min-w-2.5 rounded-full bg-black"></div>
+        <div>{tab}</div>
+      </div>
+    </div>
+
+    <div
+      class="flex w-3/4 flex-col items-start justify-start gap-[100px] border-t border-section-border pt-5 max-lg:w-4/5 max-lg:gap-y-[75px] max-md:w-full max-md:gap-[50px]"
+    >
+      <div class="flex w-full items-stretch justify-between gap-5 max-md:flex-col">
+        <Reveal disabled={!animate} color={color} class="pb-2.5">
+          <h2 class:list={[headingClass]} set:html={heading} />
+        </Reveal>
+        <Reveal
+          disabled={!animate}
+          color={color}
+          delay={0.15}
+          class="flex w-1/2 items-start justify-end pb-2.5 max-md:w-full max-md:justify-start"
+        >
+          <div class="2xl:w-auto 2xl:max-w-[550px]">{intro}</div>
+        </Reveal>
+      </div>
+
+      <slot />
+    </div>
+  </div>
+</section>
