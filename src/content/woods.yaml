@@ -1,0 +1,32 @@
+- id: maple
+  name: Maple
+  order: 1
+  description: >-
+    Light in tone and smooth in texture, maple offers a clean, understated beauty. Its pale surface and subtle
+    grain create a refined backdrop that suits modern and minimal spaces. Durable for everyday use, it holds up
+    well for years, though it can appear simpler and less distinctive than richer woods.
+  seenIn: kitchen cabinets, cutting boards, children’s furniture.
+  image: ../assets/images/wood/maple.png
+  hoverImage: ../assets/images/wood/maple-hover.png
+
+- id: white-oak
+  name: White Oak
+  order: 2
+  description: >-
+    Known for its strength and timeless appeal, white oak carries a warm, natural character. With visible grain
+    and golden-to-neutral hues, it brings both durability and elegance — a classic choice that balances
+    contemporary and traditional styles. Exceptionally long-lasting, it’s a wood that can serve for generations.
+  seenIn: hardwood flooring, wine and whiskey barrels, Craftsman furniture.
+  image: ../assets/images/wood/white-oak.png
+  hoverImage: ../assets/images/wood/white-oak-hover.png
+
+- id: walnut
+  name: Walnut
+  order: 3
+  description: >-
+    Rich and distinctive, walnut is prized for its deep tones and flowing grain. Its natural luxury makes every
+    piece feel substantial and sophisticated, transforming furniture into a focal point of the home. Strong yet
+    refined, walnut endures beautifully over time, developing a graceful patina that adds to its legacy.
+  seenIn: luxury dining and conference tables, executive desks, grand pianos and guitars.
+  image: ../assets/images/wood/walnut.png
+  hoverImage: ../assets/images/wood/walnut-hover.png

@@ -1,39 +1,25 @@
 ---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Button from '../components/Button.astro';
 import ImageBanner from '../components/ImageBanner.astro';
 import PageHero from '../components/PageHero.astro';
 import Section from '../components/Section.astro';
+import heroImage from '../assets/images/about/hero.avif';
+import workshop1 from '../assets/images/about/workshop-1.avif';
+import workshop2 from '../assets/images/about/workshop-2.avif';
+import method1 from '../assets/images/about/method-1.avif';
+import method2 from '../assets/images/about/method-2.avif';
+import footerImage from '../assets/images/footer/live-the-dream.avif';
+
+const woods = (await getCollection('woods')).sort((a, b) => a.data.order - b.data.order).map((entry) => entry.data);
 
 const stats = [
   { value: 12, suffix: '', label: 'Years of experience' },
   { value: 160, suffix: '+', label: 'Custom projects completed' },
   { value: 50, suffix: '+', label: 'Returning clients' },
   { value: 10, suffix: '', label: 'Week turnaround' },
-];
-
-const woods = [
-  {
-    name: 'Maple',
-    text: 'Light in tone and smooth in texture, maple offers a clean, understated beauty. Its pale surface and subtle grain create a refined backdrop that suits modern and minimal spaces. Durable for everyday use, it holds up well for years, though it can appear simpler and less distinctive than richer woods.',
-    seen: 'kitchen cabinets, cutting boards, children’s furniture.',
-    image: '/images/wood-maple.png',
-    hover: '/images/wood-maple-hover.png',
-  },
-  {
-    name: 'White Oak',
-    text: 'Known for its strength and timeless appeal, white oak carries a warm, natural character. With visible grain and golden-to-neutral hues, it brings both durability and elegance — a classic choice that balances contemporary and traditional styles. Exceptionally long-lasting, it’s a wood that can serve for generations.',
-    seen: 'hardwood flooring, wine and whiskey barrels, Craftsman furniture.',
-    image: '/images/wood-white-oak.png',
-    hover: '/images/wood-white-oak-hover.png',
-  },
-  {
-    name: 'Walnut',
-    text: 'Rich and distinctive, walnut is prized for its deep tones and flowing grain. Its natural luxury makes every piece feel substantial and sophisticated, transforming furniture into a focal point of the home. Strong yet refined, walnut endures beautifully over time, developing a graceful patina that adds to its legacy.',
-    seen: 'luxury dining and conference tables, executive desks, grand pianos and guitars.',
-    image: '/images/wood-walnut.png',
-    hover: '/images/wood-walnut-hover.png',
-  },
 ];
 
 const approach = [
@@ -66,14 +52,14 @@ const img = 'inline-block max-w-full align-middle';
 <Layout
   title="About | Woodream"
   description="At Woodream your vision is crafted in-house by the same hands that first heard your idea. With us there is no outsourcing, no detail lost along the way and no dream too big."
-  footerBanner={{ image: '/images/footer-2.avif', text: 'live the dream.', tabletHeight: 350 }}
+  footerBanner={{ image: footerImage, text: 'live the dream.', tabletHeight: 350 }}
 >
   <PageHero line1="If you can" line2="dream it.">
     At Woodream your vision is crafted in-house by the same hands that first heard your idea. With us there is no
     outsourcing, no detail lost along the way and no dream too big.
   </PageHero>
 
-  <ImageBanner image="/images/about-hero.avif">In-house.<br />For you.</ImageBanner>
+  <ImageBanner image={heroImage}>In-house.<br />For you.</ImageBanner>
 
   <!-- Stats -->
   <section class="relative flex items-center justify-center px-site py-20">
@@ -106,12 +92,12 @@ const img = 'inline-block max-w-full align-middle';
     <div class="flex w-full items-end justify-center gap-5 max-sm:flex-col">
       <div class="relative w-3/5 max-sm:w-full">
         <div class="relative overflow-hidden pb-2.5">
-          <img
-            src="/images/about-workshop-1.avif"
+          <Image
+            src={workshop1}
             alt="Woodream craftsmen at work in the workshop"
-            width="1388"
-            height="1774"
-            loading="lazy"
+            widths={[600, 900, 1388]}
+            sizes="(max-width: 479px) 100vw, 45vw"
+            format="avif"
             class={img}
           />
         </div>
@@ -122,12 +108,12 @@ const img = 'inline-block max-w-full align-middle';
       </div>
       <div class="flex w-2/5 flex-col items-center justify-end gap-[50px] max-sm:w-full">
         <div class="relative overflow-hidden pb-2.5">
-          <img
-            src="/images/about-workshop-2.avif"
+          <Image
+            src={workshop2}
             alt="Detail of custom woodwork"
-            width="674"
-            height="974"
-            loading="lazy"
+            widths={[400, 674]}
+            sizes="(max-width: 479px) 100vw, 400px"
+            format="avif"
             class={img}
           />
         </div>
@@ -147,24 +133,24 @@ const img = 'inline-block max-w-full align-middle';
     <div class="flex w-full items-stretch justify-between gap-5 max-sm:flex-col">
       <div class="flex w-[45%] flex-col gap-[50px] max-sm:w-full">
         <div class="relative overflow-hidden pb-2.5">
-          <img
-            src="/images/about-method-1.avif"
+          <Image
+            src={method1}
             alt="Custom millwork in a finished room"
-            width="914"
-            height="1140"
-            loading="lazy"
+            widths={[450, 914]}
+            sizes="(max-width: 479px) 100vw, 452px"
+            format="avif"
             class={img}
           />
         </div>
       </div>
       <div class="flex w-[55%] flex-col gap-10 max-sm:w-full">
         <div class="relative overflow-hidden pb-2.5">
-          <img
-            src="/images/about-method-2.avif"
+          <Image
+            src={method2}
             alt="Wood finish detail"
-            width="1154"
-            height="822"
-            loading="lazy"
+            widths={[550, 1154]}
+            sizes="(max-width: 479px) 100vw, 552px"
+            format="avif"
             class={img}
           />
         </div>
@@ -190,27 +176,23 @@ const img = 'inline-block max-w-full align-middle';
             <div class="flex w-3/5 flex-col items-start justify-start gap-[30px] max-sm:w-full">
               <h3 class="text-[30px]">{wood.name}</h3>
               <p>
-                {wood.text}
+                {wood.description}
                 <br />
                 <br />
-                <span class="underline">Where you’ve seen it: &nbsp;{wood.seen}</span>
+                <span class="underline">Where you’ve seen it: &nbsp;{wood.seenIn}</span>
               </p>
             </div>
             <div class="relative w-2/5 max-sm:w-full">
-              <img
+              <Image
                 src={wood.image}
                 alt={`${wood.name} wood sample`}
-                width="362"
-                height="258"
-                loading="lazy"
+                format="avif"
                 class="relative z-1 size-full object-cover transition-opacity duration-500 group-hover:opacity-0"
               />
-              <img
-                src={wood.hover}
+              <Image
+                src={wood.hoverImage}
                 alt=""
-                width="362"
-                height="258"
-                loading="lazy"
+                format="avif"
                 class="absolute inset-0 z-0 size-full object-cover"
               />
             </div>

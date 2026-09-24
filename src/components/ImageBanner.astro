@@ -1,12 +1,14 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { backgroundUrl } from '../lib/images';
 import Reveal from './Reveal.astro';
 
 /** Full-bleed photo under the hero, with a caption and a "scroll down" cursor. */
 interface Props {
-  image: string;
+  image: ImageMetadata;
 }
 
-const { image } = Astro.props;
+const image = await backgroundUrl(Astro.props.image, 2400);
 ---
 
 <Reveal

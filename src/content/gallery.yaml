@@ -1,0 +1,20 @@
+# Gallery categories. `id` is the URL slug (/gallery/<id>).
+- id: desks
+  name: Desks
+  order: 1
+  cover: ../assets/images/gallery/desks.jpg
+
+- id: studies
+  name: Studies
+  order: 2
+  cover: ../assets/images/gallery/studies.jpg
+
+- id: tables
+  name: Tables
+  order: 3
+  cover: ../assets/images/gallery/tables.jpg
+
+- id: furniture
+  name: Furniture
+  order: 4
+  cover: ../assets/images/gallery/furniture.jpg

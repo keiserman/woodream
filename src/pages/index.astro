@@ -1,4 +1,6 @@
 ---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Button from '../components/Button.astro';
 import ImageBanner from '../components/ImageBanner.astro';
@@ -6,6 +8,25 @@ import PageHero from '../components/PageHero.astro';
 import Reveal from '../components/Reveal.astro';
 import Section from '../components/Section.astro';
 import Slider from '../components/Slider.astro';
+import { backgroundUrl } from '../lib/images';
+import heroImage from '../assets/images/home/hero.avif';
+import aboutImage from '../assets/images/home/about-1.avif';
+import aboutBackground from '../assets/images/home/about-2.avif';
+import howWeWork1 from '../assets/images/home/how-we-work-1.avif';
+import howWeWork2 from '../assets/images/home/how-we-work-2.avif';
+import howWeWork3 from '../assets/images/home/how-we-work-3.avif';
+
+const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
+const galleries = await Promise.all(
+  (await getCollection('gallery')).sort(byOrder).map(async (entry) => ({
+    ...entry.data,
+    href: `/gallery/${entry.id}`,
+    cover: await backgroundUrl(entry.data.cover, 900),
+  })),
+);
+const steps = (await getCollection('processSteps')).sort(byOrder).map((entry) => entry.data);
+const testimonials = (await getCollection('testimonials')).sort(byOrder).map((entry) => entry.data.quote);
+const aboutBackgroundUrl = await backgroundUrl(aboutBackground, 1400);
 
 const perks = [
   { title: 'Accessible Pricing', note: 'No middleman markup.' },
@@ -13,53 +34,21 @@ const perks = [
   { title: 'Uncompromising quality', note: 'Built to last.' },
 ];
 
-const galleries = [
-  { name: 'Desks', href: '/gallery/desks', image: '/images/gallery-desks.jpg' },
-  { name: 'Studies', href: '/gallery/studies', image: '/images/gallery-studies.jpg' },
-  { name: 'Tables', href: '/gallery/tables', image: '/images/gallery-tables.jpg' },
-  { name: 'Furniture', href: '/gallery/furniture', image: '/images/gallery-furniture.jpg' },
-];
-
-const steps = [
-  { title: 'Contact', text: 'Reach out. Your call is important to us and we’ll answer it with care.' },
-  {
-    title: 'Customize',
-    text: 'Together we’ll discuss your vision, review your space renders, and brainstorm woodwork options.',
-  },
-  {
-    title: 'Confirm',
-    text: 'You’ll receive a quote within 24 hours, and we come measure your space once it’s signed.',
-  },
-  { title: 'Create', text: 'Your project comes to life in our woodshop. Standard turnaround time is under ten weeks.' },
-  {
-    title: 'Complete',
-    text: 'We handle the installation with precision and care, ensuring everything fits perfectly.',
-  },
-  { title: 'Connected', text: 'We are honored by your trust, and we stand behind every detail of our work.' },
-];
-
-const testimonials = [
-  'You can tell right away that this isn’t just about building furniture for them. They want to know who you are, how you live, and exactly what you have in mind. They find out what matters to you and then they make it matter to them, too.',
-  'When I worked with Woodream, it honestly felt like I was their only project. Every call, every meeting, they gave me their full attention. Then I walked into the shop one day and saw a dozen other pieces in progress—and realized just how many people they make feel that way.',
-  'We’d been hunting for the perfect dining table for months—stores, online, you name it. Nothing felt right, and the few we liked were way out of budget. Finally, we decided to have Woodream make it custom. Best decision ever. Not only is it exactly what we wanted, it’s more beautiful than anything we saw in the stores… and it ended up costing less.',
-  'As a designer, I’m picky—sometimes too picky. I had a very specific vision for my client’s study, and with Woodream doing everything in-house, there were no lost details, no miscommunications. What I pictured in my head is exactly what showed up in the room.',
-];
-
 const standards = [
   {
     title: 'On call',
     text: 'You’ll always reach someone who knows your project and is ready to help.',
-    image: '/images/hww-1.avif',
+    image: howWeWork1,
   },
   {
     title: 'On point',
     text: 'Your vision matters. We make sure the final result reflects it exactly.',
-    image: '/images/hww-2.avif',
+    image: howWeWork2,
   },
   {
     title: 'On record',
     text: 'You can count on us for accessible pricing and transparent turnaround times.',
-    image: '/images/hww-3.avif',
+    image: howWeWork3,
   },
 ];
 ---
@@ -69,7 +58,7 @@ const standards = [
     At Woodream, custom goes beyond the outcome. It’s how we begin, build, and finish.
   </PageHero>
 
-  <ImageBanner image="/images/home-hero.avif">Millwork <br />made for you.</ImageBanner>
+  <ImageBanner image={heroImage}>Millwork <br />made for you.</ImageBanner>
 
   <!-- About -->
   <Section
@@ -81,12 +70,12 @@ const standards = [
     <div class="flex w-full items-stretch justify-between gap-5 max-sm:flex-col">
       <div class="flex w-2/5 flex-col gap-[50px] max-sm:w-full">
         <div class="relative overflow-hidden pb-2.5">
-          <img
-            src="/images/about-1.avif"
+          <Image
+            src={aboutImage}
             alt="Custom millwork detail"
-            width="914"
-            height="900"
-            loading="lazy"
+            widths={[240, 480, 800]}
+            sizes="(max-width: 479px) 100vw, 240px"
+            format="avif"
             class="inline-block w-[240px] align-middle max-sm:w-full"
           />
         </div>
@@ -104,7 +93,8 @@ const standards = [
       <div
         role="img"
         aria-label="Woodream custom interior"
-        class="relative w-3/5 bg-[url(/images/about-2.avif)] bg-cover bg-center max-sm:min-h-[300px] max-sm:w-full"
+        class="relative w-3/5 bg-cover bg-center max-sm:min-h-[300px] max-sm:w-full"
+        style={`background-image:url(${aboutBackgroundUrl})`}
       >
       </div>
     </div>
@@ -130,7 +120,7 @@ const standards = [
                   data-cursor-area
                   aria-label={`Explore ${item.name}`}
                   class="relative block h-[500px] w-full bg-cover bg-center"
-                  style={`background-image:url(${item.image})`}
+                  style={`background-image:url(${item.cover})`}
                 >
                   <div class="fake-cursor size-[125px] min-h-[125px] min-w-[125px]" aria-hidden="true">
                     <span class="fake-cursor-label">Explore more</span>
@@ -201,7 +191,14 @@ const standards = [
               <div>{item.text}</div>
               <Button href="/contact" class="pt-10">Learn more</Button>
             </div>
-            <img src={item.image} alt="" width="724" height="410" loading="lazy" class="w-1/2 max-w-[362px] max-sm:w-full" />
+            <Image
+              src={item.image}
+              alt=""
+              widths={[362, 724]}
+              sizes="(max-width: 479px) 100vw, 362px"
+              format="avif"
+              class="w-1/2 max-w-[362px] max-sm:w-full"
+            />
           </div>
         ))
       }

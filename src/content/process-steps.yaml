@@ -1,0 +1,29 @@
+- id: contact
+  order: 1
+  title: Contact
+  text: Reach out. Your call is important to us and we’ll answer it with care.
+
+- id: customize
+  order: 2
+  title: Customize
+  text: Together we’ll discuss your vision, review your space renders, and brainstorm woodwork options.
+
+- id: confirm
+  order: 3
+  title: Confirm
+  text: You’ll receive a quote within 24 hours, and we come measure your space once it’s signed.
+
+- id: create
+  order: 4
+  title: Create
+  text: Your project comes to life in our woodshop. Standard turnaround time is under ten weeks.
+
+- id: complete
+  order: 5
+  title: Complete
+  text: We handle the installation with precision and care, ensuring everything fits perfectly.
+
+- id: connected
+  order: 6
+  title: Connected
+  text: We are honored by your trust, and we stand behind every detail of our work.
