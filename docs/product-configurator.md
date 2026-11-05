@@ -24,6 +24,13 @@ steps:
         showWhen: { Doors: 'Yes' } # Optional. Only offered while this holds
         thumbnail: { x: 0, y: 1, zoom: 3 } # Optional. Shows each choice as a crop of the preview
         woodDetails: true        # Optional. Adds the wood comparison link
+        number:                  # Optional, instead of choices. A whole number the customer types
+          min: 48
+          max: 192
+          value: 48              # Where it starts
+          unit: inches
+          times: 48              # Optional. A fixed measurement shown before it, e.g. 48 × 96 inches
+          surcharge: { from: 144, price: 300 } # Optional. Added once the number reaches `from`
         choices:
           - label: Shaker
             price: 150           # Optional. Added while selected; default 0
@@ -44,7 +51,7 @@ layerOrder: # Preview layers, bottom to top
 - Quote `'Yes'` and `'No'`.
 - `showWhen` and `if` can list several options, and all of them must hold.
 - `require` selects that choice and locks the others while the `if` holds, and shows the message beside both options.
-- Every visible option that has choices must be answered before submitting, so give an option a `selected` choice if it shouldn't demand an answer. An option with no `choices` is just a note.
+- Every visible option that has choices must be answered before submitting, so give an option a `selected` choice if it shouldn't demand an answer. An option with neither `choices` nor `number` is just a note.
 - An option in `showWhen` can be anywhere in the file.
 
 ## Common edits
@@ -76,7 +83,7 @@ layerOrder: # Preview layers, bottom to top
      Moldings: { x: 5, y: 11, zoom: 3 }
    ```
 
-2. Add its images to `src/content/products/<slug>/`: a `base.webp`, plus one `<layer>.webp` for each layer the option set uses, except any in `withoutLayers`.
+2. Add its images to `src/content/products/<slug>/`: one `<layer>.webp` for each layer the option set uses, except any in `withoutLayers`, plus a `base.webp` if the product has parts that never change. Leave out the base when the layers draw the whole product, as the tables do.
 
 `withoutOptions` also drops rules that mention those options, steps left empty and their layers. Leave out any option that depends on one you remove, or the build will flag it. If the product's options differ a lot, copy the option set to a new file and point `uses` at it.
 
@@ -84,7 +91,7 @@ When artwork arrives for a layer, add the image and remove the layer from `witho
 
 ### Image requirements
 
-All images for a product must be the same square size and line up exactly: `base.webp` is the bare product and every layer is a transparent overlay of the same canvas. Each layer is drawn in a single wood tone today, which is why wood type isn't shown in the preview.
+All images for a product must be the same square size and line up exactly: `base.webp`, if there is one, is the bare product and every layer is a transparent overlay of the same canvas. Each layer is drawn in a single wood tone today, which is why wood type isn't shown in the preview.
 
 ## Extending the logic
 

@@ -1,0 +1,5 @@
+# Page: /cabinets/dining-room-table (the file name is the URL).
+# Images: ./dining-room-table/. Setup guide: docs/product-configurator.md.
+
+name: Dining Room Table
+uses: dining-table-options

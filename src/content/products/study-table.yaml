@@ -1,0 +1,5 @@
+# Page: /cabinets/study-table (the file name is the URL).
+# Images: ./study-table/. Setup guide: docs/product-configurator.md.
+
+name: Study Table
+uses: study-table-options

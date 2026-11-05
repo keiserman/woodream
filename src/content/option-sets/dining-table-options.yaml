@@ -1,0 +1,123 @@
+# The options for the dining room table. Field-by-field notes and common edits
+# are in docs/product-configurator.md.
+#
+# Option names and choice labels appear in form submissions and shared links.
+
+steps:
+  - name: Size
+    options:
+      - name: Table Size
+        label: Table Size
+        choices:
+          - { label: 8 ft, selected: true }
+          - { label: 10 ft }
+          - { label: 12 ft, price: 250 }
+          - { label: 14 ft, price: 300 }
+          - { label: 16 ft, price: 300 }
+          - { label: Custom }
+      - name: Custom Table Size
+        label: Custom Table Size
+        badge: Max 16 feet (192")
+        showWhen: { Table Size: Custom }
+        number:
+          min: 48
+          max: 192
+          value: 48
+          unit: inches
+          times: 48
+          surcharge: { from: 144, price: 300 }
+
+  - name: Wood
+    options:
+      - name: Wood
+        label: Type of Wood
+        badge: Not shown in preview
+        woodDetails: true
+        choices:
+          - { label: Maple, price: 3500, swatch: maple, selected: true }
+          - { label: Oak, price: 4750, swatch: white-oak }
+          - { label: Walnut, price: 5250, swatch: walnut }
+
+  - name: Legs
+    options:
+      - name: Leg Style
+        label: Leg Style
+        choices:
+          - { label: Classic, selected: true }
+          - { label: Premium, price: 1500 }
+      - name: Classic Leg Style
+        label: Classic Leg Style
+        showWhen: { Leg Style: Classic }
+        thumbnail: { x: 15, y: 46, zoom: 1.4 }
+        choices:
+          - { label: Rectangle, layer: leg-rectangle, selected: true }
+          - { label: Tapered, layer: leg-tapered }
+          - { label: Tapered + Base, layer: leg-tapered-base }
+          - { label: Oval, layer: leg-oval }
+          - { label: Rounded, layer: leg-rounded }
+      - name: Premium Leg Style
+        label: Premium Leg Style
+        showWhen: { Leg Style: Premium }
+        thumbnail: { x: 15, y: 46, zoom: 1.4 }
+        choices:
+          - { label: Center Circle, layer: leg-center-circle, selected: true }
+          - { label: Rounded Base, price: 1500, layer: leg-rounded-base }
+          - { label: Fluted, layer: leg-fluted }
+          - { label: Diamond, price: 1500, layer: leg-diamond }
+
+  - name: Apron
+    options:
+      - name: Apron Style
+        label: Apron Style
+        choices:
+          - { label: Classic, selected: true }
+          - { label: Inset }
+      - name: Classic Apron Style
+        label: Classic Apron Style
+        showWhen: { Apron Style: Classic }
+        thumbnail: { x: 4, y: 25, zoom: 1.1 }
+        choices:
+          - { label: Modern, layer: apron-modern, selected: true }
+          - { label: Fluted, layer: apron-fluted }
+          - { label: Etched, layer: apron-etched }
+      - name: Inset Apron Style
+        label: Inset Apron Style
+        showWhen: { Apron Style: Inset }
+        thumbnail: { x: 4, y: 25, zoom: 1.1 }
+        choices:
+          - { label: Modern, layer: inset-modern, selected: true }
+          - { label: Fluted, layer: inset-fluted }
+          - { label: Tapered, layer: inset-tapered }
+
+  - name: Finish
+    options:
+      - name: Rounded Corners
+        label: Rounded Corners
+        badge: Not shown in preview
+        choices:
+          - { label: 'Yes', selected: true }
+          - { label: 'No' }
+      - name: Gold Inlay
+        label: Gold Inlay
+        badge: Not shown in preview
+        choices:
+          - { label: 'No', selected: true }
+          - { label: 'Yes' }
+
+# Bottom to top: the tabletop and apron sit over the legs.
+layerOrder:
+  - leg-rectangle
+  - leg-tapered
+  - leg-tapered-base
+  - leg-oval
+  - leg-rounded
+  - leg-center-circle
+  - leg-rounded-base
+  - leg-fluted
+  - leg-diamond
+  - apron-modern
+  - apron-fluted
+  - apron-etched
+  - inset-modern
+  - inset-fluted
+  - inset-tapered

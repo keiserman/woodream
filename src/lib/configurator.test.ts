@@ -113,6 +113,58 @@ test('shared links round-trip and ignore anything unrecognized', () => {
   assert.deepEqual(bad, defaultPicks(config()));
 });
 
+const withLength = (): ProductConfig => ({
+  layerOrder: [],
+  rules: [],
+  steps: [
+    {
+      name: 'Size',
+      options: [
+        option('Length', [], {
+          number: { min: 48, max: 192, value: 96, unit: 'inches', times: 48, surcharge: { from: 144, price: 300 } },
+        }),
+      ],
+    },
+  ],
+});
+
+test('a number starts at its value and reads with its unit', () => {
+  const { lines, total } = evaluate(withLength(), defaultPicks(withLength()));
+  assert.equal(lines[0].choice, '48 × 96 inches');
+  assert.equal(total, 0);
+});
+
+test('a number adds its surcharge from the set amount', () => {
+  assert.equal(evaluate(withLength(), { Length: '143' }).total, 0);
+  assert.equal(evaluate(withLength(), { Length: '144' }).total, 300);
+});
+
+test('a number that is out of range or not whole is missing', () => {
+  for (const value of ['47', '193', '', 'abc', '100.5']) {
+    const { missing, lines } = evaluate(withLength(), { Length: value });
+    assert.equal(missing.length, 1, value);
+    assert.deepEqual(lines, [], value);
+  }
+});
+
+test('shared links carry numbers and ignore invalid ones', () => {
+  const params = picksToParams(withLength(), { Length: '120' });
+  assert.equal(params.toString(), 'Length=120');
+  assert.deepEqual(picksFromParams(withLength(), params), { Length: '120' });
+  assert.equal(picksToParams(withLength(), defaultPicks(withLength())).toString(), '');
+  assert.deepEqual(picksFromParams(withLength(), new URLSearchParams('Length=999')), { Length: '96' });
+});
+
+test('catches a number that starts out of range or also has choices', () => {
+  const broken = withLength();
+  const length = broken.steps[0].options[0];
+  length.number!.value = 10;
+  length.choices = [choice('A')];
+  const errors = validate(broken, names);
+  assert.ok(errors.some((error) => /outside its min and max/.test(error)));
+  assert.ok(errors.some((error) => /both a number and choices/.test(error)));
+});
+
 const unchanged = { prices: {}, withoutOptions: [], withoutLayers: [], thumbnails: {} };
 
 test('a product can override shared prices', () => {

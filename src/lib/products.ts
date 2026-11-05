@@ -8,7 +8,8 @@ export interface Product {
   id: string;
   name: string;
   config: ProductConfig;
-  base: ImageMetadata;
+  /** The bare product, if it has one; some products are drawn entirely by their layers. */
+  base?: ImageMetadata;
   layers: Record<string, ImageMetadata>;
   swatches: Record<string, ImageMetadata>;
 }
@@ -38,7 +39,6 @@ export async function getProducts(): Promise<Product[]> {
       if (path.startsWith(folder)) layers[path.slice(folder.length, -'.webp'.length)] = image.default;
     }
     const { base, ...overlays } = layers;
-    if (!base) report(`needs a base image at ${folder}base.webp.`);
     for (const layer of data.withoutLayers) {
       if (overlays[layer]) report(`withoutLayers lists "${layer}", but its image exists. Remove it from the list.`);
     }

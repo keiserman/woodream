@@ -1,0 +1,103 @@
+# The options for the study table. Field-by-field notes and common edits are in
+# docs/product-configurator.md.
+#
+# Option names and choice labels appear in form submissions and shared links.
+
+steps:
+  - name: Size
+    options:
+      - name: Table Size
+        label: Table Size
+        badge: Max 16 feet (192")
+        number:
+          min: 48
+          max: 192
+          value: 48
+          unit: inches
+          times: 48
+
+  - name: Wood
+    options:
+      - name: Wood
+        label: Type of Wood
+        badge: Not shown in preview
+        woodDetails: true
+        choices:
+          - { label: Maple, price: 3750, swatch: maple, selected: true }
+          - { label: Oak, price: 5000, swatch: white-oak }
+          - { label: Walnut, price: 5500, swatch: walnut }
+
+  - name: Legs
+    options:
+      - name: Leg Style
+        label: Leg Style
+        thumbnail: { x: 0, y: 33, zoom: 1 }
+        choices:
+          - { label: '1', layer: leg-1, selected: true }
+          - { label: '2', layer: leg-2 }
+          - { label: '3', layer: leg-3 }
+          - { label: '4', layer: leg-4 }
+          - { label: '5', layer: leg-5 }
+          - { label: '6', layer: leg-6 }
+          - { label: '7', layer: leg-7 }
+          - { label: '8', layer: leg-8 }
+          - { label: '9', layer: leg-9 }
+          - { label: '10', layer: leg-10 }
+
+  - name: Apron
+    options:
+      - name: Apron Style
+        label: Apron Style
+        choices:
+          - { label: Classic, selected: true }
+          - { label: Inset }
+      - name: Classic Style
+        label: Classic Styles
+        showWhen: { Apron Style: Classic }
+        thumbnail: { x: 0, y: 22, zoom: 1 }
+        choices:
+          - { label: '1', layer: classic-1, selected: true }
+          - { label: '2', layer: classic-2 }
+          - { label: '3', layer: classic-3 }
+          - { label: '4', layer: classic-4 }
+      - name: Inset Style
+        label: Inset Styles
+        showWhen: { Apron Style: Inset }
+        thumbnail: { x: 0, y: 22, zoom: 1 }
+        choices:
+          - { label: '1', layer: inset-1, selected: true }
+          - { label: '2', layer: inset-2 }
+          - { label: '3', layer: inset-3 }
+          - { label: '4', layer: inset-4 }
+          - { label: '5', layer: inset-5 }
+
+  - name: Finish
+    options:
+      - name: Rounded Corners
+        label: Rounded Corners
+        badge: Not shown in preview
+        choices:
+          - { label: 'Yes', selected: true }
+          - { label: 'No' }
+
+# Bottom to top: the tabletop and apron sit over the legs.
+layerOrder:
+  - leg-1
+  - leg-2
+  - leg-3
+  - leg-4
+  - leg-5
+  - leg-6
+  - leg-7
+  - leg-8
+  - leg-9
+  - leg-10
+  - classic-1
+  - classic-2
+  - classic-3
+  - classic-4
+  - inset-1
+  - inset-2
+  - inset-3
+  - inset-4
+  - inset-5

@@ -76,6 +76,17 @@ const optionSets = defineCollection({
             showWhen: condition.optional(),
             /** Shows each choice as a crop of the preview: position in % and magnification. */
             thumbnail: thumbnail.optional(),
+            /** A whole number the customer types in, instead of picking a choice. */
+            number: z
+              .strictObject({
+                min: z.number(),
+                max: z.number(),
+                value: z.number(),
+                unit: z.string(),
+                times: z.number().optional(),
+                surcharge: z.strictObject({ from: z.number(), price: z.number() }).optional(),
+              })
+              .optional(),
             choices: z
               .array(
                 z.strictObject({

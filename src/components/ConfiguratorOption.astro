@@ -8,7 +8,7 @@ interface Props {
   option: Option;
   visible: boolean;
   images: {
-    base: ImageMetadata;
+    base?: ImageMetadata;
     layers: Record<string, ImageMetadata>;
     swatches: Record<string, ImageMetadata>;
   };
@@ -17,7 +17,8 @@ interface Props {
 const { option, visible, images } = Astro.props;
 const slug = (text: string) => text.toLowerCase().replace(/\W+/g, '-');
 const labelId = `${slug(option.name)}-label`;
-const { thumbnail } = option;
+const { thumbnail, number } = option;
+const { base } = images;
 const hasPictures = Boolean(thumbnail) || option.choices.some((choice) => choice.swatch);
 
 // Rows of three, or four at a time when that leaves no card on its own.
@@ -47,7 +48,38 @@ const cropStyle = thumbnail && {
     {option.badge && <div class="bg-white px-2 py-px text-[10px] tracking-[0.04em] text-black uppercase">{option.badge}</div>}
   </div>
 
-  <div class:list={['gap-2', hasPictures ? `grid pt-1 ${gridColumns}` : 'flex flex-wrap']}>
+  {
+    number && (
+      <div class="flex items-center gap-2 pt-1 text-[18px]">
+        {number.times && (
+          <>
+            <span class="border border-section-border px-3 py-2 text-grey">{number.times}</span>
+            <span aria-label="by">×</span>
+          </>
+        )}
+        <input
+          type="number"
+          id={slug(option.name)}
+          name={option.name}
+          aria-labelledby={labelId}
+          min={number.min}
+          max={number.max}
+          step="1"
+          required
+          value={number.value}
+          :value="picks[$el.name]"
+          @input="choose($el)"
+          class="w-24 border border-section-border bg-transparent px-3 py-2 outline-none focus:border-accent"
+        />
+        <span class="text-[15px]">{number.unit}</span>
+      </div>
+    )
+  }
+
+  <div
+    hidden={Boolean(number)}
+    class:list={['gap-2', hasPictures ? `grid pt-1 ${gridColumns}` : 'flex flex-wrap']}
+  >
     {
       option.choices.map((choice) => {
         const id = slug(`${option.name}-${choice.label}`);
@@ -89,15 +121,17 @@ const cropStyle = thumbnail && {
                 thumbnail && (
                   <span class="relative block aspect-3/2 overflow-hidden bg-dark-beige">
                     <span class="absolute top-0 left-0 block aspect-square max-w-none" style={cropStyle}>
-                      <Image
-                        src={images.base}
-                        alt=""
-                        widths={cropWidths.filter((width) => width < images.base.width).concat(images.base.width)}
-                        sizes="800px"
-                        format="avif"
-                        loading="lazy"
-                        class="absolute inset-0 size-full"
-                      />
+                      {base && (
+                        <Image
+                          src={base}
+                          alt=""
+                          widths={cropWidths.filter((width) => width < base.width).concat(base.width)}
+                          sizes="800px"
+                          format="avif"
+                          loading="lazy"
+                          class="absolute inset-0 size-full"
+                        />
+                      )}
                       {layer && (
                         <Image
                           src={layer}

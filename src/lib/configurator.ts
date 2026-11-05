@@ -22,6 +22,19 @@ export interface Thumbnail {
   zoom: number;
 }
 
+/** A whole number the customer types in, instead of picking a choice. */
+export interface NumberField {
+  min: number;
+  max: number;
+  value: number;
+  /** Shown after the number. */
+  unit: string;
+  /** A fixed measurement shown before the number, e.g. a table's width. */
+  times?: number;
+  /** Added once the number reaches `from`. */
+  surcharge?: { from: number; price: number };
+}
+
 export interface Option {
   name: string;
   label: string;
@@ -29,6 +42,7 @@ export interface Option {
   woodDetails: boolean;
   showWhen?: Condition;
   thumbnail?: Thumbnail;
+  number?: NumberField;
   choices: Choice[];
 }
 
@@ -53,7 +67,10 @@ export interface Line {
   step: number;
   option: string;
   label: string;
+  /** What the customer reads. */
   choice: string;
+  /** What's stored in the picks and shared links. */
+  value: string;
   price: number;
 }
 
@@ -75,11 +92,17 @@ export interface Evaluation {
 
 const allOptions = (config: ProductConfig) => config.steps.flatMap((step) => step.options);
 
+const isValidNumber = ({ min, max }: NumberField, value: string | undefined) => {
+  const number = Number(value);
+  return Boolean(value?.trim()) && Number.isInteger(number) && number >= min && number <= max;
+};
+
 export function defaultPicks(config: ProductConfig): Picks {
   const picks: Picks = {};
   for (const option of allOptions(config)) {
     const choice = option.choices.find((c) => c.selected);
     if (choice) picks[option.name] = choice.label;
+    if (option.number) picks[option.name] = String(option.number.value);
   }
   return picks;
 }
@@ -129,6 +152,23 @@ export function evaluate(config: ProductConfig, picks: Picks): Evaluation {
     for (const option of step.options) {
       if (!isVisible(option.name)) continue;
       visible.push(option.name);
+      if (option.number) {
+        const { unit, times, surcharge } = option.number;
+        const value = current[option.name];
+        if (!isValidNumber(option.number, value)) {
+          missing.push({ step: stepIndex, option: option.name, label: option.label });
+          continue;
+        }
+        lines.push({
+          step: stepIndex,
+          option: option.name,
+          label: option.label,
+          choice: `${times ? `${times} × ` : ''}${value} ${unit}`,
+          value,
+          price: surcharge && Number(value) >= surcharge.from ? surcharge.price : 0,
+        });
+        continue;
+      }
       if (!option.choices.length) continue;
       const choice = option.choices.find((c) => c.label === current[option.name]);
       if (!choice) {
@@ -140,6 +180,7 @@ export function evaluate(config: ProductConfig, picks: Picks): Evaluation {
         option: option.name,
         label: option.label,
         choice: choice.label,
+        value: choice.label,
         price: choice.price,
       });
       if (choice.layer) active.add(choice.layer);
@@ -162,7 +203,7 @@ export function picksToParams(config: ProductConfig, picks: Picks): URLSearchPar
   const defaults = defaultPicks(config);
   const params = new URLSearchParams();
   for (const line of evaluate(config, picks).lines) {
-    if (defaults[line.option] !== line.choice) params.set(line.option, line.choice);
+    if (defaults[line.option] !== line.value) params.set(line.option, line.value);
   }
   return params;
 }
@@ -172,7 +213,9 @@ export function picksFromParams(config: ProductConfig, params: URLSearchParams):
   const picks = defaultPicks(config);
   for (const option of allOptions(config)) {
     const value = params.get(option.name);
-    if (value && option.choices.some((c) => c.label === value)) picks[option.name] = value;
+    if (!value) continue;
+    const valid = option.number ? isValidNumber(option.number, value) : option.choices.some((c) => c.label === value);
+    if (valid) picks[option.name] = value;
   }
   return picks;
 }
@@ -270,6 +313,12 @@ export function validate(
     }
     if (option.choices.filter((c) => c.selected).length > 1) {
       errors.push(`Option "${option.name}" has more than one selected choice.`);
+    }
+    if (option.number) {
+      if (option.choices.length) errors.push(`Option "${option.name}" can't have both a number and choices.`);
+      if (!isValidNumber(option.number, String(option.number.value))) {
+        errors.push(`Option "${option.name}" starts at ${option.number.value}, which is outside its min and max.`);
+      }
     }
     for (const choice of option.choices) {
       if (choice.swatch && !swatches.has(choice.swatch)) {
