@@ -1,0 +1,19 @@
+---
+import Layout from './Layout.astro';
+
+/** The legal pages, written in Markdown at src/pages/legal/. */
+interface Props {
+  frontmatter: { title: string };
+}
+
+const { title } = Astro.props.frontmatter;
+---
+
+<Layout title={`${title} | Woodream`}>
+  <section class="relative flex justify-center px-site pt-[250px] pb-20 max-lg:pt-[200px] max-md:pt-[150px] max-md:pb-[50px]">
+    <div class="flex w-full max-w-(--container-site) flex-col items-start gap-5">
+      <h1 class="text-[80px] max-md:text-[60px] max-sm:text-[40px]">{title}</h1>
+      <div class="rich-text"><slot /></div>
+    </div>
+  </section>
+</Layout>

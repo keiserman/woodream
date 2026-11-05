@@ -78,6 +78,20 @@
     @apply flex items-center justify-center gap-5 border-b border-black bg-transparent p-0 text-[0.9375rem] leading-none font-normal text-black uppercase no-underline transition-all duration-300 hover:-mb-[0.3125rem] hover:pb-[0.3125rem];
   }
 
+  /* Long-form text from Markdown, such as the legal pages */
+  .rich-text {
+    @apply text-[20px];
+  }
+  .rich-text p {
+    @apply mb-2.5;
+  }
+  .rich-text h2 {
+    @apply pt-10 pb-5 text-[35px] max-sm:pt-[30px] max-sm:text-[30px];
+  }
+  .rich-text a {
+    @apply underline underline-offset-2 hover:text-grey;
+  }
+
   /* Text input / textarea used by the contact forms (textareas add their own height) */
   .field {
     @apply block h-[38px] min-h-10 w-full border-[0.8px] border-black/40 bg-transparent px-3 py-2 text-[18px] leading-[1.42857] text-black outline-none placeholder:text-[#3d1d074d] focus:border-black;

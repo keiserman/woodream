@@ -4,6 +4,7 @@ import Reveal from './Reveal.astro';
 /**
  * Big page title with an intro paragraph on the right.
  * With `line2`, the title wraps onto an indented second line.
+ * A button in the "action" slot sits under the intro paragraph.
  * Content in the "below" slot (e.g. the gallery grid) renders under the title row.
  */
 interface Props {
@@ -40,8 +41,9 @@ const hasBelow = Astro.slots.has('below');
         }
       </h1>
     </Reveal>
-    <Reveal onLoad delay={0.45} class="w-[41%] pb-2.5 xl:w-[35%] max-lg:w-[77%] max-md:w-auto">
+    <Reveal onLoad delay={0.45} class="flex w-[41%] flex-col items-start gap-5 pb-2.5 xl:w-[35%] max-lg:w-[77%] max-md:w-auto">
       <p class:list={['mb-[5px] text-[20px]', introClass]}><slot /></p>
+      <slot name="action" />
     </Reveal>
   </div>
 
