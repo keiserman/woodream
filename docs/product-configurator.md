@@ -1,11 +1,11 @@
 # Product configurator
 
-Products live in `/products/<slug>`. Everything about them is data, so most changes never touch code.
+Products live at `/cabinets/<slug>`. Everything about them is data, so most changes never touch code.
 
 | What | Where |
 | --- | --- |
 | Options, prices, rules, layer order | `src/content/option-sets/<set>.yaml` |
-| A product: its name, option set, own prices | `src/content/products/<slug>.yaml` |
+| A product: its name, option set, own prices and differences | `src/content/products/<slug>.yaml` |
 | A product's images | `src/content/products/<slug>/` |
 | Logic (visibility, price, rules, checks) and tests | `src/lib/configurator.ts`, `configurator.test.ts` |
 | Page and wiring | `src/components/Configurator*.astro`, `src/scripts/configurator.ts` |
@@ -51,11 +51,13 @@ layerOrder: # Preview layers, bottom to top
 
 **Change a price or a label:** edit the choice in the option set. To change a price for one product only, use `prices` in its product file. Renaming a label or option also means updating any `showWhen` or `rules` that mention it; the build will point them out.
 
-**Add a choice:** add it to `choices`. If it changes the preview, also add a `layer`, put `<layer>.webp` in each product's image folder that uses this set, and add the name to `layerOrder`.
+**Add a choice:** add it to `choices`. If it changes the preview, also add a `layer` and add the name to `layerOrder`. Then, for each product using this set, either add `<layer>.webp` to its image folder or list the layer in its `withoutLayers`.
 
 **Add an option:** add it under a step. Options can move between steps without affecting the preview, because stacking comes from `layerOrder`.
 
-**Add a rule:** add it under `rules`. If a product can't offer something at all, it should use its own option set.
+**Add a rule:** add it under `rules`.
+
+**Remove an option from one product:** list it in that product's `withoutOptions`.
 
 **Add a wood:** add it to `src/content/woods.yaml` with its photos, which also adds it to the About page and the comparison dialog, then add a choice with `swatch: <id>`.
 
@@ -67,12 +69,18 @@ layerOrder: # Preview layers, bottom to top
    name: 4-piece Bookshelf
    uses: bookshelf-options
    prices:
-     Wood: { Maple: 3100, Oak: 3700, Walnut: 4300 }
+     Wood: { Maple: 3300, Oak: 3950, Walnut: 4500 }
+   withoutOptions: [Glass, Mirrors] # Options this product doesn't offer
+   withoutLayers: [molding-single-crown] # Layers with no artwork for this product
+   thumbnails: # Crops, if the product sits differently on its canvas
+     Moldings: { x: 5, y: 11, zoom: 3 }
    ```
 
-2. Add its images to `src/content/products/<slug>/`: a `base.webp`, plus one `<layer>.webp` for each layer the option set uses.
+2. Add its images to `src/content/products/<slug>/`: a `base.webp`, plus one `<layer>.webp` for each layer the option set uses, except any in `withoutLayers`.
 
-If the product's options differ a lot, copy the option set to a new file and point `uses` at it.
+`withoutOptions` also drops rules that mention those options, steps left empty and their layers. Leave out any option that depends on one you remove, or the build will flag it. If the product's options differ a lot, copy the option set to a new file and point `uses` at it.
+
+When artwork arrives for a layer, add the image and remove the layer from `withoutLayers`.
 
 ### Image requirements
 
@@ -81,3 +89,5 @@ All images for a product must be the same square size and line up exactly: `base
 ## Extending the logic
 
 New kinds of behavior go in `src/lib/configurator.ts`, with a test in `configurator.test.ts`: `evaluate` for what happens, and `validate` for catching setup mistakes in the new feature. `src/content.config.ts` holds the file format.
+
+After changing `src/content.config.ts`, stop the dev server, delete `.astro/data-store.json` and start it again. The dev server otherwise reuses cached entries in the old format for files that haven't changed. Production builds aren't affected.

@@ -58,6 +58,7 @@ const woods = defineCollection({
 // set in src/content/option-sets/. Strict, so a misspelled field is an error
 // rather than being ignored. See docs/product-configurator.md.
 const condition = z.record(z.string(), z.string());
+const thumbnail = z.strictObject({ x: z.number(), y: z.number(), zoom: z.number() });
 
 const optionSets = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/option-sets' }),
@@ -74,7 +75,7 @@ const optionSets = defineCollection({
             woodDetails: z.boolean().default(false),
             showWhen: condition.optional(),
             /** Shows each choice as a crop of the preview: position in % and magnification. */
-            thumbnail: z.strictObject({ x: z.number(), y: z.number(), zoom: z.number() }).optional(),
+            thumbnail: thumbnail.optional(),
             choices: z
               .array(
                 z.strictObject({
@@ -97,7 +98,7 @@ const optionSets = defineCollection({
 });
 
 // One YAML file per configurable product; the file name is the URL slug
-// (/products/<slug>) and the folder of the same name holds its images.
+// (/cabinets/<slug>) and the folder of the same name holds its images.
 const products = defineCollection({
   loader: glob({ pattern: '*.yaml', base: './src/content/products' }),
   schema: z.strictObject({
@@ -106,6 +107,12 @@ const products = defineCollection({
     uses: z.string(),
     /** This product's prices where they differ: option name → choice label → price. */
     prices: z.record(z.string(), z.record(z.string(), z.number())).default({}),
+    /** Options from the set that this product doesn't offer. */
+    withoutOptions: z.array(z.string()).default([]),
+    /** Layers from the set that have no artwork for this product. */
+    withoutLayers: z.array(z.string()).default([]),
+    /** Thumbnail crops where this product sits differently on its canvas: option name → crop. */
+    thumbnails: z.record(z.string(), thumbnail).default({}),
   }),
 });
 

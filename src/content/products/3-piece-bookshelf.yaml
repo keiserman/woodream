@@ -1,5 +1,9 @@
-# Page: /products/3-piece-bookshelf (the file name is the URL).
+# Page: /cabinets/3-piece-bookshelf (the file name is the URL).
 # Images: ./3-piece-bookshelf/. Setup guide: docs/product-configurator.md.
 
 name: 3-piece Bookshelf
 uses: bookshelf-options
+withoutLayers:
+  - etched-double-border
+  - molding-classic-crown
+  - molding-center-line

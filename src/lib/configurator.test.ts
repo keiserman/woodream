@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
-  applyPrices,
+  applyProduct,
   defaultPicks,
   evaluate,
   picksFromParams,
@@ -113,14 +113,60 @@ test('shared links round-trip and ignore anything unrecognized', () => {
   assert.deepEqual(bad, defaultPicks(config()));
 });
 
+const unchanged = { prices: {}, withoutOptions: [], withoutLayers: [], thumbnails: {} };
+
 test('a product can override shared prices', () => {
-  const { config: priced, errors } = applyPrices(config(), { Wood: { Maple: 3100 } });
+  const { config: priced, errors } = applyProduct(config(), { ...unchanged, prices: { Wood: { Maple: 3100 } } });
   assert.deepEqual(errors, []);
   assert.equal(evaluate(priced, defaultPicks(priced)).total, 3100);
   assert.equal(config().steps[0].options[0].choices[0].price, 2500);
 
-  const wrong = applyPrices(config(), { Wod: { Maple: 1 }, Wood: { Cherry: 1 } });
+  const wrong = applyProduct(config(), { ...unchanged, prices: { Wod: { Maple: 1 }, Wood: { Cherry: 1 } } });
   assert.equal(wrong.errors.length, 2);
+});
+
+test('a product can leave out options, along with their rules and layers', () => {
+  const { config: smaller, errors } = applyProduct(config(), { ...unchanged, withoutOptions: ['Glass', 'Mirrors'] });
+  assert.deepEqual(errors, []);
+  assert.deepEqual(smaller.rules, []);
+  assert.deepEqual(smaller.layerOrder, ['doors', 'shaker']);
+  assert.deepEqual(validate(smaller, names), []);
+  assert.deepEqual(evaluate(smaller, defaultPicks(smaller)).visible, ['Wood', 'Doors', 'Stain']);
+});
+
+test('steps left with no options disappear', () => {
+  const { config: smaller } = applyProduct(config(), { ...unchanged, withoutOptions: ['Wood'] });
+  assert.deepEqual(smaller.steps.map((step) => step.name), ['Doors']);
+});
+
+test('leaving out an option that others depend on is caught', () => {
+  const { config: smaller } = applyProduct(config(), { ...unchanged, withoutOptions: ['Glass'] });
+  assert.ok(validate(smaller, names).some((error) => /showWhen on "Mirrors"/.test(error)));
+});
+
+test('a product can go without a layer, and the choice still counts', () => {
+  const { config: noArt, errors } = applyProduct(config(), { ...unchanged, withoutLayers: ['shaker'] });
+  assert.deepEqual(errors, []);
+  assert.deepEqual(validate(noArt, { ...names, layers: new Set(['glass', 'doors']) }), []);
+  const result = evaluate(noArt, { Doors: 'Yes', Style: 'Shaker' });
+  assert.deepEqual(result.layers, ['doors']);
+  assert.ok(result.lines.some((line) => line.choice === 'Shaker' && line.price === 150));
+});
+
+test('a product can set its own thumbnail crops', () => {
+  const crop = { x: 5, y: 11, zoom: 3 };
+  const { config: cropped } = applyProduct(config(), { ...unchanged, thumbnails: { Doors: crop } });
+  assert.deepEqual(cropped.steps[1].options[2].thumbnail, crop);
+});
+
+test('unknown names in product changes are errors', () => {
+  const { errors } = applyProduct(config(), {
+    prices: {},
+    withoutOptions: ['Glas'],
+    withoutLayers: ['shakr'],
+    thumbnails: { Colums: { x: 0, y: 0, zoom: 2 } },
+  });
+  assert.equal(errors.length, 3);
 });
 
 test('a sound setup has no errors', () => {

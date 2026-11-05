@@ -60,10 +60,10 @@ steps:
         choices:
           - { label: Double Stripe }
           - { label: Border, layer: etched-border }
-          - { label: Double Border }
+          - { label: Double Border, layer: etched-double-border }
 
       - name: Door Type
-        label: Door Shaker Design
+        label: Shaker Door Design
         showWhen: { Shaker Design: Shaker }
         choices:
           - { label: Single }
@@ -84,8 +84,8 @@ steps:
         thumbnail: { x: 0, y: 1, zoom: 3 }
         choices:
           - { label: Modern, layer: molding-modern }
-          - { label: Classic Crown }
-          - { label: Center Line }
+          - { label: Classic Crown, layer: molding-classic-crown }
+          - { label: Center Line, layer: molding-center-line }
           - { label: Etched Stripes, layer: molding-etched-stripes }
           - { label: Single Crown, layer: molding-single-crown }
           - { label: Double Crown, layer: molding-double-crown }
@@ -126,9 +126,12 @@ layerOrder:
   - fluted
   - etched
   - etched-border
+  - etched-double-border
   - shaker-double
   - hardware
   - molding-modern
+  - molding-classic-crown
+  - molding-center-line
   - molding-etched-stripes
   - molding-single-crown
   - molding-double-crown

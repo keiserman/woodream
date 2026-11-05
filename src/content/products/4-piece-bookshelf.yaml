@@ -1,0 +1,17 @@
+# Page: /cabinets/4-piece-bookshelf (the file name is the URL).
+# Images: ./4-piece-bookshelf/. Setup guide: docs/product-configurator.md.
+
+name: 4-piece Bookshelf
+uses: bookshelf-options
+prices:
+  Wood: { Maple: 3300, Oak: 3950, Walnut: 4500 }
+withoutOptions:
+  - Glass
+  - Mirrors
+withoutLayers:
+  - molding-single-crown
+  - molding-double-crown
+# This one is wider, so it sits lower on its canvas than the set's crops expect.
+thumbnails:
+  Moldings: { x: 5, y: 11, zoom: 3 }
+  Columns: { x: 6, y: 17, zoom: 5 }

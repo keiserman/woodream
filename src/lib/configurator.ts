@@ -15,13 +15,20 @@ export interface Choice {
   selected: boolean;
 }
 
+/** A crop of the preview: position in % and magnification. */
+export interface Thumbnail {
+  x: number;
+  y: number;
+  zoom: number;
+}
+
 export interface Option {
   name: string;
   label: string;
   badge?: string;
   woodDetails: boolean;
   showWhen?: Condition;
-  thumbnail?: { x: number; y: number; zoom: number };
+  thumbnail?: Thumbnail;
   choices: Choice[];
 }
 
@@ -170,13 +177,25 @@ export function picksFromParams(config: ProductConfig, params: URLSearchParams):
   return picks;
 }
 
-/** Applies a product's own prices over the shared ones. Returns any unknown names as errors. */
-export function applyPrices(
+export interface ProductChanges {
+  /** This product's prices: option name → choice label → price. */
+  prices: Record<string, Record<string, number>>;
+  /** Options this product doesn't offer. Rules that mention them no longer apply. */
+  withoutOptions: string[];
+  /** Layers with no artwork for this product; those choices simply don't change the preview. */
+  withoutLayers: string[];
+  /** Crops for this product, where it sits differently on its canvas: option name → crop. */
+  thumbnails: Record<string, Thumbnail>;
+}
+
+/** Adapts a shared option set to one product. Returns any unknown names as errors. */
+export function applyProduct(
   config: ProductConfig,
-  prices: Record<string, Record<string, number>>,
+  { prices, withoutOptions, withoutLayers, thumbnails }: ProductChanges,
 ): { config: ProductConfig; errors: string[] } {
   const errors: string[] = [];
   const options = allOptions(config);
+
   for (const [name, choices] of Object.entries(prices)) {
     const option = options.find((o) => o.name === name);
     if (!option) errors.push(`prices: there is no option called "${name}".`);
@@ -186,20 +205,44 @@ export function applyPrices(
       }
     }
   }
+  for (const name of withoutOptions) {
+    if (!options.some((o) => o.name === name)) errors.push(`withoutOptions: there is no option called "${name}".`);
+  }
+  for (const name of Object.keys(thumbnails)) {
+    if (!options.some((o) => o.name === name)) errors.push(`thumbnails: there is no option called "${name}".`);
+  }
+  for (const layer of withoutLayers) {
+    if (!config.layerOrder.includes(layer)) errors.push(`withoutLayers: there is no layer called "${layer}".`);
+  }
+
+  const removed = new Set(withoutOptions);
+  const mentionsRemoved = (condition: Condition) => Object.keys(condition).some((name) => removed.has(name));
+  const unusedLayers = new Set([
+    ...withoutLayers,
+    ...options.filter((o) => removed.has(o.name)).flatMap((o) => o.choices.flatMap((c) => c.layer ?? [])),
+  ]);
+
   return {
     errors,
     config: {
-      ...config,
-      steps: config.steps.map((step) => ({
-        ...step,
-        options: step.options.map((option) => ({
-          ...option,
-          choices: option.choices.map((choice) => ({
-            ...choice,
-            price: prices[option.name]?.[choice.label] ?? choice.price,
-          })),
-        })),
-      })),
+      layerOrder: config.layerOrder.filter((layer) => !unusedLayers.has(layer)),
+      rules: config.rules.filter((rule) => !mentionsRemoved(rule.if) && !mentionsRemoved(rule.require)),
+      steps: config.steps
+        .map((step) => ({
+          ...step,
+          options: step.options
+            .filter((option) => !removed.has(option.name))
+            .map((option) => ({
+              ...option,
+              thumbnail: thumbnails[option.name] ?? option.thumbnail,
+              choices: option.choices.map((choice) => ({
+                ...choice,
+                price: prices[option.name]?.[choice.label] ?? choice.price,
+                layer: choice.layer && unusedLayers.has(choice.layer) ? undefined : choice.layer,
+              })),
+            })),
+        }))
+        .filter((step) => step.options.length),
     },
   };
 }

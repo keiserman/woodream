@@ -1,6 +1,6 @@
 import type { ImageMetadata } from 'astro';
 import { getCollection } from 'astro:content';
-import { applyPrices, validate, type ProductConfig } from './configurator';
+import { applyProduct, validate, type ProductConfig } from './configurator';
 
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/content/products/*/*.webp', { eager: true });
 
@@ -29,7 +29,7 @@ export async function getProducts(): Promise<Product[]> {
       return [];
     }
 
-    const { config, errors } = applyPrices(set.data, data.prices);
+    const { config, errors } = applyProduct(set.data, data);
     errors.forEach(report);
 
     const folder = `/src/content/products/${id}/`;
@@ -39,6 +39,9 @@ export async function getProducts(): Promise<Product[]> {
     }
     const { base, ...overlays } = layers;
     if (!base) report(`needs a base image at ${folder}base.webp.`);
+    for (const layer of data.withoutLayers) {
+      if (overlays[layer]) report(`withoutLayers lists "${layer}", but its image exists. Remove it from the list.`);
+    }
 
     validate(config, { layers: new Set(Object.keys(overlays)), swatches: new Set(Object.keys(swatches)) }).forEach(report);
 
