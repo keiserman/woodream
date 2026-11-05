@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import LegalBar from '../components/LegalBar.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import type { FooterBanner } from '../components/Footer.astro';
 import { site } from '../data/site';
@@ -10,9 +11,11 @@ interface Props {
   title?: string;
   description?: string;
   footerBanner?: FooterBanner;
+  /** "minimal" shows only the legal links, with no photo banner, contact block or WhatsApp button. */
+  footer?: 'full' | 'minimal';
 }
 
-const { title = site.title, description = site.description, footerBanner } = Astro.props;
+const { title = site.title, description = site.description, footerBanner, footer = 'full' } = Astro.props;
 ---
 
 <!doctype html>
@@ -32,7 +35,7 @@ const { title = site.title, description = site.description, footerBanner } = Ast
     <link rel="apple-touch-icon" href="/images/webclip.png" />
     <link rel="preload" href="/fonts/PPMori-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/PPNeueMontreal-Book.woff2" as="font" type="font/woff2" crossorigin />
-    <!-- Flag JS before first paint so reveal masks only cover content when they can be removed. -->
+    <!-- Flag JS before first paint so reveals only hide content when the script can show it again. -->
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
@@ -40,14 +43,25 @@ const { title = site.title, description = site.description, footerBanner } = Ast
     <main>
       <slot />
     </main>
-    <Footer banner={footerBanner} />
-    <WhatsAppButton />
+    {
+      footer === 'full' ? (
+        <>
+          <Footer banner={footerBanner} />
+          <WhatsAppButton />
+        </>
+      ) : (
+        <footer class="relative flex flex-col items-center justify-center px-site pt-[50px] pb-2.5">
+          <LegalBar />
+        </footer>
+      )
+    }
 
     <script>
       import '../scripts/reveal';
       import '../scripts/cursor';
       import '../scripts/slider';
       import '../scripts/countup';
+      import '../scripts/contact-form';
     </script>
   </body>
 </html>

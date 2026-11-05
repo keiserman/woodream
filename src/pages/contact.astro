@@ -1,0 +1,109 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BackgroundImage from '../components/BackgroundImage.astro';
+import FormStatus from '../components/FormStatus.astro';
+import PageHero from '../components/PageHero.astro';
+import Reveal from '../components/Reveal.astro';
+import { formEndpoint } from '../data/site';
+import contactImage from '../assets/images/contact/ready.avif';
+---
+
+<Layout
+  title="Contact | Woodream"
+  description="Great work starts with a good conversation. Tell us what you’re dreaming — we’ll take it from there."
+  footer="minimal"
+>
+  <PageHero line1="Contact Us" size="compact" introClass="max-w-[473px]">
+    Great work starts with a good conversation.<br />Tell us what you’re dreaming — we’ll take it from there.
+  </PageHero>
+
+  <section id="contact" class="relative flex items-center justify-center px-site">
+    <div
+      class="relative z-1 flex w-full max-w-(--container-site) items-stretch justify-start gap-5 max-md:flex-col"
+    >
+      <Reveal
+        onLoad
+        dir="down"
+        delay={0.3}
+        class="flex w-[43%] items-end justify-start p-5 text-[40px] leading-none text-white uppercase max-lg:text-[35px] max-md:min-h-[250px] max-md:w-full max-sm:text-[30px]"
+      >
+        <BackgroundImage
+          src={contactImage}
+          widths={[480, 866]}
+          sizes="(max-width: 767px) 100vw, 43vw"
+          priority
+        />
+        <div class="relative overflow-hidden">
+          <div class="rise" style="--reveal-delay:0.9s">ready <br />when you are.</div>
+        </div>
+      </Reveal>
+
+      <div class="relative z-1 flex w-1/2 flex-col gap-[22px] max-lg:w-[54%] max-md:w-full">
+        <form
+          data-contact-form
+          name="contact"
+          method="post"
+          action={formEndpoint || undefined}
+          class="flex flex-col items-start gap-2.5 text-left"
+        >
+          <div class="pb-3 text-[15px]">Your information</div>
+          <div class="flex w-full gap-5 max-sm:flex-col max-sm:gap-2.5">
+            <label for="contact-first-name" class="sr-only">First name</label>
+            <input
+              id="contact-first-name"
+              name="Name"
+              type="text"
+              required
+              maxlength="256"
+              autocomplete="given-name"
+              placeholder="First Name."
+              class="field"
+            />
+            <label for="contact-last-name" class="sr-only">Last name</label>
+            <input
+              id="contact-last-name"
+              name="Last-Name"
+              type="text"
+              required
+              maxlength="256"
+              autocomplete="family-name"
+              placeholder="Last Name."
+              class="field"
+            />
+          </div>
+          <label for="contact-phone" class="sr-only">Phone</label>
+          <input
+            id="contact-phone"
+            name="Phone"
+            type="tel"
+            required
+            maxlength="256"
+            autocomplete="tel"
+            placeholder="Your Phone."
+            class="field"
+          />
+          <label for="contact-email" class="sr-only">Email</label>
+          <input
+            id="contact-email"
+            name="Email"
+            type="email"
+            required
+            maxlength="256"
+            autocomplete="email"
+            placeholder="Your Email."
+            class="field"
+          />
+          <label for="contact-message" class="sr-only">Message</label>
+          <textarea
+            id="contact-message"
+            name="Message"
+            maxlength="5000"
+            placeholder="How can we help you?"
+            class="field h-[170px]"></textarea>
+          <input type="submit" value="Submit" data-wait="Please wait..." class="btn cursor-pointer" />
+        </form>
+        <FormStatus />
+      </div>
+    </div>
+  </section>
+</Layout>

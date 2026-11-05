@@ -78,6 +78,11 @@
     @apply opacity-100;
   }
   .fake-cursor-label {
+  /* Text input / textarea used by the contact forms (textareas add their own height) */
+  .field {
+    @apply block h-[38px] min-h-10 w-full border-[0.8px] border-black/40 bg-transparent px-3 py-2 text-[18px] leading-[1.42857] text-black outline-none placeholder:text-[#3d1d074d] focus:border-black;
+  }
+
     @apply flex items-center justify-center border-b border-white text-[15px] leading-none text-white uppercase;
   }
 }

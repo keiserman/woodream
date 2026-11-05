@@ -11,9 +11,11 @@ interface Props {
   line2?: string;
   /** "compact" is the single-line 80px title used on the Gallery page. */
   size?: 'large' | 'compact';
+  /** Extra classes for the intro paragraph (e.g. a max width). */
+  introClass?: string;
 }
 
-const { line1, line2, size = 'large' } = Astro.props;
+const { line1, line2, size = 'large', introClass } = Astro.props;
 const hasBelow = Astro.slots.has('below');
 ---
 
@@ -39,7 +41,7 @@ const hasBelow = Astro.slots.has('below');
       </h1>
     </Reveal>
     <Reveal onLoad delay={0.45} class="w-[41%] pb-2.5 xl:w-[35%] max-lg:w-[77%] max-md:w-auto">
-      <p class="mb-[5px] text-[20px]"><slot /></p>
+      <p class:list={['mb-[5px] text-[20px]', introClass]}><slot /></p>
     </Reveal>
   </div>
 
