@@ -16,6 +16,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "DM Sans";
+  src: url("/fonts/DMSans-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Breakpoints mirror Webflow's: 480 / 768 / 992 / 1280 / 1440.
    The original site is desktop-first, so most responsive rules use max-* variants. */
 @theme {
@@ -33,6 +41,7 @@
 
   --font-sans: "PP Neue Montreal", Arial, sans-serif;
   --font-display: "PP Mori", Arial, sans-serif;
+  --font-label: "DM Sans", sans-serif;
 
   --spacing-site: 1.25rem;
   --container-site: 90rem;
@@ -69,6 +78,11 @@
     @apply flex items-center justify-center gap-5 border-b border-black bg-transparent p-0 text-[0.9375rem] leading-none font-normal text-black uppercase no-underline transition-all duration-300 hover:-mb-[0.3125rem] hover:pb-[0.3125rem];
   }
 
+  /* Text input / textarea used by the contact forms (textareas add their own height) */
+  .field {
+    @apply block h-[38px] min-h-10 w-full border-[0.8px] border-black/40 bg-transparent px-3 py-2 text-[18px] leading-[1.42857] text-black outline-none placeholder:text-[#3d1d074d] focus:border-black;
+  }
+
   /* Circular "cursor follower" label shown over images */
   .fake-cursor {
     @apply pointer-events-none absolute top-0 left-0 z-20 flex size-[175px] min-h-[175px] min-w-[175px] items-center justify-center rounded-full border border-white opacity-0 transition-opacity duration-200 will-change-transform max-lg:hidden;
@@ -78,11 +92,6 @@
     @apply opacity-100;
   }
   .fake-cursor-label {
-  /* Text input / textarea used by the contact forms (textareas add their own height) */
-  .field {
-    @apply block h-[38px] min-h-10 w-full border-[0.8px] border-black/40 bg-transparent px-3 py-2 text-[18px] leading-[1.42857] text-black outline-none placeholder:text-[#3d1d074d] focus:border-black;
-  }
-
     @apply flex items-center justify-center border-b border-white text-[15px] leading-none text-white uppercase;
   }
 }

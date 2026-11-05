@@ -11,6 +11,7 @@
 
 - id: white-oak
   name: White Oak
+  shortName: Oak
   order: 2
   description: >-
     Known for its strength and timeless appeal, white oak carries a warm, natural character. With visible grain

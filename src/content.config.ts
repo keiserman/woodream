@@ -44,6 +44,8 @@ const woods = defineCollection({
   schema: ({ image }) =>
     z.object({
       name: z.string(),
+      /** Label for the configurator's comparison tabs; defaults to `name`. */
+      shortName: z.string().optional(),
       order: z.number(),
       description: z.string(),
       seenIn: z.string(),
@@ -52,4 +54,35 @@ const woods = defineCollection({
     }),
 });
 
-export const collections = { gallery, testimonials, processSteps, woods };
+// One YAML file per configurable product in src/content/products/; the file
+// name is the URL slug (/products/<slug>). See the notes in those files.
+const products = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/products' }),
+  schema: ({ image }) =>
+    z.object({
+      name: z.string(),
+      base: image(),
+      options: z.array(
+        z.object({
+          name: z.string(),
+          label: z.string(),
+          badge: z.string().optional(),
+          /** Adds the link that opens the wood comparison. */
+          woodDetails: z.boolean().default(false),
+          showWhen: z.object({ option: z.string(), is: z.string() }).optional(),
+          choices: z
+            .array(
+              z.object({
+                label: z.string(),
+                price: z.number().default(0),
+                layer: image().optional(),
+                selected: z.boolean().default(false),
+              }),
+            )
+            .default([]),
+        }),
+      ),
+    }),
+});
+
+export const collections = { gallery, testimonials, processSteps, woods, products };

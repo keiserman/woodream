@@ -1,0 +1,33 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import ListRow from './ListRow.astro';
+
+/** A wood type: description on the left, a sample photo that swaps on hover on the right. */
+interface Props {
+  wood: CollectionEntry<'woods'>['data'];
+}
+
+const { wood } = Astro.props;
+---
+
+<ListRow variant="wood">
+  <div class="flex w-3/5 flex-col items-start justify-start gap-[30px] max-sm:w-full">
+    <h3 class="text-[30px]">{wood.name}</h3>
+    <p>
+      {wood.description}
+      <br />
+      <br />
+      <span class="underline">Where you’ve seen it: &nbsp;{wood.seenIn}</span>
+    </p>
+  </div>
+  <div class="relative w-2/5 max-sm:w-full">
+    <Image
+      src={wood.image}
+      alt={`${wood.name} wood sample`}
+      format="avif"
+      class="relative z-1 size-full object-cover transition-opacity duration-500 group-hover:opacity-0"
+    />
+    <Image src={wood.hoverImage} alt="" format="avif" class="absolute inset-0 z-0 size-full object-cover" />
+  </div>
+</ListRow>

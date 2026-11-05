@@ -1,0 +1,223 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BackgroundImage from './BackgroundImage.astro';
+import FormStatus from './FormStatus.astro';
+import WoodDetails from './WoodDetails.astro';
+import { formEndpoint, formatPrice } from '../data/site';
+
+/**
+ * Product builder: a live preview stacked from transparent layers, an estimated
+ * price, and the options that drive both. src/scripts/configurator.ts keeps the
+ * preview, the price and the conditional options in sync with the selection.
+ * Each product's options live in src/content/products/.
+ */
+interface Props {
+  product: CollectionEntry<'products'>['data'];
+}
+
+const { product } = Astro.props;
+const { name, base, options } = product;
+
+const radioId = (option: string, choice: string) => `${option}-${choice}`.toLowerCase().replace(/\W+/g, '-');
+
+const startPrice = options
+  .flatMap((option) => option.choices)
+  .filter((choice) => choice.selected)
+  .reduce((sum, choice) => sum + choice.price, 0);
+
+// The preview zooms to 2x on hover, so request twice the displayed size.
+const layerWidths = [800, 1600, 2400];
+const layerSizes = '(max-width: 767px) 50vw, 1200px';
+---
+
+<section class="px-site pt-40 pb-24">
+  <div class="mx-auto w-full max-w-(--container-site)">
+    <form
+      data-contact-form
+      data-configurator
+      name="product-inquiry"
+      method="post"
+      action={formEndpoint || undefined}
+      class="grid grid-cols-[0.75fr_1fr] gap-16 max-md:grid-cols-1"
+    >
+      <input type="hidden" name="Product" value={name} />
+      <input type="hidden" name="Estimated Price" value={formatPrice(startPrice)} data-price-input />
+
+      <div
+        class="sticky top-32 flex flex-col gap-4 self-start max-md:fixed max-md:top-auto max-md:right-0 max-md:bottom-0 max-md:z-99 max-md:w-2/5 max-md:bg-white max-md:p-4 max-sm:w-1/2"
+      >
+        <div data-preview-zoom class="overflow-hidden">
+          <div data-preview class="relative aspect-square bg-dark-beige transition-[transform-origin] duration-300 ease-out">
+            <BackgroundImage src={base} alt={`${name} preview`} widths={layerWidths} sizes={layerSizes} priority />
+            {
+              options.flatMap((option) =>
+                option.choices.map(
+                  (choice) =>
+                    choice.layer && (
+                      <Image
+                        src={choice.layer}
+                        alt=""
+                        widths={layerWidths}
+                        sizes={layerSizes}
+                        format="avif"
+                        loading="eager"
+                        decoding="sync"
+                        hidden
+                        data-layer={radioId(option.name, choice.label)}
+                        class="pointer-events-none absolute inset-0 size-full object-cover"
+                      />
+                    ),
+                ),
+              )
+            }
+          </div>
+        </div>
+        <div class="flex flex-col gap-1">
+          <div data-price class="text-[5rem] leading-[1.1] max-md:text-[3rem] max-sm:text-[1.75rem]">
+            {formatPrice(startPrice)}
+          </div>
+          <div class="text-[18px] text-[#79675b]">Estimated Price</div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-2">
+          <h1 class="text-[40px] normal-case xl:text-[47px] 2xl:text-[47px] max-md:text-[40px] max-sm:text-[35px]">
+            Build your<br />{name.toLowerCase()}
+          </h1>
+          <p class="mb-2.5">Start customizing and watch it update live.<br />Submit your dream, we’ll make it real.</p>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
+            <div class="text-[15px]">Your information</div>
+            <div class="flex gap-2">
+              <label for="product-first-name" class="sr-only">First name</label>
+              <input
+                id="product-first-name"
+                name="First-Name"
+                type="text"
+                required
+                maxlength="256"
+                autocomplete="given-name"
+                placeholder="First Name"
+                class="field border p-4"
+              />
+              <label for="product-last-name" class="sr-only">Last name</label>
+              <input
+                id="product-last-name"
+                name="Last-Name"
+                type="text"
+                required
+                maxlength="256"
+                autocomplete="family-name"
+                placeholder="Last Name"
+                class="field border p-4"
+              />
+            </div>
+            <label for="product-phone" class="sr-only">Phone</label>
+            <input
+              id="product-phone"
+              name="Your-Phone"
+              type="tel"
+              required
+              maxlength="256"
+              autocomplete="tel"
+              placeholder="Your Phone"
+              class="field border p-4"
+            />
+            <label for="product-email" class="sr-only">Email</label>
+            <input
+              id="product-email"
+              name="Your-Email"
+              type="email"
+              required
+              maxlength="256"
+              autocomplete="email"
+              placeholder="Your Email"
+              class="field border p-4"
+            />
+          </div>
+
+          {
+            options.map((option) => {
+              const labelId = `${radioId(option.name, 'label')}`;
+              return (
+                <fieldset
+                  aria-labelledby={labelId}
+                  hidden={Boolean(option.showWhen)}
+                  disabled={Boolean(option.showWhen)}
+                  data-show-when={option.showWhen && radioId(option.showWhen.option, option.showWhen.is)}
+                  class="flex flex-col gap-1 bg-[#96815b1a] p-4"
+                >
+                  <div class="flex items-center justify-start gap-2">
+                    <div id={labelId} class="font-label text-[12px] font-semibold tracking-[0.03em] uppercase">
+                      {option.label}
+                    </div>
+                    {option.badge && (
+                      <div class="bg-white px-2 py-px text-[10px] tracking-[0.04em] text-black uppercase">
+                        {option.badge}
+                      </div>
+                    )}
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    {option.choices.map((choice) => {
+                      const id = radioId(option.name, choice.label);
+                      return (
+                        <div class="relative">
+                          <input
+                            type="radio"
+                            id={id}
+                            name={option.name}
+                            value={choice.label}
+                            checked={choice.selected}
+                            data-price={choice.price}
+                            class="peer pointer-events-none absolute opacity-0"
+                          />
+                          <label
+                            for={id}
+                            class="inline-block cursor-pointer border border-section-border px-3 py-2 text-[18px] peer-checked:border-accent peer-checked:bg-accent peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent"
+                          >
+                            {choice.label}
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {option.woodDetails && (
+                    <button type="button" data-wood-details-open class="cursor-pointer self-start text-[14px] italic underline">
+                      What’s the difference?
+                    </button>
+                  )}
+                </fieldset>
+              );
+            })
+          }
+
+          <p class="mb-2.5 w-full max-w-[55ch] text-[14px]">
+            *After submitting this form, someone will reach out within 24 hours to review and confirm your order. Once
+            your deposit is received, you can stop by the showroom to choose hardware (if applicable) and finalize your
+            stain color.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-start">
+          <input
+            type="submit"
+            value="Submit Inquiry"
+            data-wait="Please wait..."
+            class="cursor-pointer bg-black px-5 py-3 leading-[23px] text-white transition-all duration-200 hover:bg-grey"
+          />
+        </div>
+      </div>
+    </form>
+    <FormStatus />
+  </div>
+</section>
+
+{options.some((option) => option.woodDetails) && <WoodDetails />}
+
+<script>
+  import '../scripts/configurator';
+</script>

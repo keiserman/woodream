@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import ListRow from '../components/ListRow.astro';
+import WoodRow from '../components/WoodRow.astro';
 import Button from '../components/Button.astro';
 import ImageBanner from '../components/ImageBanner.astro';
 import PageHero from '../components/PageHero.astro';
@@ -165,33 +166,7 @@ const img = 'max-w-full';
     <Fragment slot="intro">Our woods are selected not just for their look, but for how they live with you — durable, versatile, and timeless.</Fragment>
     <div class="w-full">
       {
-        woods.map((wood) => (
-          <ListRow variant="wood">
-            <div class="flex w-3/5 flex-col items-start justify-start gap-[30px] max-sm:w-full">
-              <h3 class="text-[30px]">{wood.name}</h3>
-              <p>
-                {wood.description}
-                <br />
-                <br />
-                <span class="underline">Where you’ve seen it: &nbsp;{wood.seenIn}</span>
-              </p>
-            </div>
-            <div class="relative w-2/5 max-sm:w-full">
-              <Image
-                src={wood.image}
-                alt={`${wood.name} wood sample`}
-                format="avif"
-                class="relative z-1 size-full object-cover transition-opacity duration-500 group-hover:opacity-0"
-              />
-              <Image
-                src={wood.hoverImage}
-                alt=""
-                format="avif"
-                class="absolute inset-0 z-0 size-full object-cover"
-              />
-            </div>
-          </ListRow>
-        ))
+        woods.map((wood) => <WoodRow wood={wood} />)
       }
     </div>
   </Section>

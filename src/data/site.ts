@@ -46,5 +46,7 @@ export const legalLinks: NavLink[] = [
   { href: '/legal/cookie-settings', label: 'Cookie Settings' },
 ];
 
+export const formatPrice = (amount: number) => `$${amount.toLocaleString('en-US')}`;
+
 /** Whether `href` is the page at `url` (ignores a trailing slash). */
 export const isCurrentPage = (url: URL, href: string) => (url.pathname.replace(/\/$/, '') || '/') === href;
