@@ -1,38 +1,41 @@
 ---
-import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import BackgroundImage from './BackgroundImage.astro';
+import ConfiguratorOption from './ConfiguratorOption.astro';
+import ConfiguratorReview from './ConfiguratorReview.astro';
 import FormStatus from './FormStatus.astro';
 import WoodDetails from './WoodDetails.astro';
 import { formEndpoint, formatPrice } from '../data/site';
+import { defaultPicks, evaluate } from '../lib/configurator';
+import type { Product } from '../lib/products';
 
 /**
- * Product builder: a live preview stacked from transparent layers, an estimated
- * price, and the options that drive both. src/scripts/configurator.ts keeps the
- * preview, the price and the conditional options in sync with the selection.
- * Each product's options live in src/content/products/.
+ * Product builder: a live preview stacked from transparent layers, the estimated
+ * price, and the options in steps, ending with a review and the inquiry form.
+ * The logic is in src/lib/configurator.ts and src/scripts/configurator.ts wires it
+ * to this markup. Each product's setup is in src/content/ (see docs/product-configurator.md).
  */
 interface Props {
-  product: CollectionEntry<'products'>['data'];
+  product: Product;
 }
 
 const { product } = Astro.props;
-const { name, base, options } = product;
+const { name, config, base, layers, swatches } = product;
+const { steps } = config;
+const start = evaluate(config, defaultPicks(config));
+const hasWoodDetails = steps.some((step) => step.options.some((option) => option.woodDetails));
 
-const radioId = (option: string, choice: string) => `${option}-${choice}`.toLowerCase().replace(/\W+/g, '-');
+const stepNames = [...steps.map((step) => step.name), 'Review'];
+const reviewStep = steps.length;
 
-const startPrice = options
-  .flatMap((option) => option.choices)
-  .filter((choice) => choice.selected)
-  .reduce((sum, choice) => sum + choice.price, 0);
-
-// The preview zooms to 2x on hover, so request twice the displayed size.
+// The preview zooms to 2x on hover, so request twice the displayed size. On small
+// screens it's a thumbnail that expands to at most the screen's width.
 const layerWidths = [800, 1600, 2400];
-const layerSizes = '(max-width: 767px) 50vw, 1200px';
+const layerSizes = '(max-width: 767px) 400px, 1200px';
 ---
 
-<section class="px-site pt-40 pb-24">
-  <div class="mx-auto w-full max-w-(--container-site)">
+<section class="px-site pt-40 pb-24 max-md:pt-32">
+  <div class="mx-auto w-full max-w-(--container-site)" x-data={`configurator(${JSON.stringify(config)})`}>
     <form
       data-contact-form
       data-configurator
@@ -42,46 +45,61 @@ const layerSizes = '(max-width: 767px) 50vw, 1200px';
       class="grid grid-cols-[0.75fr_1fr] gap-16 max-md:grid-cols-1"
     >
       <input type="hidden" name="Product" value={name} />
-      <input type="hidden" name="Estimated Price" value={formatPrice(startPrice)} data-price-input />
+      <input type="hidden" name="Estimated Price" value={formatPrice(start.total)} :value="formatPrice(view.total)" />
+      <input type="hidden" name="Price Breakdown" :value="breakdown" />
+      <input type="hidden" name="Design Link" :value="shareUrl" />
 
       <div
-        class="sticky top-32 flex flex-col gap-4 self-start max-md:fixed max-md:top-auto max-md:right-0 max-md:bottom-0 max-md:z-99 max-md:w-2/5 max-md:bg-white max-md:p-4 max-sm:w-1/2"
+        :data-preview-expanded="expanded || null"
+        class="group sticky top-32 flex flex-col gap-4 self-start max-md:fixed max-md:inset-x-0 max-md:top-auto max-md:bottom-0 max-md:z-99 max-md:flex-row max-md:flex-wrap max-md:items-center max-md:gap-3 max-md:border-t max-md:border-section-border max-md:bg-white max-md:p-3"
       >
-        <div data-preview-zoom class="overflow-hidden">
-          <div data-preview class="relative aspect-square bg-dark-beige transition-[transform-origin] duration-300 ease-out">
+        <div
+          @pointermove="zoom($event)"
+          @pointerleave="unzoom()"
+          @click="togglePreview()"
+          class="overflow-hidden max-md:size-14 max-md:cursor-pointer max-md:group-data-[preview-expanded]:order-last max-md:group-data-[preview-expanded]:mx-auto max-md:group-data-[preview-expanded]:size-auto max-md:group-data-[preview-expanded]:w-full max-md:group-data-[preview-expanded]:max-w-[60dvh]"
+        >
+          <div x-ref="preview" class="relative aspect-square bg-dark-beige transition-[transform-origin] duration-300 ease-out">
             <BackgroundImage src={base} alt={`${name} preview`} widths={layerWidths} sizes={layerSizes} priority />
             {
-              options.flatMap((option) =>
-                option.choices.map(
-                  (choice) =>
-                    choice.layer && (
-                      <Image
-                        src={choice.layer}
-                        alt=""
-                        widths={layerWidths}
-                        sizes={layerSizes}
-                        format="avif"
-                        loading="eager"
-                        decoding="sync"
-                        hidden
-                        data-layer={radioId(option.name, choice.label)}
-                        class="pointer-events-none absolute inset-0 size-full object-cover"
-                      />
-                    ),
-                ),
-              )
+              config.layerOrder.map((layer) => (
+                <Image
+                  src={layers[layer]}
+                  alt=""
+                  widths={layerWidths}
+                  sizes={layerSizes}
+                  format="avif"
+                  loading="eager"
+                  data-layer={layer}
+                  x-bind:class="view.layers.includes($el.dataset.layer) ? 'opacity-100' : 'opacity-0'"
+                  class="pointer-events-none absolute inset-0 size-full object-cover transition-opacity duration-200"
+                />
+              ))
             }
           </div>
         </div>
-        <div class="flex flex-col gap-1">
-          <div data-price class="text-[5rem] leading-[1.1] max-md:text-[3rem] max-sm:text-[1.75rem]">
-            {formatPrice(startPrice)}
+        <div class="flex flex-col gap-1 max-md:flex-1 max-md:gap-0">
+          <div
+            x-text="formatPrice(view.total)"
+            class="text-[5rem] leading-[1.1] max-md:text-[1.75rem]"
+          >
+            {formatPrice(start.total)}
           </div>
-          <div class="text-[18px] text-[#79675b]">Estimated Price</div>
+          <div class="text-[18px] text-[#79675b] max-md:text-[14px]">Estimated Price</div>
         </div>
+        <button
+          type="button"
+          @click="togglePreview()"
+          :aria-expanded="expanded"
+          aria-expanded="false"
+          x-text="expanded ? 'Hide preview' : 'View preview'"
+          class="btn cursor-pointer normal-case md:hidden"
+        >
+          View preview
+        </button>
       </div>
 
-      <div class="flex flex-col gap-8">
+      <div class="flex min-w-0 flex-col gap-8">
         <div class="flex flex-col gap-2">
           <h1 class="text-[40px] normal-case xl:text-[47px] 2xl:text-[47px] max-md:text-[40px] max-sm:text-[35px]">
             Build your<br />{name.toLowerCase()}
@@ -89,126 +107,68 @@ const layerSizes = '(max-width: 767px) 50vw, 1200px';
           <p class="mb-2.5">Start customizing and watch it update live.<br />Submit your dream, we’ll make it real.</p>
         </div>
 
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-col gap-2">
-            <div class="text-[15px]">Your information</div>
-            <div class="flex gap-2">
-              <label for="product-first-name" class="sr-only">First name</label>
-              <input
-                id="product-first-name"
-                name="First-Name"
-                type="text"
-                required
-                maxlength="256"
-                autocomplete="given-name"
-                placeholder="First Name"
-                class="field border p-4"
-              />
-              <label for="product-last-name" class="sr-only">Last name</label>
-              <input
-                id="product-last-name"
-                name="Last-Name"
-                type="text"
-                required
-                maxlength="256"
-                autocomplete="family-name"
-                placeholder="Last Name"
-                class="field border p-4"
-              />
-            </div>
-            <label for="product-phone" class="sr-only">Phone</label>
-            <input
-              id="product-phone"
-              name="Your-Phone"
-              type="tel"
-              required
-              maxlength="256"
-              autocomplete="tel"
-              placeholder="Your Phone"
-              class="field border p-4"
-            />
-            <label for="product-email" class="sr-only">Email</label>
-            <input
-              id="product-email"
-              name="Your-Email"
-              type="email"
-              required
-              maxlength="256"
-              autocomplete="email"
-              placeholder="Your Email"
-              class="field border p-4"
-            />
-          </div>
-
+        <nav x-ref="stepper" aria-label="Steps" class="relative flex scroll-mt-32 overflow-x-auto [scrollbar-width:none]">
           {
-            options.map((option) => {
-              const labelId = `${radioId(option.name, 'label')}`;
-              return (
-                <fieldset
-                  aria-labelledby={labelId}
-                  hidden={Boolean(option.showWhen)}
-                  disabled={Boolean(option.showWhen)}
-                  data-show-when={option.showWhen && radioId(option.showWhen.option, option.showWhen.is)}
-                  class="flex flex-col gap-1 bg-[#96815b1a] p-4"
-                >
-                  <div class="flex items-center justify-start gap-2">
-                    <div id={labelId} class="font-label text-[12px] font-semibold tracking-[0.03em] uppercase">
-                      {option.label}
-                    </div>
-                    {option.badge && (
-                      <div class="bg-white px-2 py-px text-[10px] tracking-[0.04em] text-black uppercase">
-                        {option.badge}
-                      </div>
-                    )}
-                  </div>
-                  <div class="flex flex-wrap gap-2">
-                    {option.choices.map((choice) => {
-                      const id = radioId(option.name, choice.label);
-                      return (
-                        <div class="relative">
-                          <input
-                            type="radio"
-                            id={id}
-                            name={option.name}
-                            value={choice.label}
-                            checked={choice.selected}
-                            data-price={choice.price}
-                            class="peer pointer-events-none absolute opacity-0"
-                          />
-                          <label
-                            for={id}
-                            class="inline-block cursor-pointer border border-section-border px-3 py-2 text-[18px] peer-checked:border-accent peer-checked:bg-accent peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent"
-                          >
-                            {choice.label}
-                          </label>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {option.woodDetails && (
-                    <button type="button" data-wood-details-open class="cursor-pointer self-start text-[14px] italic underline">
-                      What’s the difference?
-                    </button>
-                  )}
-                </fieldset>
-              );
-            })
+            stepNames.map((stepName, index) => (
+              <button
+                type="button"
+                @click={`goTo(${index})`}
+                aria-current={index === 0 ? 'step' : undefined}
+                :aria-current={`step === ${index} ? 'step' : null`}
+                class="group/step flex flex-1 cursor-pointer items-center justify-center gap-1.5 border-b-2 border-section-border px-2 pb-3 text-[15px] whitespace-nowrap text-grey uppercase transition-colors duration-200 hover:text-black aria-[current=step]:border-black aria-[current=step]:text-black"
+              >
+                {stepName}
+                {index < reviewStep && (
+                  <svg
+                    :class={`stepDone(${index}) && 'opacity-100'`}
+                    class="size-3 text-accent opacity-0 transition-opacity duration-200"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    role="img"
+                    aria-label="Complete"
+                  >
+                    <path d="M1.5 6.5 4.5 9.5 10.5 2.5" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                )}
+              </button>
+            ))
           }
+        </nav>
 
-          <p class="mb-2.5 w-full max-w-[55ch] text-[14px]">
-            *After submitting this form, someone will reach out within 24 hours to review and confirm your order. Once
-            your deposit is received, you can stop by the showroom to choose hardware (if applicable) and finalize your
-            stain color.
-          </p>
-        </div>
+        {
+          steps.map((step, index) => (
+            <div hidden={index !== 0} :hidden={`step !== ${index}`} class="flex flex-col gap-4">
+              <h2 tabindex="-1" class="sr-only" data-step-heading>{step.name}</h2>
+              {step.options.map((option) => (
+                <ConfiguratorOption
+                  option={option}
+                  visible={start.visible.includes(option.name)}
+                  images={{ base, layers, swatches }}
+                />
+              ))}
+              <div class="flex items-center justify-between gap-5 pt-4">
+                {index > 0 ? (
+                  <button type="button" @click={`goTo(${index - 1})`} class="btn cursor-pointer">
+                    Back
+                  </button>
+                ) : (
+                  <span />
+                )}
+                <button
+                  type="button"
+                  @click={`goTo(${index + 1})`}
+                  class="cursor-pointer bg-black px-5 py-3 text-white transition-all duration-200 hover:bg-grey"
+                >
+                  Next: {stepNames[index + 1]}
+                </button>
+              </div>
+            </div>
+          ))
+        }
 
-        <div class="flex items-center justify-start">
-          <input
-            type="submit"
-            value="Submit Inquiry"
-            data-wait="Please wait..."
-            class="cursor-pointer bg-black px-5 py-3 leading-[23px] text-white transition-all duration-200 hover:bg-grey"
-          />
+        <div hidden :hidden={`step !== ${reviewStep}`} class="flex flex-col gap-8">
+          <h2 tabindex="-1" class="sr-only" data-step-heading>Review</h2>
+          <ConfiguratorReview backStep={reviewStep - 1} />
         </div>
       </div>
     </form>
@@ -216,7 +176,7 @@ const layerSizes = '(max-width: 767px) 50vw, 1200px';
   </div>
 </section>
 
-{options.some((option) => option.woodDetails) && <WoodDetails />}
+{hasWoodDetails && <WoodDetails />}
 
 <script>
   import '../scripts/configurator';

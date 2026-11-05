@@ -96,6 +96,19 @@
   }
 }
 
+/* The configurator's price bar sits along the bottom of small screens. */
+@media (width < 48rem) {
+  body:has([data-configurator]) {
+    padding-bottom: 5.5rem;
+  }
+  body:has([data-configurator]) [data-whatsapp] {
+    bottom: 6.5rem;
+  }
+  body:has([data-preview-expanded]) [data-whatsapp] {
+    display: none;
+  }
+}
+
 /* ---------- Reveals ----------
    [data-reveal] elements start clipped away and wipe into view once they are
    revealed (see src/scripts/reveal.ts). data-dir names the way the wipe travels,

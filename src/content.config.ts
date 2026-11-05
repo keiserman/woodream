@@ -54,35 +54,59 @@ const woods = defineCollection({
     }),
 });
 
-// One YAML file per configurable product in src/content/products/; the file
-// name is the URL slug (/products/<slug>). See the notes in those files.
-const products = defineCollection({
-  loader: glob({ pattern: '*.yaml', base: './src/content/products' }),
-  schema: ({ image }) =>
-    z.object({
-      name: z.string(),
-      base: image(),
-      options: z.array(
-        z.object({
-          name: z.string(),
-          label: z.string(),
-          badge: z.string().optional(),
-          /** Adds the link that opens the wood comparison. */
-          woodDetails: z.boolean().default(false),
-          showWhen: z.object({ option: z.string(), is: z.string() }).optional(),
-          choices: z
-            .array(
-              z.object({
-                label: z.string(),
-                price: z.number().default(0),
-                layer: image().optional(),
-                selected: z.boolean().default(false),
-              }),
-            )
-            .default([]),
-        }),
-      ),
-    }),
+// The options, rules and layer order that products can share, one YAML file per
+// set in src/content/option-sets/. Strict, so a misspelled field is an error
+// rather than being ignored. See docs/product-configurator.md.
+const condition = z.record(z.string(), z.string());
+
+const optionSets = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/option-sets' }),
+  schema: z.strictObject({
+    steps: z.array(
+      z.strictObject({
+        name: z.string(),
+        options: z.array(
+          z.strictObject({
+            name: z.string(),
+            label: z.string(),
+            badge: z.string().optional(),
+            /** Adds the link that opens the wood comparison. */
+            woodDetails: z.boolean().default(false),
+            showWhen: condition.optional(),
+            /** Shows each choice as a crop of the preview: position in % and magnification. */
+            thumbnail: z.strictObject({ x: z.number(), y: z.number(), zoom: z.number() }).optional(),
+            choices: z
+              .array(
+                z.strictObject({
+                  label: z.string(),
+                  price: z.number().default(0),
+                  layer: z.string().optional(),
+                  /** A wood from the woods collection, shown as a photo on the choice. */
+                  swatch: z.string().optional(),
+                  selected: z.boolean().default(false),
+                }),
+              )
+              .default([]),
+          }),
+        ),
+      }),
+    ),
+    rules: z.array(z.strictObject({ if: condition, require: condition, message: z.string() })).default([]),
+    layerOrder: z.array(z.string()),
+  }),
 });
 
-export const collections = { gallery, testimonials, processSteps, woods, products };
+// One YAML file per configurable product; the file name is the URL slug
+// (/products/<slug>) and the folder of the same name holds its images.
+const products = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/products' }),
+  schema: z.strictObject({
+    name: z.string(),
+    /** The option set this product is built from. */
+    uses: z.string(),
+    /** This product's prices where they differ: option name → choice label → price. */
+    prices: z.record(z.string(), z.record(z.string(), z.number())).default({}),
+  }),
+});
+
+export const collections = { gallery, testimonials, processSteps, woods, optionSets, products };

@@ -1,12 +1,12 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Configurator from '../../components/Configurator.astro';
+import { getProducts } from '../../lib/products';
 
 export const getStaticPaths = (async () => {
-  const products = await getCollection('products');
-  return products.map((product) => ({ params: { id: product.id }, props: { product: product.data } }));
+  const products = await getProducts();
+  return products.map((product) => ({ params: { id: product.id }, props: { product } }));
 }) satisfies GetStaticPaths;
 
 const { product } = Astro.props;

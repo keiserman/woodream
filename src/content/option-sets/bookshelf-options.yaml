@@ -1,0 +1,138 @@
+# The options shared by the bookshelf products. Field-by-field notes and common
+# edits are in docs/product-configurator.md.
+#
+# Option names and choice labels appear in form submissions and shared links.
+
+steps:
+  - name: Wood
+    options:
+      - name: Wood
+        label: Type of Wood
+        badge: Not shown in preview
+        woodDetails: true
+        choices:
+          - { label: Maple, price: 2500, swatch: maple, selected: true }
+          - { label: Oak, price: 3000, swatch: white-oak }
+          - { label: Walnut, price: 3525, swatch: walnut }
+
+  - name: Cabinet
+    options:
+      - name: Glass
+        label: Middle Glass Doors and Shelves
+        choices:
+          - { label: 'No', selected: true }
+          - { label: 'Yes', price: 250, layer: middle-glass }
+
+      - name: Mirrors
+        label: Mirror Back Wall
+        badge: Not shown in preview
+        showWhen: { Glass: 'Yes' }
+        choices:
+          - { label: 'No', selected: true }
+          - { label: 'Yes', price: 300 }
+
+  - name: Doors
+    options:
+      - name: Doors
+        label: Bottom Doors
+        choices:
+          - { label: 'No', selected: true }
+          - { label: 'Yes', price: 250, layer: doors }
+
+      - name: Shaker Design
+        label: Flat/Shaker Doors
+        showWhen: { Doors: 'Yes' }
+        choices:
+          - { label: Flat }
+          - { label: Shaker, price: 150, layer: shaker }
+
+      - name: Door Design
+        label: Flat Door Design
+        showWhen: { Shaker Design: Flat }
+        choices:
+          - { label: Plain }
+          - { label: Fluted, price: 250, layer: fluted }
+          - { label: Etched, layer: etched }
+
+      - name: Etched Design
+        label: Etched Door Design
+        showWhen: { Door Design: Etched }
+        choices:
+          - { label: Double Stripe }
+          - { label: Border, layer: etched-border }
+          - { label: Double Border }
+
+      - name: Door Type
+        label: Door Shaker Design
+        showWhen: { Shaker Design: Shaker }
+        choices:
+          - { label: Single }
+          - { label: Double, layer: shaker-double }
+
+      - name: Hardware
+        label: Hardware
+        badge: Choose in store
+        showWhen: { Doors: 'Yes' }
+        choices:
+          - { label: 'Yes', layer: hardware }
+          - { label: Push to open }
+
+  - name: Trim
+    options:
+      - name: Moldings
+        label: Top moldings
+        thumbnail: { x: 0, y: 1, zoom: 3 }
+        choices:
+          - { label: Modern, layer: molding-modern }
+          - { label: Classic Crown }
+          - { label: Center Line }
+          - { label: Etched Stripes, layer: molding-etched-stripes }
+          - { label: Single Crown, layer: molding-single-crown }
+          - { label: Double Crown, layer: molding-double-crown }
+
+      - name: Columns
+        label: Columns
+        thumbnail: { x: 4, y: 10, zoom: 5 }
+        choices:
+          - { label: Modern, layer: columns-modern }
+          - { label: Classic, layer: columns-classic }
+          - { label: Center Indent, layer: columns-center-indent }
+          - { label: Etched Stripes, layer: columns-etched-stripes }
+
+  - name: Finish
+    options:
+      - name: Gold Inlays
+        label: Gold Inlays
+        badge: Not shown in Preview
+        choices:
+          - { label: 'No', selected: true }
+          - { label: Top molding only, price: 350 }
+          - { label: Top molding and soffits, price: 500 }
+
+      - name: Stain Color
+        label: Stain Color Chosen in store
+
+rules:
+  - if: { Glass: 'Yes' }
+    require: { Doors: 'Yes' }
+    message: Middle glass needs bottom doors, so they’re included.
+
+# Preview layers from bottom to top. A product's images are in
+# src/content/products/<product>/, named <layer>.webp, plus base.webp.
+layerOrder:
+  - middle-glass
+  - doors
+  - shaker
+  - fluted
+  - etched
+  - etched-border
+  - shaker-double
+  - hardware
+  - molding-modern
+  - molding-etched-stripes
+  - molding-single-crown
+  - molding-double-crown
+  - columns-modern
+  - columns-classic
+  - columns-center-indent
+  - columns-etched-stripes

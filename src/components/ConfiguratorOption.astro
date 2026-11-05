@@ -1,0 +1,140 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import type { Option } from '../lib/configurator';
+
+/** One configurator option and its choices: as plain buttons, or as cards with a picture. */
+interface Props {
+  option: Option;
+  visible: boolean;
+  images: {
+    base: ImageMetadata;
+    layers: Record<string, ImageMetadata>;
+    swatches: Record<string, ImageMetadata>;
+  };
+}
+
+const { option, visible, images } = Astro.props;
+const slug = (text: string) => text.toLowerCase().replace(/\W+/g, '-');
+const labelId = `${slug(option.name)}-label`;
+const { thumbnail } = option;
+const hasPictures = Boolean(thumbnail) || option.choices.some((choice) => choice.swatch);
+
+// Rows of three, or four at a time when that leaves no card on its own.
+const gridColumns = option.choices.length % 3 === 0 ? 'grid-cols-3' : 'grid-cols-4 max-sm:grid-cols-2';
+
+// Crops are small, so these only need to be sharp at a few times the card size.
+const cropWidths = [800, 1600];
+const cropStyle = thumbnail && {
+  width: `${thumbnail.zoom * 100}%`,
+  transform: `translate(${-thumbnail.x}%, ${-thumbnail.y}%)`,
+};
+---
+
+<fieldset
+  aria-labelledby={labelId}
+  data-option={option.name}
+  hidden={!visible}
+  disabled={!visible}
+  :hidden="!isVisible($el.dataset.option)"
+  :disabled="!isVisible($el.dataset.option)"
+  class="flex flex-col gap-1 bg-[#96815b1a] p-4"
+>
+  <div class="flex items-center justify-start gap-2">
+    <div id={labelId} class="font-label text-[12px] font-semibold tracking-[0.03em] uppercase">
+      {option.label}
+    </div>
+    {option.badge && <div class="bg-white px-2 py-px text-[10px] tracking-[0.04em] text-black uppercase">{option.badge}</div>}
+  </div>
+
+  <div class:list={['gap-2', hasPictures ? `grid pt-1 ${gridColumns}` : 'flex flex-wrap']}>
+    {
+      option.choices.map((choice) => {
+        const id = slug(`${option.name}-${choice.label}`);
+        const swatch = choice.swatch && images.swatches[choice.swatch];
+        const layer = choice.layer && images.layers[choice.layer];
+        return (
+          <div class="relative">
+            <input
+              type="radio"
+              id={id}
+              name={option.name}
+              value={choice.label}
+              checked={choice.selected}
+              :checked="isChecked($el)"
+              :disabled="isLocked($el)"
+              @change="choose($el)"
+              class="peer pointer-events-none absolute opacity-0"
+            />
+            <label
+              for={id}
+              class:list={[
+                'block h-full cursor-pointer border border-section-border text-[18px] peer-checked:border-accent peer-checked:bg-accent peer-checked:text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent peer-disabled:cursor-not-allowed peer-disabled:opacity-40',
+                !hasPictures && 'px-3 py-2',
+              ]}
+            >
+              {
+                swatch && (
+                  <Image
+                    src={swatch}
+                    alt=""
+                    width={400}
+                    format="avif"
+                    loading="lazy"
+                    class="aspect-3/2 w-full object-cover"
+                  />
+                )
+              }
+              {
+                thumbnail && (
+                  <span class="relative block aspect-3/2 overflow-hidden bg-dark-beige">
+                    <span class="absolute top-0 left-0 block aspect-square max-w-none" style={cropStyle}>
+                      <Image
+                        src={images.base}
+                        alt=""
+                        widths={cropWidths.filter((width) => width < images.base.width).concat(images.base.width)}
+                        sizes="800px"
+                        format="avif"
+                        loading="lazy"
+                        class="absolute inset-0 size-full"
+                      />
+                      {layer && (
+                        <Image
+                          src={layer}
+                          alt=""
+                          widths={cropWidths}
+                          sizes="800px"
+                          format="avif"
+                          loading="lazy"
+                          class="absolute inset-0 size-full"
+                        />
+                      )}
+                    </span>
+                  </span>
+                )
+              }
+              <span class:list={[hasPictures ? 'block px-2 py-2 text-[15px] max-sm:text-[13px]' : '']}>{choice.label}</span>
+            </label>
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <p
+    hidden
+    :hidden="!messageFor($el.parentElement.dataset.option)"
+    x-text="messageFor($el.parentElement.dataset.option)"
+    role="status"
+    class="pt-1 text-[14px] leading-[1.3] text-accent"
+  >
+  </p>
+
+  {
+    option.woodDetails && (
+      <button type="button" data-wood-details-open class="cursor-pointer self-start text-[14px] italic underline">
+        What’s the difference?
+      </button>
+    )
+  }
+</fieldset>

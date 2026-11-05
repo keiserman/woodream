@@ -20,3 +20,7 @@ Consult these guides before working on related tasks:
 - [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
 - [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
 - [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+
+## Product configurator
+
+To add or change products, options, prices or rules, follow `docs/product-configurator.md`. Run `npm test` after changing `src/lib/configurator.ts`. `npm run build` checks every product's setup.
