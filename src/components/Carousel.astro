@@ -1,0 +1,23 @@
+---
+/**
+ * Autoplaying row of slides with a thin progress bar. It scrolls natively, so
+ * swiping and keyboard scrolling work; src/scripts/carousel.ts adds the rest.
+ * Each slide sets its own width.
+ */
+interface Props {
+  label: string;
+  /** Classes that position the progress bar; it sits on top of the slides. */
+  barClass?: string;
+}
+
+const { label, barClass = 'top-0' } = Astro.props;
+---
+
+<div data-carousel role="region" aria-roledescription="carousel" aria-label={label} class="relative w-full [contain:inline-size]">
+  <div data-carousel-track tabindex="0" class="flex snap-x snap-mandatory overflow-x-auto outline-none [scrollbar-width:none]">
+    <slot />
+  </div>
+  <div class:list={['pointer-events-none absolute inset-x-0 h-1 bg-black/25', barClass]} aria-hidden="true">
+    <div data-carousel-bar class="h-full w-full origin-left bg-black transition-transform duration-300 [transform:scaleX(0)]"></div>
+  </div>
+</div>

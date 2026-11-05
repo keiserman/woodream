@@ -37,6 +37,7 @@ export const navLinks: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/gallery', label: 'Gallery' },
+  { href: '/dreamline', label: 'Dreamline' },
   { href: '/contact', label: 'Contact' },
 ];
 

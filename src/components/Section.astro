@@ -12,11 +12,14 @@ import Reveal from './Reveal.astro';
  */
 interface Props {
   tab: string;
+  id?: string;
   headingClass?: string;
   /** Width of the intro column; defaults to half the row. */
   introClass?: string;
   /** Space between the heading row and the content below it. */
-  gap?: 'default' | 'tight';
+  gap?: 'default' | 'medium' | 'tight';
+  /** Keep the columns at exactly 25% and 75% on tablets too, with no space between them. */
+  flush?: boolean;
   beige?: boolean;
   class?: string;
   /** Slide the heading and intro in when they scroll into view. */
@@ -25,9 +28,11 @@ interface Props {
 
 const {
   tab,
+  id,
   headingClass,
   introClass = 'w-1/2',
   gap = 'default',
+  flush = false,
   beige = false,
   class: className,
   animate = true,
@@ -35,6 +40,7 @@ const {
 ---
 
 <section
+  id={id}
   class:list={[
     'relative flex items-center justify-center px-site py-20',
     beige && 'overflow-hidden bg-dark-beige',
@@ -42,9 +48,12 @@ const {
   ]}
 >
   <div
-    class="relative z-1 flex w-full max-w-(--container-site) flex-row items-start justify-between gap-5 max-md:flex-col"
+    class:list={[
+      'relative z-1 flex w-full max-w-(--container-site) flex-row items-start justify-between max-md:flex-col',
+      flush ? 'max-md:gap-5' : 'gap-5',
+    ]}
   >
-    <div class="w-1/4 border-t border-section-border pt-5 max-lg:w-1/5 max-md:w-full">
+    <div class:list={['w-1/4 border-t border-section-border pt-5 max-md:w-full', !flush && 'max-lg:w-1/5']}>
       <div class="flex max-w-[135px] items-start justify-start gap-2.5 text-[20px] max-md:max-w-none">
         <div class="mt-[5px] min-h-2.5 min-w-2.5 rounded-full bg-black"></div>
         <div>{tab}</div>
@@ -53,8 +62,13 @@ const {
 
     <div
       class:list={[
-        'flex w-3/4 flex-col items-start justify-start border-t border-section-border pt-5 max-lg:w-4/5 max-md:w-full',
-        gap === 'tight' ? 'gap-[30px]' : 'gap-[100px] max-lg:gap-y-[75px] max-md:gap-[50px]',
+        'flex w-3/4 flex-col items-start justify-start border-t border-section-border pt-5 max-md:w-full',
+        !flush && 'max-lg:w-4/5',
+        {
+          default: 'gap-[100px] max-lg:gap-y-[75px] max-md:gap-[50px]',
+          medium: 'gap-16',
+          tight: 'gap-[30px]',
+        }[gap],
       ]}
     >
       <div class="flex w-full items-stretch justify-between gap-5 max-md:flex-col">

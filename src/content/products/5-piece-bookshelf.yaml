@@ -1,0 +1,17 @@
+# Page: /cabinets/5-piece-bookshelf (the file name is the URL).
+# Images: ./5-piece-bookshelf/. Setup guide: docs/product-configurator.md.
+
+name: 5-piece Bookshelf
+uses: bookshelf-options
+prices:
+  Wood: { Maple: 4000, Oak: 4750, Walnut: 5325 }
+withoutLayers:
+  - etched-border
+  - molding-classic-crown
+  - molding-center-line
+  - molding-single-crown
+  - molding-double-crown
+# The widest of the set, so it fills its canvas and sits lower than the set's crops expect.
+thumbnails:
+  Moldings: { x: 3, y: 16, zoom: 3 }
+  Columns: { x: 2, y: 20, zoom: 5 }
