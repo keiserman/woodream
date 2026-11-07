@@ -1,6 +1,7 @@
 ---
 layout: ../../layouts/LegalLayout.astro
 title: Privacy Policy
+description: How Woodream collects, uses and protects the information you share when you visit our website or contact us.
 ---
 
 Effective Date: 08/07/2025

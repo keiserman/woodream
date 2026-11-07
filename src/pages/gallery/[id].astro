@@ -30,7 +30,10 @@ const links = categories.map((category) => ({
 }));
 ---
 
-<BaseLayout title={name} description={GALLERY_INTRO}>
+<BaseLayout
+  title={name}
+  description={`Custom ${name.toLowerCase()} by Woodream, designed, built and finished in-house. Browse the photos and start your own.`}
+>
   {/* Hero and photos */}
   <Section paddingTop="navoverlap" gap="5">
     <HeroMain line1={name} size="compact">

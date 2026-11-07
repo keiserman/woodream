@@ -91,6 +91,11 @@ const slides = await slotContent(Astro.slots);
     <div class="slider_controls">
       <div class="slider_markers" />
       <div class="slider_steps">
+        {autoplay && autoplay > 0 && (
+          <Button variant="link" arrow={false} data-autoplay-toggle>
+            Pause
+          </Button>
+        )}
         <Button
           variant="link"
           arrow={false}
@@ -280,20 +285,34 @@ const slides = await slotContent(Astro.slots);
     );
 
     /* Autoplay: starts once the slider is half in view, pauses on hover,
-       stops at the last slide, and ends for good once someone takes over. */
+       stops at the last slide, and ends for good once someone takes over.
+       The Pause button stops it; Play resumes it, from the start if it had
+       reached the end. */
     const delay = Number(slider.dataset.autoplay) * 1000;
+    const playToggle = slider.querySelector<HTMLButtonElement>(
+      "[data-autoplay-toggle]",
+    );
     if (delay > 0 && !reduced.matches) {
       let timer = 0;
       let inView = false;
       let hovering = false;
       let stopped = false;
 
+      const show = (playing: boolean) => {
+        const text = playToggle?.querySelector(".button_text");
+        if (text) text.textContent = playing ? "Pause" : "Play";
+      };
       const stop = () => clearInterval(timer);
+      const halt = () => {
+        stopped = true;
+        stop();
+        show(false);
+      };
       const start = () => {
         stop();
         if (!inView || hovering || stopped) return;
         timer = window.setInterval(() => {
-          if (current() >= pages() - 1) return stop();
+          if (current() >= pages() - 1) return halt();
           list.scrollTo({
             left: (current() + 1) * stride(),
             behavior: behavior(),
@@ -318,9 +337,9 @@ const slides = await slotContent(Astro.slots);
         start();
       });
 
-      const takeOver = () => {
-        stopped = true;
-        stop();
+      const takeOver = (event: Event) => {
+        if (playToggle?.contains(event.target as Node)) return;
+        halt();
       };
       for (const type of [
         "pointerdown",
@@ -331,6 +350,19 @@ const slides = await slotContent(Astro.slots);
       ]) {
         slider.addEventListener(type, takeOver, { passive: true });
       }
+
+      playToggle?.addEventListener("click", () => {
+        if (!stopped) return halt();
+        stopped = false;
+        hovering = false;
+        show(true);
+        if (current() >= pages() - 1) {
+          list.scrollTo({ left: 0, behavior: behavior() });
+        }
+        start();
+      });
+    } else if (playToggle) {
+      playToggle.hidden = true;
     }
 
     slider.classList.add("is-ready");

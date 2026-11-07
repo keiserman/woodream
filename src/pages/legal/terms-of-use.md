@@ -1,6 +1,7 @@
 ---
 layout: ../../layouts/LegalLayout.astro
 title: Terms of Use
+description: The terms that apply when you use the Woodream website and its content.
 ---
 
 Effective Date: 08/07/2025

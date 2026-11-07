@@ -126,7 +126,9 @@ anything an upgrade should preserve or reconsider. New files are listed under
   unchanged. Added an `autoplay` prop (seconds per slide, off by default;
   Dreamline uses 3): starts once half in view, pauses on hover, stops at the
   last slide and for good on any drag, scroll, tap, key or focus. Skipped
-  with reduced motion.
+  with reduced motion. An autoplaying slider gets a Pause/Play link button
+  before Prev (WCAG 2.2.2); Play restarts from the first slide if it had
+  reached the end.
 - `src/components/form/Form.astro` — field gap reduced to `--space-2`; every
   form on this site is compact. Added a `netlify` prop: posts to `/` unless
   `action` is set, adds `data-netlify`, a hidden `form-name` input and a
@@ -138,7 +140,9 @@ anything an upgrade should preserve or reconsider. New files are listed under
   Contact link moves into the menu instead); uppercase grey links, current
   page underlined from 64rem. Hides while scrolling down, returns on scroll
   up, and slides in on load. Lumos's toggle, Escape, click-outside and
-  collapsing menu mechanism are kept.
+  collapsing menu mechanism are kept. Sets `scroll-padding-top` on the root
+  to the bar height so focused or linked-to elements land clear of it
+  (WCAG 2.4.11).
 - `src/components/global/Footer.astro` — rebuilt: optional photo banner
   (`banner` prop, `BannerPhoto`), phone/email, `NAV_LINKS`, logo, contact form
   and the legal bar; `variant="minimal"` keeps only the legal bar.
@@ -149,8 +153,7 @@ anything an upgrade should preserve or reconsider. New files are listed under
   `footerBanner` props passed to `Footer`; renders `WhatsAppButton` with the
   full footer.
 - `src/consts.ts` — site values replaced; `NAV_LINKS`, `NAV_CTA`,
-  `LEGAL_LINKS`, `CONTACT` and `GALLERY_INTRO` added; `/example-components`
-  is noindex.
+  `LEGAL_LINKS`, `CONTACT` and `GALLERY_INTRO` added.
 - `astro.config.mjs` — the three brand fonts replace Inter.
 - `package.json` — renamed; `alpinejs` (configurator) and `@types/alpinejs`
   added, `test` script added.
@@ -158,8 +161,9 @@ anything an upgrade should preserve or reconsider. New files are listed under
   with the site's.
 - `src/assets/logo/logo.svg` — Woodream logo (its `<style>` classes turned
   into fill attributes so they can't leak when inlined).
-  `src/assets/fonts/inter-regular.woff2`, `public/favicon.svg` and
-  `public/favicon.ico` removed; `public/og-image.jpg` replaced with a crop of
+  `src/assets/fonts/inter-regular.woff2`, `public/favicon.svg`,
+  `public/favicon.ico` and the `src/pages/example-components.astro` demo page
+  removed; `public/og-image.jpg` replaced with a crop of
   the home hero.
 - `AGENTS.md` — this "This site" section appended.
 
@@ -206,6 +210,8 @@ anything an upgrade should preserve or reconsider. New files are listed under
   (Alpine.js); logic stays in `src/lib/configurator.ts`.
 - `src/components/global/WhatsAppButton.astro` — floating WhatsApp link.
 - `src/utils/format.ts` — `formatPrice`.
+- `public/_headers` — Netlify security headers for every page and a
+  one-year immutable cache for the hashed files in `/_astro/`.
 - `src/pages/cabinets/[id].astro` — one page per product.
 - `src/pages/about.astro`, `contact.astro`, `dreamline.astro`,
   `gallery/index.astro`, `gallery/[id].astro`, `legal/*.md` and

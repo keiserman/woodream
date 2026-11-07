@@ -103,7 +103,7 @@ steps:
     options:
       - name: Gold Inlays
         label: Gold Inlays
-        badge: Not shown in Preview
+        badge: Not shown in preview
         choices:
           - { label: 'No', selected: true }
           - { label: Top molding only, price: 350 }

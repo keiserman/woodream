@@ -148,6 +148,11 @@ const { render = true, overlap = false } = Astro.props;
       }
     }
 
+    /* Keep what you tab to or jump to clear of the bar */
+    :root:has(.nav_wrap) {
+      scroll-padding-top: calc(var(--nav-height) + var(--space-4));
+    }
+
     @keyframes nav-in {
       from {
         translate: 0 -100%;

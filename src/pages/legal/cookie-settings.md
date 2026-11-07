@@ -1,6 +1,7 @@
 ---
 layout: ../../layouts/LegalLayout.astro
 title: Cookie Settings
+description: How the Woodream website uses cookies and how to turn them off in your browser.
 ---
 
 Cookie Notice
