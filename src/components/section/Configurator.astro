@@ -161,20 +161,47 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
               >
                 {stepName}
                 {index < reviewStep && (
-                  <svg
-                    class="configurator_check"
-                    :class={`stepDone(${index}) && 'is-done'`}
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    role="img"
-                    aria-label="Complete"
-                  >
-                    <path
-                      d="M1.5 6.5 4.5 9.5 10.5 2.5"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                    />
-                  </svg>
+                  <span class="configurator_status">
+                    <svg
+                      class="configurator_check"
+                      :class={`stepDone(${index}) && 'is-done'`}
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      role="img"
+                      aria-label="Complete"
+                      aria-hidden="true"
+                      :aria-hidden={`!stepDone(${index})`}
+                    >
+                      <path
+                        d="M1.5 6.5 4.5 9.5 10.5 2.5"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                      />
+                    </svg>
+                    <svg
+                      class="configurator_alert"
+                      :class={`reviewed && !stepDone(${index}) && 'is-shown'`}
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      role="img"
+                      aria-label="Needs a choice"
+                      aria-hidden="true"
+                      :aria-hidden={`!(reviewed && !stepDone(${index}))`}
+                    >
+                      <path
+                        d="M6 1.25 11.25 10.75H.75Z"
+                        stroke="currentColor"
+                        stroke-width="1.25"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M6 4.75v2.5M6 8.75v.25"
+                        stroke="currentColor"
+                        stroke-width="1.25"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </span>
                 )}
               </button>
             ))}
@@ -272,6 +299,8 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
       step: location.hash === "#review" ? config.steps.length : 0,
       expanded: false,
       copied: false,
+      /* Once the review has been seen, steps with choices left are flagged. */
+      reviewed: location.hash === "#review",
       formatPrice,
 
       get shareUrl() {
@@ -324,6 +353,7 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
 
       goTo(step: number) {
         this.step = step;
+        if (step === config.steps.length) this.reviewed = true;
         this.expanded = false;
         this.$nextTick(() => {
           const headings = this.$root.querySelectorAll<HTMLElement>(
@@ -539,13 +569,22 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
       }
     }
 
-    .configurator_check {
+    .configurator_status {
+      display: grid;
+      & > * {
+        grid-area: 1 / 1;
+      }
+    }
+
+    .configurator_check,
+    .configurator_alert {
       width: 0.75rem;
       height: 0.75rem;
       color: var(--brand-500);
       opacity: 0;
       transition: opacity var(--hover-duration) var(--hover-ease);
-      &.is-done {
+      &.is-done,
+      &.is-shown {
         opacity: 1;
       }
     }
