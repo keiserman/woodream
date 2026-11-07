@@ -6,6 +6,7 @@ import HeroMain from "@/components/content/HeroMain.astro";
 import GalleryNav from "@/components/content/GalleryNav.astro";
 import GalleryPhotos from "@/components/content/GalleryPhotos.astro";
 import { GALLERY_INTRO } from "@/consts.ts";
+import { withAlt } from "@/lib/gallery.ts";
 
 export async function getStaticPaths() {
   const categories = (await getCollection("gallery")).sort(
@@ -23,7 +24,8 @@ interface Props {
 }
 
 const { entry, categories } = Astro.props;
-const { name, photos } = entry.data;
+const { name } = entry.data;
+const photos = await withAlt(entry.data.photos, name);
 const links = categories.map((category) => ({
   href: `/gallery/${category.id}`,
   label: category.data.name,
@@ -41,7 +43,7 @@ const links = categories.map((category) => ({
     </HeroMain>
     <div class="width-full">
       <GalleryNav links={links} current={`/gallery/${entry.id}`} />
-      <GalleryPhotos photos={photos} name={name} />
+      <GalleryPhotos photos={photos} />
     </div>
   </Section>
 </BaseLayout>

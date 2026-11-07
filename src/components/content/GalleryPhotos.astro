@@ -5,22 +5,21 @@ import Img from "@/components/media/Img.astro";
 import Icon from "@/components/media/Icon.astro";
 import closeIcon from "@/assets/icons/close.svg";
 import arrowIcon from "@/assets/icons/arrow.svg";
+import type { GalleryPhoto } from "@/lib/gallery.ts";
 
 interface Props extends HTMLAttributes<"div"> {
   /** Set to `false` to omit the component. */
   render?: boolean;
-  /** Photos in the grid. */
-  photos: ImageMetadata[];
-  /** Used in each photo's alt text. */
-  name: string;
+  /** Photos in the grid, each with its alt text. */
+  photos: GalleryPhoto[];
 }
 
-const { render = true, photos, name, class: className, ...rest } = Astro.props;
+const { render = true, photos, class: className, ...rest } = Astro.props;
 
 const items = await Promise.all(
-  photos.map(async (src, i) => ({
+  photos.map(async ({ src, alt }) => ({
     src,
-    alt: `${name} by Woodream, photo ${i + 1}`,
+    alt,
     large: (
       await getImage({ src, format: "avif", width: Math.min(2000, src.width) })
     ).src,

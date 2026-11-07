@@ -72,7 +72,8 @@ Every page from `main` is ported: Home, About, Gallery (index and
   The wood brown is `--brand-500`, used for accents (selected choices,
   WhatsApp button, rule messages).
 - Content collections are in `src/content.config.ts` and `src/content/`
-  (gallery, testimonials, processSteps, woods, optionSets, products). After
+  (gallery, galleryPhotos, testimonials, processSteps, woods, optionSets,
+  products). After
   changing a schema, stop the dev server, delete `.astro/data-store.json` and
   `node_modules/.astro/data-store.json`, and restart.
 - Product configurator: follow `docs/product-configurator.md` to add or
@@ -220,6 +221,9 @@ anything an upgrade should preserve or reconsider. New files are listed under
 - `src/pages/about.astro`, `contact.astro`, `dreamline.astro`,
   `gallery/index.astro`, `gallery/[id].astro`, `legal/*.md` and
   `src/layouts/LegalLayout.astro`.
+- Gallery photo alt text lives in `src/content/gallery-photos.yaml`, one
+  entry per photo file name, read through `src/lib/gallery.ts`; the build
+  stops if a gallery photo has no entry.
 - `src/content/`, `src/content.config.ts`, `src/lib/`, `docs/`,
   `src/assets/images/`, `src/assets/fonts/`, `public/images/` — carried over
   from `main`.

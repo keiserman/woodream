@@ -1,0 +1,69 @@
+# Alt text for each photo in src/content/gallery/photos/, by file name
+# (without the extension). Every photo used in a gallery category needs an
+# entry; the build stops if one is missing. Describe what the piece is, as you
+# would to someone who can't see it, in a sentence of about 15 words or fewer.
+
+- id: 367A7416
+  alt: Study with dark wood built-in bookshelves, a matching desk and a modern pendant light
+- id: 367A7451
+  alt: Wide view of a study lined with dark wood bookshelves around a central desk
+- id: 367A7472
+  alt: Dark wood desk beside tall built-in bookcases filled with books
+- id: 367A7498
+  alt: View through open glass doors into a study with dark wood bookshelves and a desk
+- id: 367A7522
+  alt: Long dining table with a marble inlay, surrounded by grey upholstered chairs
+- id: 367A7544
+  alt: Dining room with a long marble-inlaid table, grey chairs and a built-in display cabinet
+- id: 367A7556
+  alt: Dining room with a marble-inlaid wood table, grey chairs and floor-length curtains
+- id: 367A7567
+  alt: Sculpted wood pedestal base under a marble-inlaid dining table
+- id: 367A7576
+  alt: Marble-inlaid dining table with a warm wood frame and grey upholstered chairs
+- id: 367A7590
+  alt: Close-up of a wood table edge with a gold inlay line and a fluted apron
+- id: 367A7602
+  alt: Built-in wood display cabinet with glass shelves and a mirrored mosaic back
+- id: 367A7615
+  alt: Built-in wood cabinet with a glass display door, fluted doors and drawers
+- id: 367A7633
+  alt: Pair of built-in wood display cabinets on either side of a dining room doorway
+- id: 367A7651
+  alt: Floating white vanity with glass-front doors, a marble top and three arched mirrors
+- id: 367A7664
+  alt: Close-up of a floating white vanity with glass-front doors and brass fixtures
+- id: 367A7670
+  alt: Charcoal built-in bookshelves and cabinets wrapping around a reading room
+- id: 367A7680
+  alt: Charcoal built-in shelving beside a dark velvet loveseat
+- id: 367A7689
+  alt: Charcoal built-in bookcase and display wall beside a velvet loveseat
+- id: 367A7696
+  alt: Close-up of charcoal built-in shelves above paneled cabinet doors
+- id: 367A7704
+  alt: Home office seen through a glass door, with a dark wood desk and black built-in bookshelves
+- id: 367A7707
+  alt: Home office with a dark wood executive desk and black built-in bookshelves
+- id: 367A7717
+  alt: Dark wood executive desk with fluted white trim in a bright home office
+- id: 367A7757
+  alt: Close-up of a dark wood desk corner with fluted white trim
+- id: 367A7768
+  alt: Study with a wood desk on circular cut-out legs in front of built-in bookshelves
+- id: 367A7790
+  alt: Warm wood built-in bookshelves with fluted lower panels
+- id: 367A7800
+  alt: Close-up of warm wood bookshelves filled with leather-bound books
+- id: 367A7809
+  alt: Glass-topped wood desk in front of warm wood built-in bookshelves
+- id: 367A7827
+  alt: Wood desk with circular cut-out legs beside built-in bookshelves
+- id: 367A7830
+  alt: Wood desk with circular cut-out legs and a leather chair in a library study
+- id: 367A7852
+  alt: Corner study lined with light wood bookshelves around a simple desk
+- id: 367A7864
+  alt: Light wood desk in front of corner built-in bookshelves
+- id: 367A7881
+  alt: Close-up of light wood corner bookshelves above closed cabinets

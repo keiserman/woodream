@@ -22,6 +22,15 @@ const gallery = defineCollection({
     }),
 });
 
+// Alt text for the gallery photos, one entry per photo file name (without
+// the extension), so a photo shared by several categories is described once.
+const galleryPhotos = defineCollection({
+  loader: file('src/content/gallery-photos.yaml'),
+  schema: z.object({
+    alt: z.string().min(1),
+  }),
+});
+
 const testimonials = defineCollection({
   loader: file('src/content/testimonials.yaml'),
   schema: z.object({
@@ -127,4 +136,4 @@ const products = defineCollection({
   }),
 });
 
-export const collections = { gallery, testimonials, processSteps, woods, optionSets, products };
+export const collections = { gallery, galleryPhotos, testimonials, processSteps, woods, optionSets, products };
