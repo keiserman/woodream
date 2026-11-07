@@ -1,8 +1,10 @@
 ---
+import { getCollection } from "astro:content";
 import Icon from "@/components/media/Icon.astro";
 import NavLink from "@/components/global/NavLink.astro";
 import Button from "@/components/Button.astro";
 import logo from "@/assets/logo/logo.svg";
+import arrow from "@/assets/icons/arrow.svg";
 import { NAV_CTA, NAV_LINKS, SITE_NAME } from "@/consts.ts";
 
 interface Props {
@@ -13,6 +15,12 @@ interface Props {
 }
 
 const { render = true, overlap = false } = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const products = (await getCollection("products"))
+  .map(({ id, data }) => ({ href: `/cabinets/${id}`, label: data.name }))
+  .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }));
+const submenus = { products };
 ---
 
 {render && (
@@ -33,14 +41,61 @@ const { render = true, overlap = false } = Astro.props;
       <nav class="nav_menu" id="nav-menu" aria-label="Main">
         <div class="nav_menu_inner">
           <ul class="nav_links">
-            {NAV_LINKS.map((link) => (
-              <NavLink
-                href={link.href}
-                class={link.href === NAV_CTA.href ? "is-cta" : undefined}
-              >
-                {link.label}
-              </NavLink>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const children = link.submenu ? submenus[link.submenu] : [];
+              if (children.length === 0) {
+                return (
+                  <NavLink
+                    href={link.href}
+                    class={link.href === NAV_CTA.href ? "is-cta" : undefined}
+                  >
+                    {link.label}
+                  </NavLink>
+                );
+              }
+              const id = `nav-sub-${link.href.replace(/\W+/g, "") || "home"}`;
+              return (
+                <li class="nav_group">
+                  <div class="nav_group_head">
+                    <a
+                      class="nav_link"
+                      href={link.href}
+                      aria-current={link.href === path ? "page" : undefined}
+                    >
+                      {link.label}
+                    </a>
+                    <button
+                      class="nav_sub_toggle"
+                      type="button"
+                      aria-expanded="false"
+                      aria-controls={id}
+                      aria-label={`${link.label} pages`}
+                    >
+                      <span class="nav_sub_icon">
+                        <Icon src={arrow} variant="small" />
+                      </span>
+                    </button>
+                  </div>
+                  <div class="nav_sub" id={id}>
+                    <ul class="nav_sub_list">
+                      {children.map((child) => (
+                        <li>
+                          <a
+                            class="nav_sub_link"
+                            href={child.href}
+                            aria-current={
+                              child.href === path ? "page" : undefined
+                            }
+                          >
+                            {child.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </nav>
@@ -83,12 +138,44 @@ const { render = true, overlap = false } = Astro.props;
       setOpen(toggle.getAttribute("aria-expanded") !== "true");
     });
 
+    /* Submenus: the arrow beside a link opens its list. From 48rem the list
+       also opens on hover or keyboard focus, in CSS. */
+    const groups = [...nav.querySelectorAll<HTMLElement>(".nav_group")];
+    const setGroup = (group: HTMLElement, open: boolean) => {
+      group.classList.toggle("is-open", open);
+      group
+        .querySelector(".nav_sub_toggle")
+        ?.setAttribute("aria-expanded", String(open));
+    };
+    const closeGroups = () => groups.forEach((group) => setGroup(group, false));
+
+    for (const group of groups) {
+      group.querySelector(".nav_sub_toggle")?.addEventListener("click", () => {
+        const open = !group.classList.contains("is-open");
+        groups.forEach((other) => setGroup(other, other === group && open));
+      });
+    }
+
     nav.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => setOpen(false));
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && nav.classList.contains("open")) {
+      if (event.key !== "Escape") return;
+      const group = groups.find(
+        (candidate) =>
+          candidate.classList.contains("is-open") ||
+          candidate.contains(document.activeElement),
+      );
+      if (group) {
+        closeGroups();
+        group.querySelector<HTMLElement>(".nav_sub_toggle")?.focus();
+        if (matchMedia("(width >= 48rem)").matches) {
+          (document.activeElement as HTMLElement | null)?.blur();
+        }
+        return;
+      }
+      if (nav.classList.contains("open")) {
         setOpen(false);
         toggle.focus();
       }
@@ -96,7 +183,9 @@ const { render = true, overlap = false } = Astro.props;
 
     document.addEventListener("click", (event) => {
       const target = event.target;
-      if (!nav.classList.contains("open") || !(target instanceof Node)) return;
+      if (!(target instanceof Node)) return;
+      if (!groups.some((group) => group.contains(target))) closeGroups();
+      if (!nav.classList.contains("open")) return;
       if (!nav.contains(target)) setOpen(false);
     });
 
@@ -104,6 +193,7 @@ const { render = true, overlap = false } = Astro.props;
       .matchMedia("(width >= 48rem)")
       .addEventListener("change", (event) => {
         if (event.matches) setOpen(false);
+        closeGroups();
       });
 
     let lastY = scrollY;
@@ -296,6 +386,82 @@ const { render = true, overlap = false } = Astro.props;
       }
     }
 
+    /* Submenu: collapsed under its link in the small-screen menu */
+    .nav_group_head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.375rem;
+    }
+
+    .nav_sub_toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      margin-right: -0.75rem;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: color var(--hover-duration) var(--hover-ease);
+      @media (hover: hover) {
+        &:hover {
+          color: var(--text);
+        }
+      }
+    }
+
+    .nav_sub_icon {
+      display: flex;
+      rotate: 90deg;
+      transition: rotate var(--open-duration) var(--open-ease);
+      .nav_group.is-open & {
+        rotate: -90deg;
+      }
+    }
+
+    .nav_sub {
+      display: grid;
+      grid-template-rows: 0fr;
+      visibility: hidden;
+      transition:
+        grid-template-rows var(--open-duration) var(--open-ease),
+        visibility var(--open-duration) var(--open-ease);
+      .nav_group.is-open > & {
+        grid-template-rows: 1fr;
+        visibility: visible;
+      }
+    }
+
+    .nav_sub_list {
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding-left: var(--space-4);
+      font-size: var(--text-small);
+      text-transform: none;
+      & > li:last-child {
+        padding-bottom: var(--space-4);
+      }
+    }
+
+    .nav_sub_link {
+      display: block;
+      padding-block: var(--space-2);
+      color: var(--text-2);
+      text-decoration: none;
+      transition: color var(--hover-duration) var(--hover-ease);
+      &[aria-current="page"] {
+        color: var(--text);
+      }
+      @media (hover: hover) {
+        &:hover {
+          color: var(--text);
+        }
+      }
+    }
+
     .nav_cta {
       display: none;
     }
@@ -314,6 +480,8 @@ const { render = true, overlap = false } = Astro.props;
         position: static;
         display: block;
         visibility: visible;
+        max-height: none;
+        overflow: visible;
         background-color: transparent;
         border-bottom: 0;
       }
@@ -340,6 +508,69 @@ const { render = true, overlap = false } = Astro.props;
 
       .nav_link {
         padding-block: 0;
+      }
+
+      /* Submenu: a panel under the bar, opened on hover, focus or the arrow */
+      .nav_group {
+        position: relative;
+      }
+
+      .nav_group_head {
+        justify-content: start;
+        gap: 0;
+      }
+
+      .nav_sub_toggle {
+        min-width: 1.5rem;
+        min-height: 1.5rem;
+        margin-right: -0.5rem;
+      }
+
+      .nav_sub {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        display: block;
+        padding-top: calc((var(--nav-height) - 1.5rem) / 2);
+        opacity: 0;
+        translate: -50% -0.5rem;
+        transition:
+          opacity var(--open-duration) var(--open-ease),
+          translate var(--open-duration) var(--open-ease),
+          visibility var(--open-duration) var(--open-ease);
+      }
+
+      .nav_group:is(.is-open, :focus-within) > .nav_sub {
+        visibility: visible;
+        opacity: 1;
+        translate: -50% 0;
+      }
+      @media (hover: hover) {
+        .nav_group:hover > .nav_sub {
+          visibility: visible;
+          opacity: 1;
+          translate: -50% 0;
+        }
+        .nav_group:hover .nav_sub_icon {
+          rotate: -90deg;
+        }
+      }
+      .nav_group:focus-within .nav_sub_icon {
+        rotate: -90deg;
+      }
+
+      .nav_sub_list {
+        min-width: 13rem;
+        overflow: visible;
+        padding: var(--space-3) var(--space-5);
+        font-size: var(--text-label);
+        text-transform: uppercase;
+        white-space: nowrap;
+        background-color: var(--background);
+        border: var(--border-width) solid var(--border);
+        & > li:last-child {
+          padding-bottom: 0;
+        }
       }
 
       .nav_cta {

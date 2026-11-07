@@ -133,7 +133,11 @@ anything an upgrade should preserve or reconsider. New files are listed under
   Contact link moves into the menu instead); uppercase grey links, current
   page underlined from 64rem. Hides while scrolling down, returns on scroll
   up, and slides in on load. Lumos's toggle, Escape, click-outside and
-  collapsing menu mechanism are kept.
+  collapsing menu mechanism are kept. A link with `submenu: "products"` in `NAV_LINKS`
+  (Dreamline) gets a product list from the products collection: an arrow
+  button beside the link toggles it; from 48rem it is a panel under the bar
+  that also opens on hover or focus (so `.nav_menu` no longer clips overflow
+  there); in the small-screen menu it expands under the link.
 - `src/components/global/Footer.astro` — rebuilt: optional photo banner
   (`banner` prop, `BannerPhoto`), phone/email, `NAV_LINKS`, logo, contact form
   and the legal bar; `variant="minimal"` keeps only the legal bar.
@@ -144,8 +148,8 @@ anything an upgrade should preserve or reconsider. New files are listed under
   `footerBanner` props passed to `Footer`; renders `WhatsAppButton` with the
   full footer.
 - `src/consts.ts` — site values replaced; `NAV_LINKS`, `NAV_CTA`,
-  `LEGAL_LINKS`, `CONTACT` and `GALLERY_INTRO` added; `/example-components`
-  is noindex.
+  `LEGAL_LINKS`, `CONTACT` and `GALLERY_INTRO` added; `NAV_LINKS` entries
+  take an optional `submenu`; `/example-components` is noindex.
 - `astro.config.mjs` — the three brand fonts replace Inter.
 - `package.json` — renamed; `alpinejs` (configurator) and `@types/alpinejs`
   added, `test` script added.

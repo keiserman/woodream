@@ -10,12 +10,19 @@ export const SITE_LOCALE = "en-US";
 /** Routes excluded from search and the sitemap. Surrounding slashes are ignored. */
 export const NOINDEX_ROUTES: string[] = ["/404", "/example-components"];
 
-/** Main navigation, read by `Nav` and `Footer`. */
-export const NAV_LINKS = [
+/**
+ * Main navigation, read by `Nav` and `Footer`. `submenu: "products"` gives a
+ * link a dropdown in the nav listing every configurable product.
+ */
+export const NAV_LINKS: {
+  href: string;
+  label: string;
+  submenu?: "products";
+}[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/gallery", label: "Gallery" },
-  { href: "/dreamline", label: "Dreamline" },
+  { href: "/dreamline", label: "Dreamline", submenu: "products" },
   { href: "/contact", label: "Contact" },
 ];
 
