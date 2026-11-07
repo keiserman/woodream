@@ -39,11 +39,24 @@ const { render = true } = Astro.props;
 
 <style is:global>
   @layer components {
+    /* On small screens, room under the footer so its last lines scroll clear
+       of the button, and scroll padding so focused fields do too. A bottom
+       bar (the configurator's price bar) sets --bottom-bar on the root; the
+       button sits above it. */
+    @media (width < 48rem) {
+      :root:has(.whatsapp_wrap) {
+        scroll-padding-bottom: calc(var(--bottom-bar, 0rem) + 6rem);
+        & body {
+          padding-bottom: calc(var(--bottom-bar, 0rem) + 5.75rem);
+        }
+      }
+    }
+
     .whatsapp_wrap {
       --_ease: 500ms ease-out;
       position: fixed;
       left: var(--site-margin);
-      bottom: 1.25rem;
+      bottom: calc(var(--bottom-bar, 0rem) + 1.25rem);
       z-index: 1000;
       display: flex;
       flex-direction: column;
@@ -52,6 +65,7 @@ const { render = true } = Astro.props;
       @media (width >= 48rem) {
         left: auto;
         right: 1.25rem;
+        bottom: 1.25rem;
         align-items: end;
         gap: 0.625rem;
       }

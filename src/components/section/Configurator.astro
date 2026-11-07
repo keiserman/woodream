@@ -546,12 +546,13 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
     /* Room for the price bar along the bottom of small screens */
     @media (width < 48rem) {
       :root:has(.configurator_wrap) {
-        scroll-padding-bottom: 6.5rem;
+        --bottom-bar: 5.5rem;
       }
-      body:has(.configurator_wrap) {
-        padding-bottom: 5.5rem;
-        & .whatsapp_wrap {
-          bottom: 6.5rem;
+      /* WhatsAppButton adds this room itself when it is on the page */
+      :root:has(.configurator_wrap):not(:has(.whatsapp_wrap)) {
+        scroll-padding-bottom: calc(var(--bottom-bar) + 1rem);
+        & body {
+          padding-bottom: var(--bottom-bar);
         }
       }
       body:has(.configurator_aside[data-expanded]) .whatsapp_wrap {

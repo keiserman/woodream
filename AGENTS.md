@@ -208,7 +208,11 @@ anything an upgrade should preserve or reconsider. New files are listed under
   `src/components/content/ConfiguratorOption.astro`,
   `ConfiguratorReview.astro`, `WoodCompare.astro` — the product configurator
   (Alpine.js); logic stays in `src/lib/configurator.ts`.
-- `src/components/global/WhatsAppButton.astro` — floating WhatsApp link.
+- `src/components/global/WhatsAppButton.astro` — floating WhatsApp link. On
+  small screens it pads the bottom of the page (and its scroll padding) by
+  its own height so the footer and focused fields clear it; a bottom bar
+  sets `--bottom-bar` on the root and the button sits above it (the
+  configurator's price bar does this).
 - `src/utils/format.ts` — `formatPrice`.
 - `public/_headers` — Netlify security headers for every page and a
   one-year immutable cache for the hashed files in `/_astro/`.
