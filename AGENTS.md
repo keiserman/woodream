@@ -80,9 +80,12 @@ Every page from `main` is ported: Home, About, Gallery (index and
   `src/lib/configurator.ts`; `npm run build` checks every product's setup.
 - Legal pages are Markdown in `src/pages/legal/`, rendered by
   `src/layouts/LegalLayout.astro`.
-- Forms (footer, contact, configurator) use Lumos `Form` with no `action` yet, so they
-  show the success message without sending anything. Set `action` (or wire
-  Netlify Forms) before launch.
+- Forms (footer `footer-contact`, Contact `contact`, configurator
+  `product-inquiry`) go to Netlify Forms through `Form`'s `netlify` prop.
+  Netlify only records fields present in the built HTML, so a new field
+  needs a deploy before it shows up; submissions and email notifications
+  are managed under the site's Forms settings in Netlify. Locally the dev
+  server answers the POST itself, so forms only really send on Netlify.
 
 ### Changes to Lumos files
 
@@ -125,7 +128,9 @@ anything an upgrade should preserve or reconsider. New files are listed under
   last slide and for good on any drag, scroll, tap, key or focus. Skipped
   with reduced motion.
 - `src/components/form/Form.astro` — field gap reduced to `--space-2`; every
-  form on this site is compact.
+  form on this site is compact. Added a `netlify` prop: posts to `/` unless
+  `action` is set, adds `data-netlify`, a hidden `form-name` input and a
+  hidden `bot-field` honeypot.
 - `src/components/form/Textarea.astro` — `labelHidden` prop added, matching
   `Input`.
 - `src/components/global/Nav.astro` — links from `NAV_LINKS`, logo left,

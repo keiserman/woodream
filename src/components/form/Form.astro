@@ -9,6 +9,9 @@ interface Props extends HTMLAttributes<"form"> {
   name?: string;
   /** Form endpoint. Omit to skip submission. */
   action?: string;
+  /** Send to Netlify Forms. Posts to `/` unless `action` is set, and adds
+   * Netlify's form name and a hidden spam trap. */
+  netlify?: boolean;
   /** Message shown after submission. */
   successMessage?: string;
   /** Message shown after an error. */
@@ -18,13 +21,19 @@ interface Props extends HTMLAttributes<"form"> {
 const {
   render = true,
   name,
-  action,
+  action: actionProp,
+  netlify = false,
   successMessage = "Thanks — we will be in touch.",
   errorMessage = "That did not send. Please try again.",
   method = "post",
   class: className,
   ...rest
 } = Astro.props;
+
+const action = actionProp ?? (netlify ? "/" : undefined);
+const netlifyAttrs = netlify
+  ? { "data-netlify": "true", "netlify-honeypot": "bot-field" }
+  : {};
 
 const content = await slotContent(Astro.slots);
 ---
@@ -40,8 +49,19 @@ const content = await slotContent(Astro.slots);
       name={name}
       action={action}
       method={method}
+      {...netlifyAttrs}
       {...rest}
     >
+      {netlify && (
+        <Fragment>
+          <input type="hidden" name="form-name" value={name} />
+          <p hidden>
+            <label>
+              Leave this empty: <input name="bot-field" tabindex="-1" />
+            </label>
+          </p>
+        </Fragment>
+      )}
       <Fragment set:html={content} />
     </form>
 
