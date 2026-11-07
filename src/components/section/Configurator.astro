@@ -98,16 +98,19 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
               )}
               {config.layerOrder.map((layer) => (
                 <span
-                  class="configurator_layer"
+                  class:list={[
+                    "configurator_layer",
+                    start.layers.includes(layer) && "is-shown",
+                  ]}
                   data-layer={layer}
-                  :class="view.layers.includes($el.dataset.layer) && 'is-shown'"
+                  :class="{ 'is-shown': view.layers.includes($el.dataset.layer) }"
                 >
                   <Img
                     class="cover-absolute"
                     src={layers[layer]}
                     variant="constrained"
                     sizes={layerSizes}
-                    loading="eager"
+                    loading={start.layers.includes(layer) ? "eager" : "lazy"}
                     transparent
                   />
                 </span>
@@ -229,6 +232,22 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
 </Section>
 
 <WoodCompare render={render && hasWoodDetails} />
+
+<script>
+  /* Layers that aren't showing stay out of the layout, so their lazy images
+     wait; once the page has loaded they join it and download in the
+     background, ready for the first change. */
+  const warm = () =>
+    document
+      .querySelectorAll(".configurator_preview")
+      .forEach((preview) => preview.classList.add("is-warm"));
+  const whenIdle = () =>
+    "requestIdleCallback" in window
+      ? requestIdleCallback(warm, { timeout: 2000 })
+      : setTimeout(warm, 200);
+  if (document.readyState === "complete") whenIdle();
+  else addEventListener("load", whenIdle, { once: true });
+</script>
 
 <script>
   import Alpine from "alpinejs";
@@ -430,6 +449,11 @@ const layerSizes = "(max-width: 767px) 400px, 1200px";
       transition: opacity var(--hover-duration) var(--hover-ease);
       &.is-shown {
         opacity: 1;
+      }
+      /* Until the page has loaded, hidden layers skip layout so their lazy
+         images don't download yet */
+      .configurator_preview:not(.is-warm) &:not(.is-shown) {
+        display: none;
       }
     }
 
