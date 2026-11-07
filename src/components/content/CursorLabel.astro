@@ -1,0 +1,166 @@
+---
+interface Props {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Text inside the circle. */
+  label: string;
+  /** Circle size. */
+  variant?: "large" | "small";
+}
+
+const { render = true, label, variant = "large" } = Astro.props;
+---
+
+{render && label && (
+  <span
+    class:list={["cursor-label_wrap", variant !== "large" && variant]}
+    aria-hidden="true"
+  >
+    <span class="cursor-label_text">{label}</span>
+  </span>
+)}
+
+<script>
+  const LAG = 0.15;
+
+  type Area = {
+    element: HTMLElement;
+    cursor: HTMLElement;
+    active: boolean;
+    tx: number;
+    ty: number;
+    x: number;
+    y: number;
+  };
+
+  const areas: Area[] = [
+    ...document.querySelectorAll<HTMLElement>(".cursor-label_wrap"),
+  ].flatMap((cursor) =>
+    cursor.parentElement
+      ? [
+          {
+            element: cursor.parentElement,
+            cursor,
+            active: false,
+            tx: 0,
+            ty: 0,
+            x: 0,
+            y: 0,
+          },
+        ]
+      : [],
+  );
+
+  if (areas.length && matchMedia("(pointer: fine)").matches) {
+    let lastX: number | null = null;
+    let lastY: number | null = null;
+
+    const aim = (area: Area, clientX: number, clientY: number) => {
+      const box = area.element.getBoundingClientRect();
+      area.tx = Math.max(0, Math.min(clientX - box.left, box.width));
+      area.ty = Math.max(0, Math.min(clientY - box.top, box.height));
+      if (!area.active) {
+        area.x = area.tx;
+        area.y = area.ty;
+      }
+    };
+
+    const activate = (area: Area, on: boolean) => {
+      area.active = on;
+      area.cursor.classList.toggle("is-active", on);
+    };
+
+    addEventListener("pointermove", (event) => {
+      lastX = event.clientX;
+      lastY = event.clientY;
+    });
+
+    for (const area of areas) {
+      area.element.addEventListener("pointerenter", (event) => {
+        aim(area, event.clientX, event.clientY);
+        activate(area, true);
+      });
+      area.element.addEventListener("pointermove", (event) => {
+        aim(area, event.clientX, event.clientY);
+        area.active = true;
+      });
+      area.element.addEventListener("pointerleave", () =>
+        activate(area, false),
+      );
+    }
+
+    let ticking = false;
+    const recheck = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        if (lastX === null || lastY === null) return;
+        for (const area of areas) {
+          const box = area.element.getBoundingClientRect();
+          const inside =
+            lastX >= box.left &&
+            lastX <= box.right &&
+            lastY >= box.top &&
+            lastY <= box.bottom;
+          if (inside) aim(area, lastX, lastY);
+          activate(area, inside);
+        }
+      });
+    };
+    addEventListener("scroll", recheck, { passive: true });
+    addEventListener("wheel", recheck, { passive: true });
+
+    const tick = () => {
+      for (const area of areas) {
+        area.x += (area.tx - area.x) * LAG;
+        area.y += (area.ty - area.y) * LAG;
+        area.cursor.style.transform = `translate(${area.x}px, ${area.y}px) translate(-50%, -50%)`;
+      }
+      requestAnimationFrame(tick);
+    };
+    tick();
+  }
+</script>
+
+<style is:global>
+  @layer components {
+    .cursor-label_wrap {
+      --_size: 10.9375rem;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: var(--_size);
+      height: var(--_size);
+      border: var(--border-width) solid var(--light-100);
+      border-radius: var(--radius-round);
+      color: var(--light-100);
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity var(--hover-duration) var(--hover-ease);
+      will-change: transform;
+
+      &.small {
+        --_size: 7.8125rem;
+      }
+      &.is-active {
+        opacity: 1;
+      }
+      @media (width >= 64rem) and (pointer: fine) {
+        display: flex;
+      }
+    }
+
+    .cursor-label_text {
+      border-bottom: var(--border-width) solid currentcolor;
+      font-size: var(--text-label);
+      line-height: 1;
+      text-transform: uppercase;
+    }
+  }
+</style>

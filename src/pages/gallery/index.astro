@@ -1,82 +1,26 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import Button from '../../components/Button.astro';
-import PageHero from '../../components/PageHero.astro';
-import BackgroundImage from '../../components/BackgroundImage.astro';
-import { galleryIntro } from '../../data/site';
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import HeroMain from "@/components/content/HeroMain.astro";
+import GalleryStagger from "@/components/content/GalleryStagger.astro";
+import { GALLERY_INTRO } from "@/consts.ts";
 
-const categories = (await getCollection('gallery'))
+const categories = (await getCollection("gallery"))
   .sort((a, b) => a.data.order - b.data.order)
-  .map((entry) => ({ name: entry.data.name, href: `/gallery/${entry.id}`, cover: entry.data.cover }));
-
-// Staggered layout: cards sit two per row and cycle through these four
-// positions (short + tall, then offset up + offset down).
-const positions = [
-  {
-    item: 'w-2/5 max-sm:w-full',
-    image: 'h-[400px] max-md:h-[200px]',
-  },
-  {
-    item: 'w-1/2 max-sm:w-full',
-    image: 'h-[550px] max-lg:h-[450px] max-md:h-[350px]',
-  },
-  {
-    item: 'w-[45%] -mt-[41px] max-lg:mt-[30px] max-md:-mt-[54px] max-sm:mt-0 max-sm:w-full',
-    image: 'h-[400px] max-sm:h-[300px]',
-  },
-  {
-    item: 'w-2/5 mt-[94px] max-lg:w-[45%] max-sm:mt-0 max-sm:w-full',
-    image: 'h-[550px] max-lg:h-[250px] max-sm:h-[450px]',
-  },
-];
-
-const rows: (typeof categories)[] = [];
-for (let i = 0; i < categories.length; i += 2) rows.push(categories.slice(i, i + 2));
+  .map((entry) => ({
+    name: entry.data.name,
+    href: `/gallery/${entry.id}`,
+    cover: entry.data.cover,
+  }));
 ---
 
-<Layout
-  title="Gallery | Woodream"
-  description={galleryIntro}
->
-  <PageHero line1="our gallery" size="compact">
-    {galleryIntro}
-
-    <ul
-      slot="below"
-      class="mt-5 flex w-full flex-col justify-between gap-[100px] border-t border-section-border pt-10 max-lg:gap-[50px]"
-    >
-      {
-        rows.map((row, r) => (
-          <li class="flex w-full justify-between gap-[100px] max-lg:gap-[50px] max-sm:flex-col">
-            {row.map((category, c) => {
-              const position = positions[(r * 2 + c) % positions.length];
-              return (
-                <div class:list={['flex flex-col items-start gap-[15px] pb-2.5', position.item]}>
-                  <a
-                    href={category.href}
-                    data-cursor-area
-                    aria-label={`Explore ${category.name}`}
-                    class:list={['relative block w-full overflow-hidden', position.image]}
-                  >
-                    <BackgroundImage
-                      src={category.cover}
-                      widths={[400, 800, 1200, 1600]}
-                      sizes="(max-width: 479px) 100vw, 50vw"
-                    />
-                    <div class="fake-cursor size-[125px] min-h-[125px] min-w-[125px]" aria-hidden="true">
-                      <span class="fake-cursor-label">Explore more</span>
-                    </div>
-                  </a>
-                  <Button href={category.href} class="text-[22px] normal-case">
-                    {category.name}
-                  </Button>
-                </div>
-              );
-            })}
-          </li>
-        ))
-      }
-    </ul>
-  </PageHero>
-</Layout>
+<BaseLayout title="Gallery" description={GALLERY_INTRO}>
+  {/* Hero and categories */}
+  <Section paddingTop="navoverlap" gap="5">
+    <HeroMain line1="our gallery" size="compact">
+      {GALLERY_INTRO}
+    </HeroMain>
+    <GalleryStagger categories={categories} />
+  </Section>
+</BaseLayout>

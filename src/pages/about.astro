@@ -1,203 +1,168 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import Layout from '../layouts/Layout.astro';
-import ListRow from '../components/ListRow.astro';
-import WoodRow from '../components/WoodRow.astro';
-import Button from '../components/Button.astro';
-import ImageBanner from '../components/ImageBanner.astro';
-import PageHero from '../components/PageHero.astro';
-import Section from '../components/Section.astro';
-import heroImage from '../assets/images/about/hero.avif';
-import workshop1 from '../assets/images/about/workshop-1.avif';
-import workshop2 from '../assets/images/about/workshop-2.avif';
-import method1 from '../assets/images/about/method-1.avif';
-import method2 from '../assets/images/about/method-2.avif';
-import footerImage from '../assets/images/footer/live-the-dream.avif';
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import Button from "@/components/Button.astro";
+import HeroMain from "@/components/content/HeroMain.astro";
+import BannerPhoto from "@/components/content/BannerPhoto.astro";
+import LayoutLabeled from "@/components/content/LayoutLabeled.astro";
+import StatList from "@/components/content/StatList.astro";
+import PhotoPair from "@/components/content/PhotoPair.astro";
+import ListRow from "@/components/content/ListRow.astro";
+import heroImage from "@/assets/images/about/hero.avif";
+import workshop1 from "@/assets/images/about/workshop-1.avif";
+import workshop2 from "@/assets/images/about/workshop-2.avif";
+import method1 from "@/assets/images/about/method-1.avif";
+import method2 from "@/assets/images/about/method-2.avif";
+import footerImage from "@/assets/images/footer/live-the-dream.avif";
 
-const woods = (await getCollection('woods')).sort((a, b) => a.data.order - b.data.order).map((entry) => entry.data);
+const woods = (await getCollection("woods")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 
 const stats = [
-  { value: 12, suffix: '', label: 'Years of experience' },
-  { value: 160, suffix: '+', label: 'Custom projects completed' },
-  { value: 50, suffix: '+', label: 'Returning clients' },
-  { value: 10, suffix: '', label: 'Week turnaround' },
+  { value: 12, label: "Years of experience" },
+  { value: 160, suffix: "+", label: "Custom projects completed" },
+  { value: 50, suffix: "+", label: "Returning clients" },
+  { value: 10, label: "Week turnaround" },
 ];
 
 const approach = [
   {
-    title: 'Bespoke solutions for every space',
-    text: 'No two homes—and no two clients—are the same. Every piece we create is designed around your space, your style, and the way you actually live.',
+    title: "Bespoke solutions for every space",
+    text: "No two homes—and no two clients—are the same. Every piece we create is designed around your space, your style, and the way you actually live.",
   },
   {
-    title: 'Completely in-house team, no middlemen',
-    text: 'From first sketch to final polish, everything happens under our roof. That means total control over quality, timelines, and the little details that matter most.',
+    title: "Completely in-house team, no middlemen",
+    text: "From first sketch to final polish, everything happens under our roof. That means total control over quality, timelines, and the little details that matter most.",
   },
   {
-    title: '100% transparent pricing',
-    text: 'No surprises, no fine print. We’ll walk you through every cost up front so you know exactly what you’re getting and why.',
+    title: "100% transparent pricing",
+    text: "No surprises, no fine print. We’ll walk you through every cost up front so you know exactly what you’re getting and why.",
   },
   {
-    title: 'Personal communication and updates at every step',
-    text: 'You’ll never wonder where your project stands. We check in, share progress, and keep you involved—because it’s your vision we’re building.',
+    title: "Personal communication and updates at every step",
+    text: "You’ll never wonder where your project stands. We check in, share progress, and keep you involved—because it’s your vision we’re building.",
   },
   {
-    title: 'Commitment to quality and lasting craftsmanship',
-    text: 'We build with care, precision, and materials that stand the test of time—pieces you’ll be proud of today and decades from now.',
+    title: "Commitment to quality and lasting craftsmanship",
+    text: "We build with care, precision, and materials that stand the test of time—pieces you’ll be proud of today and decades from now.",
   },
 ];
-
-const img = 'max-w-full';
 ---
 
-<Layout
-  title="About | Woodream"
+<BaseLayout
+  title="About"
   description="At Woodream your vision is crafted in-house by the same hands that first heard your idea. With us there is no outsourcing, no detail lost along the way and no dream too big."
-  footerBanner={{ image: footerImage, text: 'live the dream.', tabletHeight: 350 }}
+  footerBanner={{ image: footerImage, text: "live the dream." }}
 >
-  <PageHero line1="If you can" line2="dream it.">
-    At Woodream your vision is crafted in-house by the same hands that first heard your idea. With us there is no
-    outsourcing, no detail lost along the way and no dream too big.
-  </PageHero>
-
-  <ImageBanner image={heroImage}>In-house.<br />For you.</ImageBanner>
-
-  <!-- Stats -->
-  <section class="relative flex items-center justify-center px-site py-20">
-    <div class="relative z-1 w-full max-w-(--container-site)">
-      <dl class="grid w-full grid-cols-4 gap-5 max-md:grid-cols-2">
-        {
-          stats.map((stat) => (
-            <div class="flex w-full flex-col-reverse gap-[5px] border-t border-section-border pt-5">
-              <dt class="max-lg:text-[20px] max-sm:text-[18px]">{stat.label}</dt>
-              <dd class="text-[80px] leading-none xl:text-[110px] max-lg:text-[70px] max-sm:text-[50px]">
-                <span data-count-to={stat.value}>{stat.value}</span>{stat.suffix}
-              </dd>
-            </div>
-          ))
-        }
-      </dl>
-    </div>
-  </section>
-
-  <!-- About us -->
-  <Section
-    tab="About us"
-    headingClass="max-w-[338px] max-md:max-w-none"
-    gap="tight"
-  >
-    <Fragment slot="heading">Built around you</Fragment>
-    <Fragment slot="intro">Some see lumber, but our dream team sees limitless possibility. Every project begins in our workshop, where precision, focus, and true care shape each detail. This is where the magic happens.</Fragment>
-    <div class="mt-10 flex w-full items-end justify-center gap-5 max-sm:flex-col">
-      <div class="relative w-3/5 max-sm:w-full">
-        <div class="relative overflow-hidden pb-2.5">
-          <Image
-            src={workshop1}
-            alt="Woodream craftsmen at work in the workshop"
-            widths={[600, 900, 1388]}
-            sizes="(max-width: 479px) 100vw, 45vw"
-            format="avif"
-            class={img}
-          />
-        </div>
-        <div class="relative overflow-hidden pb-2.5">
-          Woodwork is what we do. Making it yours is why we do it. Everything you see here was crafted start to finish
-          in our workshop by a team that knows every inch of your plan and project.
-        </div>
-      </div>
-      <div class="flex w-2/5 flex-col items-center justify-end pb-[125px] max-sm:w-full max-sm:pb-0">
-        <div class="relative overflow-hidden pb-2.5">
-          <Image
-            src={workshop2}
-            alt="Detail of custom woodwork"
-            widths={[400, 674]}
-            sizes="(max-width: 479px) 100vw, 400px"
-            format="avif"
-            class={img}
-          />
-        </div>
-      </div>
-    </div>
+  {/* Hero */}
+  <Section paddingTop="navoverlap" paddingBottom="none">
+    <HeroMain line1="If you can" line2="dream it.">
+      At Woodream your vision is crafted in-house by the same hands that first
+      heard your idea. With us there is no outsourcing, no detail lost along the
+      way and no dream too big.
+    </HeroMain>
   </Section>
 
-  <!-- Design methodology -->
-  <Section
-    tab="Design Methodology"
-    headingClass="max-w-[338px] max-md:max-w-none"
-    introClass="w-[66%]"
-  >
-    <Fragment slot="heading">Etched in time.</Fragment>
-    <Fragment slot="intro">At Woodream, we craft spaces that blend purpose with beauty. Every detail is carefully considered and contributes to the whole. Ideas evolve into carefully chosen materials—oak for durability, walnut for rich color, and maple for a smooth finish—and from there your vision comes to life.<br /><br />Our premium-grade stains and finishes protect and enhance the natural beauty of the wood, and expert craftsmanship ensures a flawless finish. The result is something you’ll love and live with for a lifetime.</Fragment>
-    <div class="flex w-full items-stretch justify-between gap-5 max-sm:flex-col">
-      <div class="flex w-[45%] flex-col gap-[50px] max-sm:w-full">
-        <div class="relative overflow-hidden pb-2.5">
-          <Image
-            src={method1}
-            alt="Custom millwork in a finished room"
-            widths={[450, 914]}
-            sizes="(max-width: 479px) 100vw, 452px"
-            format="avif"
-            class={img}
-          />
-        </div>
-      </div>
-      <div class="flex w-[55%] flex-col gap-10 max-sm:w-full">
-        <div class="relative overflow-hidden pb-2.5">
-          <Image
-            src={method2}
-            alt="Wood finish detail"
-            widths={[550, 1154]}
-            sizes="(max-width: 479px) 100vw, 552px"
-            format="avif"
-            class={img}
-          />
-        </div>
-      </div>
-    </div>
-    <Button href="/gallery" class="-mt-[50px] max-lg:-mt-[25px]">View Gallery</Button>
+  <BannerPhoto variant="hero" image={heroImage}>
+    In-house.
+    <br />
+    For you.
+  </BannerPhoto>
+
+  {/* Stats */}
+  <Section>
+    <StatList stats={stats} />
   </Section>
 
-  <!-- Wood selection -->
-  <Section
-    tab="Wood Selection"
-    headingClass="max-w-[338px] max-md:max-w-none"
-  >
-    <Fragment slot="heading">Crafted from the finest woods.</Fragment>
-    <Fragment slot="intro">Our woods are selected not just for their look, but for how they live with you — durable, versatile, and timeless.</Fragment>
-    <div class="w-full">
-      {
-        woods.map((wood) => <WoodRow wood={wood} />)
-      }
-    </div>
+  {/* About us */}
+  <Section>
+    <LayoutLabeled label="About us" headingMaxWidth={14} gap="tight">
+      <Fragment slot="heading">Built around you</Fragment>
+      <Fragment slot="intro">
+        Some see lumber, but our dream team sees limitless possibility. Every
+        project begins in our workshop, where precision, focus, and true care
+        shape each detail. This is where the magic happens.
+      </Fragment>
+      <PhotoPair
+        first={workshop1}
+        firstAlt="Woodream craftsmen at work in the workshop"
+        second={workshop2}
+        secondAlt="Detail of custom woodwork"
+      >
+        Woodwork is what we do. Making it yours is why we do it. Everything you
+        see here was crafted start to finish in our workshop by a team that
+        knows every inch of your plan and project.
+      </PhotoPair>
+    </LayoutLabeled>
   </Section>
 
-  <!-- Our approach -->
-  <Section
-    tab="Our Approach"
-    headingClass="max-w-[338px] max-md:max-w-none"
-  >
-    <Fragment slot="heading">Design with you in mind.</Fragment>
-    <Fragment slot="intro">Our priority is to exceed your expectations. Not just in the final result but throughout the entire process.</Fragment>
-    <ul class="w-3/4 self-end max-md:w-full">
-      {
-        approach.map((item) => (
-          <ListRow as="li" variant="approach">
-            <div>
-              <div>{item.title}</div>
-              <div class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-out group-hover:grid-rows-[1fr] group-focus-within:grid-rows-[1fr]">
-                <div class="overflow-hidden">
-                  <p class="pt-[30px] text-[18px]">{item.text}</p>
-                </div>
-              </div>
-            </div>
-            <div class="shrink-0 transition-transform duration-500 ease-out group-hover:rotate-90 group-focus-within:rotate-90">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="inline align-baseline">
-                <path d="M7.5 7.5h10.5v10.5M18 7.5 6.5 19" stroke="currentColor" stroke-width="2.2" />
-              </svg>
-            </div>
-          </ListRow>
-        ))
-      }
-    </ul>
+  {/* Design methodology */}
+  <Section>
+    <LayoutLabeled label="Design Methodology" headingMaxWidth={14}>
+      <Fragment slot="heading">Etched in time.</Fragment>
+      <Fragment slot="intro">
+        At Woodream, we craft spaces that blend purpose with beauty. Every
+        detail is carefully considered and contributes to the whole. Ideas
+        evolve into carefully chosen materials—oak for durability, walnut for
+        rich color, and maple for a smooth finish—and from there your vision
+        comes to life.
+        <br />
+        <br />
+        Our premium-grade stains and finishes protect and enhance the natural
+        beauty of the wood, and expert craftsmanship ensures a flawless finish.
+        The result is something you’ll love and live with for a lifetime.
+      </Fragment>
+      <PhotoPair
+        variant="split"
+        first={method1}
+        firstAlt="Custom millwork in a finished room"
+        second={method2}
+        secondAlt="Wood finish detail"
+      />
+      <Button element="link" variant="link" href="/gallery">
+        View Gallery
+      </Button>
+    </LayoutLabeled>
   </Section>
-</Layout>
+
+  {/* Wood selection */}
+  <Section>
+    <LayoutLabeled label="Wood Selection" headingMaxWidth={14}>
+      <Fragment slot="heading">Crafted from the finest woods.</Fragment>
+      <Fragment slot="intro">
+        Our woods are selected not just for their look, but for how they live
+        with you — durable, versatile, and timeless.
+      </Fragment>
+      <ul class="width-full">
+        {woods.map(({ data }) => (
+          <ListRow
+            variant="wood"
+            title={data.name}
+            text={data.description}
+            note={`Where you’ve seen it: ${data.seenIn}`}
+            image={data.image}
+            hoverImage={data.hoverImage}
+          />
+        ))}
+      </ul>
+    </LayoutLabeled>
+  </Section>
+
+  {/* Our approach */}
+  <Section>
+    <LayoutLabeled label="Our Approach" headingMaxWidth={14}>
+      <Fragment slot="heading">Design with you in mind.</Fragment>
+      <Fragment slot="intro">
+        Our priority is to exceed your expectations. Not just in the final
+        result but throughout the entire process.
+      </Fragment>
+      <ul class="width-full">
+        {approach.map((item) => (
+          <ListRow variant="approach" title={item.title} text={item.text} />
+        ))}
+      </ul>
+    </LayoutLabeled>
+  </Section>
+</BaseLayout>

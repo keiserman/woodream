@@ -1,0 +1,104 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+export interface Stat {
+  /** Number to count up to. */
+  value: number;
+  /** Text after the number, such as `+`. */
+  suffix?: string;
+  /** What the number counts. */
+  label: string;
+}
+
+interface Props extends HTMLAttributes<"dl"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Figures to show. */
+  stats: Stat[];
+}
+
+const { render = true, stats, class: className, ...rest } = Astro.props;
+---
+
+{render && stats.length > 0 && (
+  <dl class:list={["stat-list_wrap", className]} {...rest}>
+    {stats.map((stat) => (
+      <div class="stat-list_item">
+        <dt>{stat.label}</dt>
+        <dd class="stat-list_value">
+          <span data-count-to={stat.value}>{stat.value}</span>
+          {stat.suffix}
+        </dd>
+      </div>
+    ))}
+  </dl>
+)}
+
+<script>
+  /* Counts each number up from 0 once it scrolls into view. The final value is
+     in the HTML, so it still shows without JavaScript. */
+  const DURATION = 5000;
+  const DELAY = 300;
+  const easeOut = (t: number) => 1 - Math.pow(1 - t, 4);
+
+  const numbers = [
+    ...document.querySelectorAll<HTMLElement>("[data-count-to]"),
+  ];
+
+  if (
+    numbers.length &&
+    !matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    const run = (element: HTMLElement) => {
+      const target = Number(element.dataset.countTo);
+      let start: number | null = null;
+      const step = (now: number) => {
+        start ??= now;
+        const t = Math.min((now - start) / DURATION, 1);
+        element.textContent = String(Math.round(target * easeOut(t)));
+        if (t < 1) requestAnimationFrame(step);
+      };
+      setTimeout(() => requestAnimationFrame(step), DELAY);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        run(entry.target as HTMLElement);
+      }
+    });
+
+    for (const number of numbers) {
+      number.textContent = "0";
+      observer.observe(number);
+    }
+  }
+</script>
+
+<style is:global>
+  @layer components {
+    .stat-list_wrap {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--site-gutter);
+      @media (width >= 48rem) {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .stat-list_item {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 0.3125rem;
+      padding-top: var(--site-gutter);
+      border-top: var(--border-width) solid var(--border);
+    }
+
+    .stat-list_value {
+      font-size: clamp(3.125rem, 2.054rem + 5.357vw, 6.875rem);
+      line-height: 1;
+    }
+  }
+</style>

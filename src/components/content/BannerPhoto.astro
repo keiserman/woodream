@@ -1,0 +1,109 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Img from "@/components/media/Img.astro";
+import Reveal from "@/components/wrapper/Reveal.astro";
+import CursorLabel from "@/components/content/CursorLabel.astro";
+import { slotContent } from "@/utils/slots.ts";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Background photo. */
+  image: ImageMetadata;
+  /** Alt text. Omit for decorative images. */
+  alt?: string;
+  /**
+   * Banner style. `hero` sits under the page title; `cta` closes the page;
+   * `panel` fills a column beside other content, text in the bottom corner.
+   */
+  variant?: "hero" | "cta" | "panel";
+}
+
+const {
+  render = true,
+  image,
+  alt,
+  variant = "cta",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const isHero = variant === "hero";
+const onLoad = variant !== "cta";
+const text = await slotContent(Astro.slots);
+---
+
+{render && image && (
+  <div class:list={["banner-photo_wrap", variant, className]} {...rest}>
+    <Reveal
+      class="cover-absolute"
+      direction="down"
+      onLoad={onLoad}
+      delay={onLoad ? 0.3 : undefined}
+    >
+      <Img
+        class="cover-absolute"
+        src={image}
+        alt={alt}
+        loading={onLoad ? "eager" : "lazy"}
+        fetchPriority={onLoad ? "high" : "auto"}
+      />
+    </Reveal>
+    {text && (
+      <div class="banner-photo_content">
+        <Reveal variant="rise" onLoad={onLoad} delay={onLoad ? 0.9 : 0.3}>
+          <p class="banner-photo_text text-style-h2">
+            <Fragment set:html={text} />
+          </p>
+        </Reveal>
+      </div>
+    )}
+    {isHero && <CursorLabel label="scroll down" />}
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .banner-photo_wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: clamp(18.75rem, 13.39rem + 26.79vw, 31.25rem);
+      padding: var(--site-margin);
+      overflow: hidden;
+      color: var(--light-100);
+
+      &.hero {
+        align-items: end;
+        padding-top: var(--section-space-medium);
+        padding-bottom: 2.8125rem;
+      }
+      &.panel {
+        align-items: end;
+        min-height: 15.625rem;
+        padding: var(--site-gutter);
+      }
+    }
+
+    .banner-photo_content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: var(--max-width-main);
+      text-align: center;
+      .banner-photo_wrap:is(.hero, .panel) & {
+        text-align: start;
+      }
+    }
+
+    .banner-photo_text {
+      font-family: var(--primary-family);
+      font-size: clamp(1.875rem, 1.607rem + 1.34vw, 2.8125rem);
+      text-transform: uppercase;
+      .banner-photo_wrap.panel & {
+        font-size: clamp(1.875rem, 1.696rem + 0.893vw, 2.5rem);
+      }
+    }
+  }
+</style>

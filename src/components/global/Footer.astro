@@ -1,0 +1,291 @@
+---
+import Img from "@/components/media/Img.astro";
+import Button from "@/components/Button.astro";
+import ButtonWrapper from "@/components/wrapper/ButtonWrapper.astro";
+import Form from "@/components/form/Form.astro";
+import Input from "@/components/form/Input.astro";
+import Textarea from "@/components/form/Textarea.astro";
+import BannerPhoto from "@/components/content/BannerPhoto.astro";
+import readyImage from "@/assets/images/footer/ready.avif";
+import { CONTACT, LEGAL_LINKS, NAV_LINKS, SITE_NAME } from "@/consts.ts";
+
+export interface FooterBanner {
+  /** Banner photo. */
+  image: ImageMetadata;
+  /** Banner text. May contain `<br />`. */
+  text: string;
+}
+
+interface Props {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Footer layout. `minimal` shows only the legal links and copyright. */
+  variant?: "full" | "minimal";
+  /** Photo banner above the footer. */
+  banner?: FooterBanner;
+}
+
+const {
+  render = true,
+  variant = "full",
+  banner = { image: readyImage, text: "Ready<br />When you are" },
+} = Astro.props;
+
+const isFull = variant === "full";
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+---
+
+{render && (
+  <footer class:list={["footer_wrap", variant]}>
+    {isFull && (
+      <BannerPhoto image={banner.image}>
+        <Fragment set:html={banner.text} />
+      </BannerPhoto>
+    )}
+    <div class="footer_main">
+      <div class="footer_inner">
+        {isFull && (
+          <Fragment>
+            <div class="footer_top">
+              <p class="footer_contact text-style-large">
+                <a class="footer_contact-link" href={CONTACT.phoneHref}>
+                  {CONTACT.phone}
+                </a>
+                <a class="footer_contact-link" href={CONTACT.emailHref}>
+                  {CONTACT.email}
+                </a>
+              </p>
+              <nav aria-label="Footer">
+                <ul class="footer_links">
+                  {NAV_LINKS.map((link) => (
+                    <li>
+                      <a
+                        class="footer_link"
+                        href={link.href}
+                        aria-current={path === link.href ? "page" : undefined}
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+            <div class="footer_middle">
+              <div class="footer_logo">
+                <Img
+                  src="/images/webclip.png"
+                  alt={SITE_NAME}
+                  width={256}
+                  height={256}
+                  transparent
+                />
+              </div>
+              <div class="footer_form">
+                <Form name="footer-contact">
+                  <Input
+                    variant="email"
+                    label="Email"
+                    name="Email"
+                    placeholder="Your email."
+                    maxlength={256}
+                    required
+                    labelHidden
+                  />
+                  <Textarea
+                    label="Message"
+                    name="Message"
+                    placeholder="How can we help you?"
+                    maxlength={5000}
+                    minLines={6}
+                    labelHidden
+                  />
+                  <ButtonWrapper marginTop="0">
+                    <Button type="submit" variant="link" arrow={false}>
+                      Contact us
+                    </Button>
+                  </ButtonWrapper>
+                </Form>
+              </div>
+            </div>
+          </Fragment>
+        )}
+        <div class="footer_bottom">
+          <ul class="footer_legal">
+            {LEGAL_LINKS.map((link) => (
+              <li>
+                <a class="footer_legal-link" href={link.href}>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p class="text-style-small">
+            &copy; <span class="footer_year">{new Date().getFullYear()}</span>{" "}
+            {SITE_NAME}. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+)}
+
+<script>
+  const year = document.querySelector<HTMLSpanElement>(".footer_year");
+
+  if (year) {
+    year.textContent = new Date().getFullYear().toString();
+  }
+</script>
+
+<style is:global>
+  @layer components {
+    .footer_wrap {
+      position: relative;
+      background-color: var(--background);
+      color: var(--text);
+    }
+
+    .footer_main {
+      display: flex;
+      justify-content: center;
+      padding: var(--section-space-small) var(--site-margin) 0.625rem;
+    }
+
+    .footer_inner {
+      width: 100%;
+      max-width: var(--max-width-main);
+      display: flex;
+      flex-direction: column;
+      gap: var(--site-gutter);
+    }
+
+    .footer_top {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      @media (width >= 64rem) {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: var(--site-gutter);
+      }
+    }
+
+    .footer_contact {
+      display: flex;
+      flex-direction: column;
+      font-size: clamp(1.375rem, 1.304rem + 0.36vw, 1.5625rem);
+    }
+
+    .footer_contact-link,
+    .footer_link {
+      transition: color var(--hover-duration) var(--hover-ease);
+    }
+
+    .footer_contact-link {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--text-2);
+        }
+      }
+    }
+
+    .footer_links {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      @media (width >= 30rem) {
+        flex-direction: row;
+      }
+    }
+
+    .footer_link {
+      color: var(--text-2);
+      text-decoration-thickness: var(--border-width);
+      text-underline-offset: 0.25rem;
+      transition:
+        color var(--hover-duration) var(--hover-ease),
+        text-underline-offset var(--hover-duration) var(--hover-ease);
+      &[aria-current="page"] {
+        color: var(--text);
+        text-decoration-line: underline;
+      }
+      @media (hover: hover) {
+        &:hover {
+          color: var(--text);
+        }
+        &[aria-current="page"]:hover {
+          text-underline-offset: 0.5625rem;
+        }
+      }
+    }
+
+    .footer_middle {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      gap: var(--site-gutter);
+      padding-bottom: 3.125rem;
+      @media (width >= 30rem) {
+        flex-direction: row;
+        align-items: end;
+        justify-content: space-between;
+        padding-top: 3.75rem;
+      }
+    }
+
+    .footer_logo {
+      width: 100%;
+      max-width: 9.375rem;
+      @media (width >= 48rem) {
+        max-width: 14.9375rem;
+      }
+    }
+
+    .footer_form {
+      width: 100%;
+      @media (width >= 30rem) {
+        width: 60%;
+      }
+      @media (width >= 48rem) {
+        width: 40%;
+      }
+      @media (width >= 64rem) {
+        width: 32%;
+      }
+    }
+
+    .footer_bottom {
+      display: flex;
+      flex-direction: column;
+      gap: var(--site-gutter);
+      @media (width >= 48rem) {
+        flex-direction: row;
+        align-items: start;
+        justify-content: space-between;
+      }
+    }
+
+    .footer_legal {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      font-size: var(--text-small);
+      @media (width >= 30rem) {
+        flex-direction: row;
+      }
+    }
+
+    .footer_legal-link {
+      text-decoration: underline;
+      text-decoration-thickness: var(--border-width);
+      text-underline-offset: 0.25rem;
+      transition: text-underline-offset var(--hover-duration) var(--hover-ease);
+      @media (hover: hover) {
+        &:hover {
+          text-underline-offset: 0.5rem;
+        }
+      }
+    }
+  }
+</style>

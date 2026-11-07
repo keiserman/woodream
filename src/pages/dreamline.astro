@@ -1,121 +1,130 @@
 ---
-import { Image } from 'astro:assets';
-import Layout from '../layouts/Layout.astro';
-import Section from '../components/Section.astro';
-import Button from '../components/Button.astro';
-import Carousel from '../components/Carousel.astro';
-import Reveal from '../components/Reveal.astro';
-import footerImage from '../assets/images/footer/ready.avif';
-import heroImage from '../assets/images/dreamline/hero.jpg';
-import diningRoomTable from '../assets/images/dreamline/dining-room-table.png';
-import studyTable from '../assets/images/dreamline/study-table.png';
-import threePieceBookshelf from '../assets/images/dreamline/3-piece-bookshelf.png';
-import fourPieceBookshelf from '../assets/images/dreamline/4-piece-bookshelf.png';
-import fivePieceBookshelf from '../assets/images/dreamline/5-piece-bookshelf.png';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import Slider from "@/components/interactive/Slider.astro";
+import Button from "@/components/Button.astro";
+import HeroSplit from "@/components/content/HeroSplit.astro";
+import LayoutLabeled from "@/components/content/LayoutLabeled.astro";
+import CardProduct from "@/components/content/CardProduct.astro";
+import CardStep from "@/components/content/CardStep.astro";
+import heroImage from "@/assets/images/dreamline/hero.jpg";
+import footerImage from "@/assets/images/footer/ready.avif";
+import diningRoomTable from "@/assets/images/dreamline/dining-room-table.png";
+import studyTable from "@/assets/images/dreamline/study-table.png";
+import threePieceBookshelf from "@/assets/images/dreamline/3-piece-bookshelf.png";
+import fourPieceBookshelf from "@/assets/images/dreamline/4-piece-bookshelf.png";
+import fivePieceBookshelf from "@/assets/images/dreamline/5-piece-bookshelf.png";
 
 const products = [
-  { name: 'Dining Room Tables', href: '/cabinets/dining-room-table', image: diningRoomTable },
-  { name: 'Study Table', href: '/cabinets/study-table', image: studyTable },
-  { name: '3-piece Bookshelf', href: '/cabinets/3-piece-bookshelf', image: threePieceBookshelf },
-  { name: '4-piece Bookshelf', href: '/cabinets/4-piece-bookshelf', image: fourPieceBookshelf },
-  { name: '5-piece Bookshelf', href: '/cabinets/5-piece-bookshelf', image: fivePieceBookshelf },
+  {
+    name: "Dining Room Tables",
+    href: "/cabinets/dining-room-table",
+    image: diningRoomTable,
+  },
+  { name: "Study Table", href: "/cabinets/study-table", image: studyTable },
+  {
+    name: "3-piece Bookshelf",
+    href: "/cabinets/3-piece-bookshelf",
+    image: threePieceBookshelf,
+  },
+  {
+    name: "4-piece Bookshelf",
+    href: "/cabinets/4-piece-bookshelf",
+    image: fourPieceBookshelf,
+  },
+  {
+    name: "5-piece Bookshelf",
+    href: "/cabinets/5-piece-bookshelf",
+    image: fivePieceBookshelf,
+  },
 ];
 
 const steps = [
   {
-    title: 'Premium Quality',
-    text: 'All pieces are solid wood, not pressed materials, built to the trusted WoodDream standard for lasting craftsmanship.',
+    title: "Premium Quality",
+    text: "All pieces are solid wood, not pressed materials, built to the trusted WoodDream standard for lasting craftsmanship.",
   },
   {
-    title: 'Endless Customization',
-    text: 'A wide range of finishes, colors, and styles to suit every taste and budget, including doors, legs, trims, and more.',
+    title: "Endless Customization",
+    text: "A wide range of finishes, colors, and styles to suit every taste and budget, including doors, legs, trims, and more.",
   },
   {
-    title: 'Instant Pricing',
-    text: 'Cost updates live as the options are selected, providing complete transparency without waiting for quotes.',
+    title: "Instant Pricing",
+    text: "Cost updates live as the options are selected, providing complete transparency without waiting for quotes.",
   },
   {
-    title: 'Accessible Luxury',
-    text: 'Options are ready to mix and match, cutting out extra labor and middlemen for surprisingly affordable pricing.',
+    title: "Accessible Luxury",
+    text: "Options are ready to mix and match, cutting out extra labor and middlemen for surprisingly affordable pricing.",
   },
 ];
-
-const introClass = 'w-[calc(50%-10px)] justify-start';
 ---
 
-<Layout
-  title="Dreamline | Woodream"
+<BaseLayout
+  title="Dreamline"
   description="Introducing Dreamline by WoodDream: design your custom solid wood furniture with our live form and see real-time pricing."
-  footerBanner={{ image: footerImage, text: 'design the dream.' }}
+  footerBanner={{ image: footerImage, text: "design the dream." }}
 >
-  <section class="relative flex justify-center px-site py-20">
-    <div class="grid w-full max-w-(--container-site) grid-cols-[1.5fr_1fr] gap-8 max-lg:grid-cols-1">
-      <div class="flex flex-col items-start justify-between gap-8 pt-20">
-        <div class="flex flex-col items-start gap-6">
-          <Reveal onLoad delay={0.2} class="pb-2.5">
-            <h1 class="text-[104px] max-lg:text-[88px] max-md:text-[64px] max-sm:text-[56px]">From dream to done.</h1>
-          </Reveal>
-          <Reveal onLoad delay={0.45} class="w-full max-w-160 pb-2.5">
-            <p class="mb-[5px] text-[20px]">
-              Introducing Dreamline by WoodDream, a revolutionary concept in custom solid wood furniture. No more
-              inflated quotes or drawn-out back-and-forths. With our live form you can design your piece and see
-              real-time pricing for an effortless, elevated, and attainable experience.
-            </p>
-          </Reveal>
-        </div>
-        <Button href="/contact">Customize Your Own</Button>
-      </div>
-      <div class="aspect-2/3 max-h-[80vh] w-full max-lg:aspect-3/2">
-        <Image
-          src={heroImage}
-          alt="A custom solid wood library with floor-to-ceiling bookshelves"
-          widths={[500, 800, 1080, 1600, 1980]}
-          sizes="(max-width: 991px) 100vw, 40vw"
-          loading="eager"
-          fetchpriority="high"
-          class="size-full object-cover"
-        />
-      </div>
-    </div>
-  </section>
-
-  <Section id="customize" tab="Dreamline" gap="medium" flush {introClass}>
-    <Fragment slot="heading">Customize<br />your piece</Fragment>
-    <Fragment slot="intro">
-      Choose your materials, style, and finishes with live pricing as you build. Submit your design and we’ll make it a
-      reality.
-    </Fragment>
-    <Carousel label="Products to customize">
-      {
-        products.map((product) => (
-          <div class="relative mt-1 flex w-1/3 shrink-0 snap-start flex-col items-center justify-between gap-5 text-center max-lg:w-full">
-            <div class="flex w-full justify-center border-r border-section-border p-5 transition-colors hover:bg-dark-beige max-sm:border-l">
-              <Image src={product.image} alt="" widths={[320, 640]} sizes="(max-width: 991px) 100vw, 310px" class="h-48 w-full object-contain" draggable="false" />
-            </div>
-            <div class="text-[20px] text-accent opacity-55">{product.name}</div>
-            <Button href={product.href} class="after:absolute after:inset-0">Customize now</Button>
-          </div>
-        ))
-      }
-    </Carousel>
+  {/* Hero */}
+  <Section paddingTop="navoverlap">
+    <HeroSplit
+      heading="From dream to done."
+      image={heroImage}
+      imageAlt="A custom solid wood library with floor-to-ceiling bookshelves"
+    >
+      Introducing Dreamline by WoodDream, a revolutionary concept in custom
+      solid wood furniture. No more inflated quotes or drawn-out
+      back-and-forths. With our live form you can design your piece and see
+      real-time pricing for an effortless, elevated, and attainable experience.
+      <Button slot="action" element="link" variant="link" href="/contact">
+        Customize Your Own
+      </Button>
+    </HeroSplit>
   </Section>
 
-  <Section tab="Steps" gap="medium" flush {introClass}>
-    <Fragment slot="heading">Dreamline is custom streamlined.</Fragment>
-    <Fragment slot="intro">From design to delivery, every detail of your custom piece is effortless.</Fragment>
-    <Carousel label="What makes Dreamline different" barClass="top-14">
-      {
-        steps.map((step, i) => (
-          <div class="flex w-1/2 shrink-0 snap-start flex-col gap-10 max-lg:w-full">
-            <div class="text-[1.875rem] leading-[1.1]">{String(i + 1).padStart(2, '0')}</div>
-            <div class="flex min-h-80 flex-col justify-between gap-4 border-r border-black/30 p-5 transition-colors hover:bg-dark-beige">
-              <h3 class="text-[1.875rem] leading-[1.1] font-normal">{step.title}</h3>
-              <p>{step.text}</p>
-            </div>
-          </div>
-        ))
-      }
-    </Carousel>
-    <Button href="#customize">Show me the way</Button>
+  {/* Products */}
+  <Section id="customize">
+    <LayoutLabeled label="Dreamline" gap="medium" flush>
+      <Fragment slot="heading">
+        Customize
+        <br />
+        your piece
+      </Fragment>
+      <Fragment slot="intro">
+        Choose your materials, style, and finishes with live pricing as you
+        build. Submit your design and we’ll make it a reality.
+      </Fragment>
+      <Slider label="Products to customize" variant="contained" large={3}>
+        {products.map((product) => (
+          <CardProduct
+            name={product.name}
+            href={product.href}
+            image={product.image}
+          />
+        ))}
+      </Slider>
+    </LayoutLabeled>
   </Section>
-</Layout>
+
+  {/* Steps */}
+  <Section>
+    <LayoutLabeled label="Steps" gap="medium" flush>
+      <Fragment slot="heading">Dreamline is custom streamlined.</Fragment>
+      <Fragment slot="intro">
+        From design to delivery, every detail of your custom piece is
+        effortless.
+      </Fragment>
+      <Slider
+        label="What makes Dreamline different"
+        variant="contained"
+        large={2}
+      >
+        {steps.map((step, i) => (
+          <CardStep number={i + 1} title={step.title} text={step.text} />
+        ))}
+      </Slider>
+      <Button element="link" variant="link" href="#customize">
+        Show me the way
+      </Button>
+    </LayoutLabeled>
+  </Section>
+</BaseLayout>

@@ -1,0 +1,62 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Img from "@/components/media/Img.astro";
+import Reveal from "@/components/wrapper/Reveal.astro";
+import CursorLabel from "@/components/content/CursorLabel.astro";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Category name. */
+  name: string;
+  /** Link destination. */
+  href: string;
+  /** Cover photo. */
+  image: ImageMetadata;
+  /** Seconds to wait before the card wipes in. */
+  delay?: number;
+}
+
+const {
+  render = true,
+  name,
+  href,
+  image,
+  delay,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{render && name && href && (
+  <div class:list={["card-gallery_wrap", className]} {...rest}>
+    <Reveal direction="left" delay={delay}>
+      <div class="card-gallery_inner">
+        <p>{name}</p>
+        <a class="card-gallery_link" href={href} aria-label={`Explore ${name}`}>
+          <Img class="cover-absolute" src={image} />
+          <CursorLabel label="Explore more" variant="small" />
+        </a>
+      </div>
+    </Reveal>
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .card-gallery_inner {
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+      gap: 0.625rem;
+    }
+
+    .card-gallery_link {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 31.25rem;
+      overflow: hidden;
+    }
+  }
+</style>

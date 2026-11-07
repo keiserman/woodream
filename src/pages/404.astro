@@ -1,12 +1,22 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Button from '../components/Button.astro';
-import PageHero from '../components/PageHero.astro';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import Button from "@/components/Button.astro";
+import HeroMain from "@/components/content/HeroMain.astro";
 ---
 
-<Layout title="Not Found | Woodream">
-  <PageHero line1="Hmm, this page does not exist">
-    At Woodream, custom goes beyond the outcome. It’s how we begin, build, and finish.
-    <Button slot="action" href="/">Home</Button>
-  </PageHero>
-</Layout>
+<BaseLayout
+  title="Page not found"
+  description="The page you're looking for doesn't exist."
+>
+  {/* Hero */}
+  <Section paddingTop="navoverlap" paddingBottom="none">
+    <HeroMain line1="Hmm, this page does not exist">
+      At Woodream, custom goes beyond the outcome. It’s how we begin, build, and
+      finish.
+      <Button slot="action" element="link" variant="link" href="/">
+        Home
+      </Button>
+    </HeroMain>
+  </Section>
+</BaseLayout>

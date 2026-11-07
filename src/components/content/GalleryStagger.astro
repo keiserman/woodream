@@ -1,0 +1,151 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Img from "@/components/media/Img.astro";
+import Button from "@/components/Button.astro";
+import CursorLabel from "@/components/content/CursorLabel.astro";
+
+export interface GalleryCategory {
+  /** Category name. */
+  name: string;
+  /** Category page. */
+  href: string;
+  /** Cover photo. */
+  cover: ImageMetadata;
+}
+
+interface Props extends HTMLAttributes<"ul"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Categories, two per row in a staggered layout. */
+  categories: GalleryCategory[];
+}
+
+const { render = true, categories, class: className, ...rest } = Astro.props;
+
+const rows: GalleryCategory[][] = [];
+for (let i = 0; i < categories.length; i += 2) {
+  rows.push(categories.slice(i, i + 2));
+}
+---
+
+{render && categories.length > 0 && (
+  <ul class:list={["gallery-stagger_wrap", className]} {...rest}>
+    {rows.map((row) => (
+      <li class="gallery-stagger_row">
+        {row.map((category) => (
+          <div class="gallery-stagger_item">
+            <a
+              class="gallery-stagger_link"
+              href={category.href}
+              aria-label={`Explore ${category.name}`}
+            >
+              <Img class="cover-absolute" src={category.cover} />
+              <CursorLabel label="Explore more" variant="small" />
+            </a>
+            <Button
+              class="text-transform-none"
+              element="link"
+              variant="link"
+              href={category.href}
+            >
+              {category.name}
+            </Button>
+          </div>
+        ))}
+      </li>
+    ))}
+  </ul>
+)}
+
+<style is:global>
+  @layer components {
+    .gallery-stagger_wrap {
+      --_gap: 3.125rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--_gap);
+      padding-top: 2.5rem;
+      border-top: var(--border-width) solid var(--border);
+      @media (width >= 64rem) {
+        --_gap: 6.25rem;
+      }
+    }
+
+    .gallery-stagger_row {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--_gap);
+      @media (width >= 30rem) {
+        flex-direction: row;
+      }
+    }
+
+    /* Rows alternate: short + tall, then raised + lowered. */
+    .gallery-stagger_item {
+      --_height: 25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      gap: 0.9375rem;
+      padding-bottom: 0.625rem;
+
+      .gallery-stagger_row:nth-child(odd) > &:first-child {
+        --_height: 12.5rem;
+        @media (width >= 30rem) {
+          width: 40%;
+        }
+        @media (width >= 48rem) {
+          --_height: 25rem;
+        }
+      }
+      .gallery-stagger_row:nth-child(odd) > &:last-child {
+        --_height: 21.875rem;
+        @media (width >= 30rem) {
+          width: 50%;
+        }
+        @media (width >= 48rem) {
+          --_height: 28.125rem;
+        }
+        @media (width >= 64rem) {
+          --_height: 34.375rem;
+        }
+      }
+      .gallery-stagger_row:nth-child(even) > &:first-child {
+        --_height: 18.75rem;
+        @media (width >= 30rem) {
+          width: 45%;
+          margin-top: -3.375rem;
+          --_height: 25rem;
+        }
+        @media (width >= 48rem) {
+          margin-top: 1.875rem;
+        }
+        @media (width >= 64rem) {
+          margin-top: -2.5625rem;
+        }
+      }
+      .gallery-stagger_row:nth-child(even) > &:last-child {
+        --_height: 28.125rem;
+        @media (width >= 30rem) {
+          width: 45%;
+          margin-top: 5.875rem;
+          --_height: 15.625rem;
+        }
+        @media (width >= 64rem) {
+          width: 40%;
+          --_height: 34.375rem;
+        }
+      }
+    }
+
+    .gallery-stagger_link {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: var(--_height);
+      overflow: hidden;
+    }
+  }
+</style>

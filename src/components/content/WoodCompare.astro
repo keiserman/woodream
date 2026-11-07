@@ -1,0 +1,94 @@
+---
+import { getCollection } from "astro:content";
+import Modal from "@/components/interactive/Modal.astro";
+import Tabs from "@/components/interactive/Tabs.astro";
+import TabLink from "@/components/interactive/TabLink.astro";
+import Img from "@/components/media/Img.astro";
+
+interface Props {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+}
+
+const { render = true } = Astro.props;
+
+const woods = (await getCollection("woods")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Modal
+  render={render && woods.length > 0}
+  id="compare-wood"
+  label="Compare wood types"
+>
+  <Tabs id="compare-wood-tabs">
+    <Fragment slot="links">
+      {woods.map(({ data }) => (
+        <TabLink>{data.shortName ?? data.name}</TabLink>
+      ))}
+    </Fragment>
+    {woods.map(({ data }) => (
+      <div class="wood-compare_wrap">
+        <div class="wood-compare_text">
+          <h3 class="text-style-h4">{data.name}</h3>
+          <p>{data.description}</p>
+          <p class="wood-compare_seen">Where you’ve seen it: {data.seenIn}</p>
+        </div>
+        <div class="wood-compare_visual">
+          <Img class="cover-absolute" src={data.hoverImage} />
+          <span class="wood-compare_sample">
+            <Img
+              class="cover-absolute"
+              src={data.image}
+              alt={`${data.name} wood sample`}
+            />
+          </span>
+        </div>
+      </div>
+    ))}
+  </Tabs>
+</Modal>
+
+<style is:global>
+  @layer components {
+    .wood-compare_wrap {
+      display: flex;
+      flex-direction: column;
+      gap: var(--site-gutter);
+      @media (width >= 30rem) {
+        flex-direction: row;
+      }
+    }
+
+    .wood-compare_text {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      @media (width >= 30rem) {
+        width: 60%;
+      }
+    }
+
+    .wood-compare_seen {
+      text-decoration: underline;
+    }
+
+    .wood-compare_visual {
+      position: relative;
+      min-height: 15rem;
+      @media (width >= 30rem) {
+        flex: 1;
+      }
+    }
+
+    .wood-compare_sample {
+      position: absolute;
+      inset: 0;
+      transition: opacity 500ms var(--hover-ease);
+      .wood-compare_visual:hover & {
+        opacity: 0;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,269 @@
+---
+import Button from "@/components/Button.astro";
+import Input from "@/components/form/Input.astro";
+
+interface Props {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** The step the Back button returns to. */
+  backStep: number;
+}
+
+const { render = true, backStep } = Astro.props;
+---
+
+{render && (
+  <div class="configurator-review_wrap">
+    <div class="configurator-review_summary">
+      <div class="configurator-review_head">
+        <span class="configurator-review_label">Your design</span>
+        <button
+          class="configurator-review_copy"
+          type="button"
+          @click="copyLink()"
+          x-text="copied ? 'Link copied' : 'Copy link to this design'"
+        >
+          Copy link to this design
+        </button>
+      </div>
+
+      <ul class="configurator-review_lines">
+        <template x-for="line in view.lines" :key="line.option">
+          <li class="configurator-review_line">
+            <button
+              class="configurator-review_change"
+              type="button"
+              @click="goTo(line.step)"
+              :aria-label="'Change ' + line.label"
+            >
+              <span class="configurator-review_option" x-text="line.label" />
+              <span x-text="line.choice" />
+            </button>
+            <span
+              class="configurator-review_price"
+              x-text="line.price ? formatPrice(line.price) : 'Included'"
+            />
+          </li>
+        </template>
+      </ul>
+
+      <div class="configurator-review_total">
+        <span>Estimated total</span>
+        <span
+          class="configurator-review_amount"
+          x-text="formatPrice(view.total)"
+        />
+      </div>
+
+      <div
+        class="configurator-review_missing"
+        role="status"
+        hidden
+        :hidden="!view.missing.length"
+      >
+        <p>A few choices are left before you can submit:</p>
+        <ul>
+          <template x-for="item in view.missing" :key="item.option">
+            <li>
+              <button
+                class="configurator-review_jump"
+                type="button"
+                @click="goTo(item.step)"
+                x-text="item.label"
+              />
+            </li>
+          </template>
+        </ul>
+      </div>
+    </div>
+
+    <fieldset class="configurator-review_contact">
+      <legend class="configurator-review_legend">Your information</legend>
+      <div class="configurator-review_names">
+        <Input
+          variant="first-name"
+          name="First-Name"
+          maxlength={256}
+          required
+          labelHidden
+        />
+        <Input
+          variant="last-name"
+          name="Last-Name"
+          maxlength={256}
+          required
+          labelHidden
+        />
+      </div>
+      <Input
+        variant="phone"
+        label="Your Phone"
+        name="Your-Phone"
+        maxlength={256}
+        required
+        labelHidden
+      />
+      <Input
+        variant="email"
+        label="Your Email"
+        name="Your-Email"
+        maxlength={256}
+        required
+        labelHidden
+      />
+    </fieldset>
+
+    <p class="configurator-review_note">
+      *After submitting this form, someone will reach out within 24 hours to
+      review and confirm your order. Once your deposit is received, you can stop
+      by the showroom to choose hardware (if applicable) and finalize your stain
+      color.
+    </p>
+
+    <div class="configurator-review_actions">
+      <Button variant="link" arrow={false} x-on:click={`goTo(${backStep})`}>
+        Back
+      </Button>
+      <Button type="submit" x-bind:disabled="view.missing.length > 0">
+        Submit Inquiry
+      </Button>
+    </div>
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .configurator-review_wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .configurator-review_summary {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      background-color: color-mix(in lab, var(--brand-500) 10%, transparent);
+    }
+
+    .configurator-review_head,
+    .configurator-review_line,
+    .configurator-review_total {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .configurator-review_head {
+      align-items: center;
+    }
+
+    .configurator-review_label {
+      font-family: var(--tertiary-family);
+      font-size: 0.75rem;
+      font-weight: var(--tertiary-semibold);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .configurator-review_copy,
+    .configurator-review_jump {
+      text-decoration: underline;
+    }
+
+    .configurator-review_copy {
+      font-size: 0.875rem;
+      font-style: italic;
+    }
+
+    .configurator-review_lines {
+      display: flex;
+      flex-direction: column;
+      font-size: var(--text-small);
+    }
+
+    .configurator-review_line {
+      padding-block: 0.5rem;
+      border-bottom: var(--border-width) solid var(--border);
+    }
+
+    .configurator-review_change {
+      line-height: 1.2;
+      @media (hover: hover) {
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .configurator-review_option {
+      display: block;
+      color: color-mix(in lab, var(--brand-500) 80%, var(--text));
+      font-size: 0.8125rem;
+    }
+
+    .configurator-review_price {
+      white-space: nowrap;
+    }
+
+    .configurator-review_total {
+      font-size: var(--text-small);
+    }
+
+    .configurator-review_amount {
+      font-size: 1.875rem;
+    }
+
+    .configurator-review_missing {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: var(--border-width) solid var(--border);
+      font-size: 1rem;
+      line-height: var(--line-height-large);
+      & > ul {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    .configurator-review_contact {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .configurator-review_legend {
+      margin-bottom: 0.5rem;
+      font-size: var(--text-label);
+    }
+
+    .configurator-review_names {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .configurator-review_note {
+      max-width: 55ch;
+      font-size: 0.875rem;
+      line-height: var(--line-height-large);
+    }
+
+    .configurator-review_actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--site-gutter);
+    }
+  }
+</style>

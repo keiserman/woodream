@@ -1,211 +1,183 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import Layout from '../layouts/Layout.astro';
-import ListRow from '../components/ListRow.astro';
-import Button from '../components/Button.astro';
-import ImageBanner from '../components/ImageBanner.astro';
-import PageHero from '../components/PageHero.astro';
-import Reveal from '../components/Reveal.astro';
-import Section from '../components/Section.astro';
-import Slider from '../components/Slider.astro';
-import BackgroundImage from '../components/BackgroundImage.astro';
-import heroImage from '../assets/images/home/hero.avif';
-import aboutImage from '../assets/images/home/about-1.avif';
-import aboutBackground from '../assets/images/home/about-2.avif';
-import howWeWork1 from '../assets/images/home/how-we-work-1.avif';
-import howWeWork2 from '../assets/images/home/how-we-work-2.avif';
-import howWeWork3 from '../assets/images/home/how-we-work-3.avif';
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import Slider from "@/components/interactive/Slider.astro";
+import Card from "@/components/item/Card.astro";
+import Button from "@/components/Button.astro";
+import HeroMain from "@/components/content/HeroMain.astro";
+import BannerPhoto from "@/components/content/BannerPhoto.astro";
+import LayoutLabeled from "@/components/content/LayoutLabeled.astro";
+import AboutIntro from "@/components/content/AboutIntro.astro";
+import CardGallery from "@/components/content/CardGallery.astro";
+import ListRow from "@/components/content/ListRow.astro";
+import heroImage from "@/assets/images/home/hero.avif";
+import aboutImage from "@/assets/images/home/about-1.avif";
+import aboutBackground from "@/assets/images/home/about-2.avif";
+import howWeWork1 from "@/assets/images/home/how-we-work-1.avif";
+import howWeWork2 from "@/assets/images/home/how-we-work-2.avif";
+import howWeWork3 from "@/assets/images/home/how-we-work-3.avif";
 
-const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
-const galleries = (await getCollection('gallery'))
-  .sort((a, b) => a.data.homeOrder - b.data.homeOrder)
-  .map((entry) => ({ ...entry.data, href: `/gallery/${entry.id}` }));
-const steps = (await getCollection('processSteps')).sort(byOrder).map((entry) => entry.data);
-const testimonials = (await getCollection('testimonials')).sort(byOrder).map((entry) => entry.data.quote);
+const byOrder = (
+  a: { data: { order: number } },
+  b: { data: { order: number } },
+) => a.data.order - b.data.order;
+const galleries = (await getCollection("gallery")).sort(
+  (a, b) => a.data.homeOrder - b.data.homeOrder,
+);
+const steps = (await getCollection("processSteps")).sort(byOrder);
+const testimonials = (await getCollection("testimonials")).sort(byOrder);
 
 const perks = [
-  { title: 'Accessible Pricing', note: 'No middleman markup.' },
-  { title: 'Limitless design options', note: 'No dream too big.' },
-  { title: 'Uncompromising quality', note: 'Built to last.' },
+  { title: "Accessible Pricing", note: "No middleman markup." },
+  { title: "Limitless design options", note: "No dream too big." },
+  { title: "Uncompromising quality", note: "Built to last." },
 ];
 
 const standards = [
   {
-    title: 'On call',
-    text: 'You’ll always reach someone who knows your project and is ready to help.',
+    title: "On call",
+    text: "You’ll always reach someone who knows your project and is ready to help.",
     image: howWeWork1,
   },
   {
-    title: 'On point',
-    text: 'Your vision matters. We make sure the final result reflects it exactly.',
+    title: "On point",
+    text: "Your vision matters. We make sure the final result reflects it exactly.",
     image: howWeWork2,
   },
   {
-    title: 'On record',
-    text: 'You can count on us for accessible pricing and transparent turnaround times.',
+    title: "On record",
+    text: "You can count on us for accessible pricing and transparent turnaround times.",
     image: howWeWork3,
   },
 ];
 ---
 
-<Layout>
-  <PageHero line1="the custom" line2="experience.">
-    At Woodream, custom goes beyond the outcome. It’s how we begin, build, and finish.
-  </PageHero>
+<BaseLayout title="Custom Millwork Made for You">
+  {/* Hero */}
+  <Section paddingTop="navoverlap" paddingBottom="none">
+    <HeroMain line1="the custom" line2="experience.">
+      At Woodream, custom goes beyond the outcome. It’s how we begin, build, and
+      finish.
+    </HeroMain>
+  </Section>
 
-  <ImageBanner image={heroImage}>Millwork <br />made for you.</ImageBanner>
+  <BannerPhoto variant="hero" image={heroImage}>
+    Millwork <br />
+    made for you.
+  </BannerPhoto>
 
-  <!-- About -->
-  <Section
-    tab="About us"
-    headingClass="max-w-[338px] max-md:max-w-none"
-  >
-    <Fragment slot="heading">Built by hand, backed by heart</Fragment>
-    <Fragment slot="intro">We deliver luxury and elevated design, with a personal touch that makes you feel at home.</Fragment>
-    <div class="flex w-full items-stretch justify-between gap-5 max-sm:flex-col">
-      <div class="flex w-2/5 flex-col gap-[50px] max-sm:w-full">
-        <div class="relative overflow-hidden pb-2.5">
-          <Image
-            src={aboutImage}
-            alt="Custom millwork detail"
-            widths={[240, 480, 800]}
-            sizes="(max-width: 479px) 100vw, 240px"
-            format="avif"
-            class="w-[240px] max-sm:w-full"
+  {/* About */}
+  <Section>
+    <LayoutLabeled label="About us" headingMaxWidth={14}>
+      <Fragment slot="heading">Built by hand, backed by heart</Fragment>
+      <Fragment slot="intro">
+        We deliver luxury and elevated design, with a personal touch that makes
+        you feel at home.
+      </Fragment>
+      <AboutIntro
+        photo={aboutImage}
+        photoAlt="Custom millwork detail"
+        image={aboutBackground}
+        imageAlt="Woodream custom interior"
+        perks={perks}
+      />
+    </LayoutLabeled>
+  </Section>
+
+  {/* Gallery */}
+  <Section theme="brand">
+    <LayoutLabeled label="Gallery" headingMaxWidth={16}>
+      <Fragment slot="heading">Woodream makes the dream work.</Fragment>
+      <Fragment slot="intro">
+        Take your vision further with custom millwork.
+      </Fragment>
+      <Slider
+        label="Gallery categories"
+        variant="crop-start"
+        small={2}
+        large={2.5}
+      >
+        {galleries.map((entry, i) => (
+          <CardGallery
+            name={entry.data.name}
+            href={`/gallery/${entry.id}`}
+            image={entry.data.cover}
+            delay={i * 0.1}
           />
-        </div>
-        <div class="relative flex flex-col gap-[30px] overflow-hidden pb-2.5">
-          {
-            perks.map((perk) => (
-              <div>
-                <div>{perk.title}</div>
-                <div class="text-[21px]">{perk.note}</div>
-              </div>
-            ))
-          }
-        </div>
-      </div>
-      <div class="relative w-3/5 max-sm:min-h-[300px] max-sm:w-full">
-        <BackgroundImage
-          src={aboutBackground}
-          alt="Woodream custom interior"
-          widths={[400, 800, 1200]}
-          sizes="(max-width: 479px) 100vw, 45vw"
-        />
-      </div>
-    </div>
+        ))}
+      </Slider>
+      <Button element="link" variant="link" href="/gallery">
+        View Gallery
+      </Button>
+    </LayoutLabeled>
   </Section>
 
-  <!-- Gallery -->
-  <Section
-    beige
-    tab="Gallery"
-    headingClass="max-w-[393px]"
-  >
-    <Fragment slot="heading">Woodream makes the dream work.</Fragment>
-    <Fragment slot="intro">Take your vision further with custom millwork.</Fragment>
-    <Slider count={galleries.length} label="Gallery categories" class="-mb-[50px] flex-col max-lg:mb-0">
-      {
-        galleries.map((item, i) => (
-          <div class="w-full shrink-0">
-            <div class="mr-5">
-              <Reveal dir="left" delay={i * 0.1} class="flex w-full flex-col items-end">
-                <p class="mb-2.5">{item.name}</p>
-                <a
-                  href={item.href}
-                  data-cursor-area
-                  aria-label={`Explore ${item.name}`}
-                  class="relative block h-[500px] w-full"
-                >
-                  <BackgroundImage
-                    src={item.cover}
-                    widths={[400, 800, 1200]}
-                    sizes="(max-width: 479px) 100vw, (max-width: 991px) 50vw, 360px"
-                  />
-                  <div class="fake-cursor size-[125px] min-h-[125px] min-w-[125px]" aria-hidden="true">
-                    <span class="fake-cursor-label">Explore more</span>
-                  </div>
-                </a>
-              </Reveal>
-            </div>
-          </div>
-        ))
-      }
-    </Slider>
-    <Button href="/gallery">View Gallery</Button>
+  {/* Process */}
+  <Section>
+    <LayoutLabeled label="Our Process">
+      <Fragment slot="heading">Built around you.</Fragment>
+      <Fragment slot="intro">
+        We’re in the business of making your dreams come true.
+      </Fragment>
+      <ol class="width-full">
+        {steps.map((step, i) => (
+          <ListRow
+            number={i + 1}
+            title={step.data.title}
+            text={step.data.text}
+          />
+        ))}
+      </ol>
+      <Button element="link" variant="link" href="/contact">
+        Get started
+      </Button>
+    </LayoutLabeled>
   </Section>
 
-  <!-- Process -->
-  <Section
-    tab="Our Process"
-  >
-    <Fragment slot="heading">Built around you.</Fragment>
-    <Fragment slot="intro">We’re in the business of making your dreams come true.</Fragment>
-    <ol class="w-full">
-      {
-        steps.map((step, i) => (
-          <ListRow as="li" variant="step">
-            <div class="flex w-[43%] items-center justify-start gap-40 xl:gap-[180px] max-lg:w-auto max-lg:gap-[100px] max-sm:gap-5">
-              <div class="min-w-[9%] max-sm:min-w-0">{String(i + 1).padStart(2, '0')}</div>
-              <div>{step.title}</div>
-            </div>
-            <div class="w-[45%] max-lg:w-full">{step.text}</div>
-          </ListRow>
-        ))
-      }
-    </ol>
-    <Button href="/contact">Get started</Button>
+  {/* Testimonials */}
+  <Section theme="brand" paddingBottom="large">
+    <LayoutLabeled label="What our clients say about us">
+      <Fragment slot="heading">
+        Nailed. <br />
+        Every time.
+      </Fragment>
+      <Fragment slot="intro">
+        Hear firsthand how precision, passion, and seamless service set Woodream
+        apart.
+      </Fragment>
+      <Slider
+        label="Client testimonials"
+        variant="crop-start"
+        small={2}
+        large={2.5}
+      >
+        {testimonials.map((entry) => (
+          <Card class="text-style-small" text={entry.data.quote} />
+        ))}
+      </Slider>
+    </LayoutLabeled>
   </Section>
 
-  <!-- Testimonials -->
-  <Section
-    beige
-    tab="What our clients say about us"
-    class="pb-[220px] max-lg:pb-[195px] max-md:pb-[150px]"
-  >
-    <Fragment slot="heading">Nailed. <br />Every time.</Fragment>
-    <Fragment slot="intro">Hear firsthand how precision, passion, and seamless service set Woodream apart.</Fragment>
-    <Slider count={testimonials.length} label="Client testimonials" floatingBar class="pb-10">
-      {
-        testimonials.map((quote) => (
-          <div class="w-full shrink-0">
-            <blockquote class="mr-5 h-full rounded-[20px] bg-bg p-10 text-[20px] leading-[1.3] max-md:p-[30px]">
-              {quote}
-            </blockquote>
-          </div>
-        ))
-      }
-    </Slider>
+  {/* How we work */}
+  <Section>
+    <LayoutLabeled label="How we work" headingMaxWidth={14}>
+      <Fragment slot="heading">
+        Craftsmanship <br />+ Care
+      </Fragment>
+      <Fragment slot="intro">The Woodream standard.</Fragment>
+      <ul class="width-full">
+        {standards.map((item) => (
+          <ListRow
+            variant="feature"
+            title={item.title}
+            text={item.text}
+            image={item.image}
+            buttonLabel="Learn more"
+            buttonHref="/contact"
+          />
+        ))}
+      </ul>
+    </LayoutLabeled>
   </Section>
-
-  <!-- How we work -->
-  <Section
-    tab="How we work"
-    headingClass="max-w-[338px] max-md:max-w-none"
-  >
-    <Fragment slot="heading">Craftsmanship <br />+ Care</Fragment>
-    <Fragment slot="intro">The Woodream standard.</Fragment>
-    <div class="w-full">
-      {
-        standards.map((item) => (
-          <ListRow variant="feature">
-            <div class="flex w-1/2 flex-col items-start justify-start gap-[30px] max-sm:w-full">
-              <div class="text-[30px]">{item.title}</div>
-              <div>{item.text}</div>
-              <Button href="/contact" class="pt-10">Learn more</Button>
-            </div>
-            <Image
-              src={item.image}
-              alt=""
-              widths={[362, 724]}
-              sizes="(max-width: 479px) 100vw, 362px"
-              format="avif"
-              class="w-1/2 max-w-[362px] max-sm:w-full"
-            />
-          </ListRow>
-        ))
-      }
-    </div>
-  </Section>
-</Layout>
+</BaseLayout>

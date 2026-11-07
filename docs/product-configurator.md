@@ -8,7 +8,7 @@ Products live at `/cabinets/<slug>`. Everything about them is data, so most chan
 | A product: its name, option set, own prices and differences | `src/content/products/<slug>.yaml` |
 | A product's images | `src/content/products/<slug>/` |
 | Logic (visibility, price, rules, checks) and tests | `src/lib/configurator.ts`, `configurator.test.ts` |
-| Page and wiring | `src/components/Configurator*.astro`, `src/scripts/configurator.ts` |
+| Page and wiring | `src/components/section/Configurator.astro` (layout, preview, steps and the Alpine wiring), `src/components/content/Configurator{Option,Review}.astro`, `src/components/content/WoodCompare.astro` |
 
 After a change, run `npm run build`. It stops with a list of problems if a setup has mistakes, such as a misspelled field or option name, a missing image, or rules that contradict each other.
 

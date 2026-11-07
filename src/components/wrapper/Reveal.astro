@@ -1,0 +1,160 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { slotContent } from "@/utils/slots.ts";
+
+type Base = HTMLAttributes<"div"> & {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** HTML element. */
+  tag?: "div" | "section" | "li" | "span";
+  /** Seconds to wait before animating. */
+  delay?: number;
+  /** Animate on page load instead of when scrolled into view. */
+  onLoad?: boolean;
+};
+
+type Props = Base &
+  (
+    | {
+        /** Reveal style. */
+        variant?: "wipe";
+        /** The way the wipe travels: `up` shows the bottom edge first. */
+        direction?: "up" | "down" | "left";
+      }
+    | { variant: "rise" | "fade"; direction?: never }
+  );
+
+type AllProps = Base & {
+  variant?: "wipe" | "rise" | "fade";
+  direction?: "up" | "down" | "left";
+};
+
+const {
+  render = true,
+  tag: Tag = "div",
+  delay,
+  onLoad = false,
+  variant = "wipe",
+  direction = "up",
+  class: className,
+  ...rest
+} = Astro.props as AllProps;
+
+const content = await slotContent(Astro.slots);
+---
+
+{render && content && (
+  <Tag
+    class:list={[
+      "reveal_wrap",
+      "margin-trim",
+      variant,
+      variant === "wipe" && direction,
+      className,
+    ]}
+    data-reveal={onLoad ? "load" : "scroll"}
+    style={delay ? `--_delay: ${delay}s` : undefined}
+    {...rest}
+  >
+    {variant === "rise" ? (
+      <span class="reveal_inner">
+        <Fragment set:html={content} />
+      </span>
+    ) : (
+      <Fragment set:html={content} />
+    )}
+  </Tag>
+)}
+
+<script>
+  const show = (element: Element) => element.classList.add("is-revealed");
+
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.reveal_wrap[data-reveal="load"]').forEach(show);
+  });
+
+  /* Compared by position rather than IntersectionObserver: a wipe starts fully
+     clipped, which the observer counts as never visible. Anything already
+     scrolled past is revealed too. */
+  const pending = new Set(
+    document.querySelectorAll('.reveal_wrap[data-reveal="scroll"]'),
+  );
+  let frame = 0;
+
+  const check = () => {
+    frame = 0;
+    const line = innerHeight * 0.9;
+    for (const element of pending) {
+      if (element.getBoundingClientRect().top < line) {
+        show(element);
+        pending.delete(element);
+      }
+    }
+    if (!pending.size) {
+      removeEventListener("scroll", schedule);
+      removeEventListener("resize", schedule);
+    }
+  };
+
+  const schedule = () => {
+    frame ||= requestAnimationFrame(check);
+  };
+
+  if (pending.size) {
+    addEventListener("scroll", schedule, { passive: true });
+    addEventListener("resize", schedule, { passive: true });
+    schedule();
+  }
+</script>
+
+<style is:global>
+  @layer components {
+    .reveal_wrap {
+      --_ease: cubic-bezier(0.65, 0, 0.35, 1);
+
+      &.rise {
+        display: block;
+        overflow: hidden;
+      }
+      & .reveal_inner {
+        display: block;
+      }
+
+      @media (scripting: enabled) {
+        &.wipe {
+          transition: clip-path 1.2s var(--_ease) var(--_delay, 0s);
+        }
+        &.wipe.up {
+          clip-path: inset(100% 0 0 0);
+        }
+        &.wipe.down {
+          clip-path: inset(0 0 100% 0);
+        }
+        &.wipe.left {
+          clip-path: inset(0 0 0 100%);
+        }
+        &.wipe.is-revealed {
+          clip-path: inset(-0.5em);
+        }
+
+        & .reveal_inner {
+          transform: translateY(105%);
+          transition: transform 1.2s var(--_ease) var(--_delay, 0s);
+        }
+        &.is-revealed .reveal_inner {
+          transform: none;
+        }
+
+        &.fade {
+          transition:
+            opacity 0.8s ease var(--_delay, 0s),
+            transform 0.8s ease var(--_delay, 0s);
+        }
+        &.fade:not(.is-revealed) {
+          opacity: 0;
+          transform: translateY(1.25rem);
+        }
+      }
+    }
+  }
+</style>

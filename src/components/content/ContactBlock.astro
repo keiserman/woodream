@@ -1,0 +1,129 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import BannerPhoto from "@/components/content/BannerPhoto.astro";
+import Form from "@/components/form/Form.astro";
+import Input from "@/components/form/Input.astro";
+import Textarea from "@/components/form/Textarea.astro";
+import Button from "@/components/Button.astro";
+import ButtonWrapper from "@/components/wrapper/ButtonWrapper.astro";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Photo beside the form. */
+  image: ImageMetadata;
+  /** Text on the photo. May contain `<br />`. */
+  text?: string;
+}
+
+const {
+  render = true,
+  image,
+  text = "ready <br />when you are.",
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{render && (
+  <div class:list={["contact-block_wrap", className]} {...rest}>
+    <div class="contact-block_photo">
+      <BannerPhoto variant="panel" image={image}>
+        <Fragment set:html={text} />
+      </BannerPhoto>
+    </div>
+    <div class="contact-block_form">
+      <Form name="contact">
+        <p class="text-style-small">Your information</p>
+        <div class="contact-block_names">
+          <Input
+            variant="first-name"
+            label="First name"
+            name="Name"
+            placeholder="First Name."
+            labelHidden
+            required
+          />
+          <Input
+            variant="last-name"
+            label="Last name"
+            name="Last-Name"
+            placeholder="Last Name."
+            labelHidden
+            required
+          />
+        </div>
+        <Input
+          variant="phone"
+          label="Phone"
+          name="Phone"
+          placeholder="Your Phone."
+          labelHidden
+          required
+        />
+        <Input
+          variant="email"
+          label="Email"
+          name="Email"
+          placeholder="Your Email."
+          labelHidden
+          required
+        />
+        <Textarea
+          label="Message"
+          name="Message"
+          placeholder="How can we help you?"
+          minLines={6}
+          labelHidden
+        />
+        <ButtonWrapper marginTop="0">
+          <Button type="submit">Submit</Button>
+        </ButtonWrapper>
+      </Form>
+    </div>
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .contact-block_wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--site-gutter);
+      @media (width >= 48rem) {
+        flex-direction: row;
+        align-items: stretch;
+      }
+    }
+
+    .contact-block_photo {
+      display: flex;
+      flex-direction: column;
+      & > * {
+        flex: 1;
+      }
+      @media (width >= 48rem) {
+        width: 43%;
+        flex: none;
+      }
+    }
+
+    .contact-block_form {
+      @media (width >= 48rem) {
+        width: 54%;
+      }
+      @media (width >= 64rem) {
+        width: 50%;
+      }
+    }
+
+    .contact-block_names {
+      display: grid;
+      gap: var(--space-2) var(--site-gutter);
+      @media (width >= 30rem) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  }
+</style>

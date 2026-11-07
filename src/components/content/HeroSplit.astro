@@ -1,0 +1,103 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import Img from "@/components/media/Img.astro";
+import Reveal from "@/components/wrapper/Reveal.astro";
+import { slotContent } from "@/utils/slots.ts";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Page title. */
+  heading: string;
+  /** Photo beside the text. */
+  image: ImageMetadata;
+  /** Photo alt text. */
+  imageAlt?: string;
+}
+
+const {
+  render = true,
+  heading,
+  image,
+  imageAlt,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const intro = await slotContent(Astro.slots);
+const action = await slotContent(Astro.slots, "action");
+---
+
+{render && heading && image && (
+  <div class:list={["hero-split_wrap", className]} {...rest}>
+    <div class="hero-split_text">
+      <div class="hero-split_intro">
+        <Reveal onLoad delay={0.2}>
+          <Heading tag="h1">{heading}</Heading>
+        </Reveal>
+        {intro && (
+          <Reveal onLoad delay={0.45}>
+            <Paragraph variant="small" maxWidth={64}>
+              <Fragment set:html={intro} />
+            </Paragraph>
+          </Reveal>
+        )}
+      </div>
+      <Fragment set:html={action} />
+    </div>
+    <div class="hero-split_media">
+      <Img
+        class="cover-absolute"
+        src={image}
+        alt={imageAlt}
+        loading="eager"
+        fetchPriority="high"
+      />
+    </div>
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .hero-split_wrap {
+      width: 100%;
+      display: grid;
+      gap: var(--space-8);
+      @media (width >= 64rem) {
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      }
+    }
+
+    .hero-split_text {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      justify-content: space-between;
+      gap: var(--space-8);
+      @media (width >= 64rem) {
+        padding-top: 5rem;
+      }
+    }
+
+    .hero-split_intro {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      & > * {
+        padding-bottom: 0.625rem;
+      }
+    }
+
+    .hero-split_media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      max-height: 80vh;
+      @media (width >= 64rem) {
+        aspect-ratio: 2 / 3;
+      }
+    }
+  }
+</style>

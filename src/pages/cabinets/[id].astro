@@ -1,20 +1,24 @@
 ---
-import type { GetStaticPaths } from 'astro';
-import Layout from '../../layouts/Layout.astro';
-import Configurator from '../../components/Configurator.astro';
-import { getProducts } from '../../lib/products';
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Configurator from "@/components/section/Configurator.astro";
+import { getProducts } from "@/lib/products.ts";
 
 export const getStaticPaths = (async () => {
   const products = await getProducts();
-  return products.map((product) => ({ params: { id: product.id }, props: { product } }));
+  return products.map((product) => ({
+    params: { id: product.id },
+    props: { product },
+  }));
 }) satisfies GetStaticPaths;
 
 const { product } = Astro.props;
 ---
 
-<Layout
-  title={`${product.name} | Woodream`}
+<BaseLayout
+  title={product.name}
   description={`Build your ${product.name.toLowerCase()}. Start customizing and watch it update live.`}
 >
+  {/* Configurator */}
   <Configurator product={product} />
-</Layout>
+</BaseLayout>

@@ -1,0 +1,253 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { getImage } from "astro:assets";
+import Img from "@/components/media/Img.astro";
+import Icon from "@/components/media/Icon.astro";
+import closeIcon from "@/assets/icons/close.svg";
+import arrowIcon from "@/assets/icons/arrow.svg";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Photos in the grid. */
+  photos: ImageMetadata[];
+  /** Used in each photo's alt text. */
+  name: string;
+}
+
+const { render = true, photos, name, class: className, ...rest } = Astro.props;
+
+const items = await Promise.all(
+  photos.map(async (src, i) => ({
+    src,
+    alt: `${name} by Woodream, photo ${i + 1}`,
+    large: (
+      await getImage({ src, format: "avif", width: Math.min(2000, src.width) })
+    ).src,
+  })),
+);
+---
+
+{render && items.length > 0 && (
+  <div class:list={["gallery-photos_wrap", className]} {...rest}>
+    <ul class="gallery-photos_grid">
+      {items.map((photo) => (
+        <li>
+          <a class="gallery-photos_link" href={photo.large} data-lightbox>
+            <Img class="cover-absolute" src={photo.src} alt={photo.alt} />
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <dialog class="gallery-photos_lightbox" aria-label="Photo viewer">
+      <div class="gallery-photos_stage">
+        <img class="gallery-photos_image" alt="" />
+        <button
+          type="button"
+          class="gallery-photos_control is-close"
+          aria-label="Close"
+        >
+          <Icon src={closeIcon} />
+        </button>
+        <button
+          type="button"
+          class="gallery-photos_control is-prev"
+          aria-label="Previous photo"
+        >
+          <Icon src={arrowIcon} />
+        </button>
+        <button
+          type="button"
+          class="gallery-photos_control is-next"
+          aria-label="Next photo"
+        >
+          <Icon src={arrowIcon} />
+        </button>
+        <p class="gallery-photos_counter" aria-live="polite" />
+      </div>
+    </dialog>
+  </div>
+)}
+
+<script>
+  /* Photo links open in the lightbox instead of navigating; without
+     JavaScript they open the large image directly. */
+  for (const wrap of document.querySelectorAll<HTMLElement>(
+    ".gallery-photos_wrap",
+  )) {
+    const dialog = wrap.querySelector<HTMLDialogElement>(
+      ".gallery-photos_lightbox",
+    );
+    const image = wrap.querySelector<HTMLImageElement>(".gallery-photos_image");
+    const counter = wrap.querySelector<HTMLElement>(".gallery-photos_counter");
+    const prev = wrap.querySelector<HTMLButtonElement>(".is-prev");
+    const next = wrap.querySelector<HTMLButtonElement>(".is-next");
+    const close = wrap.querySelector<HTMLButtonElement>(".is-close");
+    if (!dialog || !image || !counter || !prev || !next || !close) continue;
+
+    const links = [
+      ...wrap.querySelectorAll<HTMLAnchorElement>("a[data-lightbox]"),
+    ];
+    let index = 0;
+
+    const show = (i: number) => {
+      index = Math.max(0, Math.min(i, links.length - 1));
+      const link = links[index];
+      image.src = link.href;
+      image.alt = link.querySelector("img")?.alt ?? "";
+      counter.textContent = `${index + 1} / ${links.length}`;
+      prev.disabled = index === 0;
+      next.disabled = index === links.length - 1;
+      for (const n of [index - 1, index + 1]) {
+        if (links[n]) new Image().src = links[n].href;
+      }
+    };
+
+    links.forEach((link, i) =>
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        show(i);
+        dialog.showModal();
+        document.documentElement.style.overflow = "hidden";
+      }),
+    );
+
+    dialog.addEventListener("close", () => {
+      document.documentElement.style.overflow = "";
+      links[index]?.focus();
+    });
+    close.addEventListener("click", () => dialog.close());
+    prev.addEventListener("click", () => show(index - 1));
+    next.addEventListener("click", () => show(index + 1));
+
+    dialog.addEventListener("click", (event) => {
+      const target = event.target as HTMLElement;
+      if (target === dialog || target === dialog.firstElementChild) {
+        dialog.close();
+      }
+    });
+
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") show(index - 1);
+      if (event.key === "ArrowRight") show(index + 1);
+    });
+
+    let startX: number | null = null;
+    dialog.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "mouse") startX = event.clientX;
+    });
+    dialog.addEventListener("pointerup", (event) => {
+      if (startX == null) return;
+      const distance = event.clientX - startX;
+      startX = null;
+      if (Math.abs(distance) > 40) show(index + (distance < 0 ? 1 : -1));
+    });
+  }
+</script>
+
+<style is:global>
+  @layer components {
+    .gallery-photos_wrap {
+      width: 100%;
+    }
+
+    .gallery-photos_grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--site-gutter);
+      @media (width >= 48rem) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      @media (width >= 64rem) {
+        gap: 2.5rem;
+      }
+    }
+
+    .gallery-photos_link {
+      position: relative;
+      display: block;
+      height: 9.375rem;
+      overflow: hidden;
+      @media (width >= 30rem) {
+        height: 15.625rem;
+      }
+      @media (width >= 64rem) {
+        height: 18.75rem;
+      }
+    }
+
+    .gallery-photos_lightbox {
+      width: 100vw;
+      max-width: none;
+      height: 100dvh;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--light-100);
+      &::backdrop {
+        background-color: color-mix(in lab, var(--dark-900) 90%, transparent);
+      }
+    }
+
+    .gallery-photos_stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--site-margin);
+      @media (width >= 48rem) {
+        padding-inline: 6rem;
+      }
+    }
+
+    .gallery-photos_image {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      user-select: none;
+    }
+
+    .gallery-photos_control {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      color: inherit;
+      cursor: pointer;
+      &:disabled {
+        visibility: hidden;
+      }
+      &.is-close {
+        top: var(--site-margin);
+        right: var(--site-margin);
+      }
+      &.is-prev {
+        left: 0.5rem;
+        transform: scaleX(-1);
+        @media (width >= 48rem) {
+          left: 2rem;
+        }
+      }
+      &.is-next {
+        right: 0.5rem;
+        @media (width >= 48rem) {
+          right: 2rem;
+        }
+      }
+    }
+
+    .gallery-photos_counter {
+      position: absolute;
+      bottom: var(--site-margin);
+      font-size: var(--text-label);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+</style>

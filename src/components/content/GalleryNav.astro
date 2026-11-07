@@ -1,0 +1,90 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"nav"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Category links. */
+  links: { href: string; label: string }[];
+  /** Link of the page being shown. */
+  current?: string;
+}
+
+const {
+  render = true,
+  links,
+  current,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{render && links.length > 0 && (
+  <nav
+    class:list={["gallery-nav_wrap", className]}
+    aria-label="Gallery categories"
+    {...rest}
+  >
+    <ul class="gallery-nav_list">
+      {links.map((link) => (
+        <li>
+          <a
+            class="gallery-nav_link"
+            href={link.href}
+            aria-current={link.href === current ? "page" : undefined}
+          >
+            {link.label}
+            <span class="gallery-nav_slash" aria-hidden="true" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style is:global>
+  @layer components {
+    .gallery-nav_wrap {
+      width: 100%;
+      padding-top: var(--site-gutter);
+      padding-bottom: 3.75rem;
+      border-top: var(--border-width) solid var(--border);
+    }
+
+    .gallery-nav_list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.625rem;
+    }
+
+    .gallery-nav_link {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      color: color-mix(in lab, var(--text-1) 40%, transparent);
+      font-size: var(--text-label);
+      text-transform: uppercase;
+      text-decoration-line: none;
+      text-underline-offset: 0.25em;
+      transition: color var(--hover-duration) var(--hover-ease);
+      &:hover,
+      &[aria-current="page"] {
+        color: var(--text-1);
+      }
+      &[aria-current="page"] {
+        text-decoration-line: underline;
+      }
+    }
+
+    .gallery-nav_slash {
+      width: 0.4375rem;
+      height: 1rem;
+      background: linear-gradient(
+        to top right,
+        transparent calc(50% - 0.5px),
+        color-mix(in lab, var(--text-1) 40%, transparent) 50%,
+        transparent calc(50% + 0.5px)
+      );
+    }
+  }
+</style>

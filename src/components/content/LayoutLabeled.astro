@@ -1,0 +1,164 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import Reveal from "@/components/wrapper/Reveal.astro";
+import { slotContent } from "@/utils/slots.ts";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Short label beside the heading. */
+  label: string;
+  /**
+   * Maximum heading line length in characters.
+   *
+   * @min 1
+   * @int
+   */
+  headingMaxWidth?: number;
+  /** Space between the heading row and the content below it. */
+  gap?: "default" | "medium" | "tight";
+  /** Keep the columns at 25% and 75% on tablets too, with no space between. */
+  flush?: boolean;
+}
+
+const {
+  render = true,
+  label,
+  headingMaxWidth,
+  gap = "default",
+  flush = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const heading = await slotContent(Astro.slots, "heading");
+const intro = await slotContent(Astro.slots, "intro");
+const content = await slotContent(Astro.slots);
+---
+
+{render && label && heading && (
+  <div
+    class:list={[
+      "layout-labeled_wrap",
+      gap !== "default" && `gap-${gap}`,
+      flush && "flush",
+      className,
+    ]}
+    {...rest}
+  >
+    <div class="layout-labeled_label">
+      <span class="layout-labeled_dot" aria-hidden="true" />
+      <p class="text-style-small">{label}</p>
+    </div>
+    <div class="layout-labeled_body">
+      <div class="layout-labeled_header">
+        <div>
+          <Reveal>
+            <Heading maxWidth={headingMaxWidth}>
+              <Fragment set:html={heading} />
+            </Heading>
+          </Reveal>
+        </div>
+        {intro && (
+          <div class="layout-labeled_intro">
+            <Reveal delay={0.15}>
+              <Paragraph maxWidth={48}>
+                <Fragment set:html={intro} />
+              </Paragraph>
+            </Reveal>
+          </div>
+        )}
+      </div>
+      <Fragment set:html={content} />
+    </div>
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .layout-labeled_wrap {
+      --_gap: calc(var(--section-space-medium) * 1.25);
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--site-gutter);
+
+      &.gap-medium {
+        --_gap: var(--space-8);
+      }
+      &.gap-tight {
+        --_gap: var(--space-5);
+      }
+
+      @media (width >= 48rem) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
+        &.flush {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+          column-gap: 0;
+        }
+      }
+      @media (width >= 64rem) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+      }
+    }
+
+    .layout-labeled_label,
+    .layout-labeled_body {
+      padding-top: var(--site-gutter);
+      border-top: var(--border-width) solid var(--border);
+    }
+
+    .layout-labeled_label {
+      display: flex;
+      align-items: start;
+      gap: 0.625rem;
+      max-width: 100%;
+      @media (width >= 48rem) {
+        & > p {
+          max-width: 8.5rem;
+        }
+      }
+    }
+
+    .layout-labeled_dot {
+      flex: none;
+      width: 0.625rem;
+      height: 0.625rem;
+      margin-top: 0.05em;
+      border-radius: var(--radius-round);
+      background-color: currentcolor;
+    }
+
+    .layout-labeled_body {
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      gap: var(--_gap);
+    }
+
+    .layout-labeled_header {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--site-gutter);
+      & > * {
+        padding-bottom: 0.625rem;
+      }
+      @media (width >= 48rem) {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .layout-labeled_intro {
+      display: flex;
+      @media (width >= 48rem) {
+        width: 50%;
+        flex: none;
+        justify-content: end;
+      }
+    }
+  }
+</style>

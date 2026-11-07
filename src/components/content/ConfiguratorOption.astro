@@ -1,0 +1,328 @@
+---
+import Img from "@/components/media/Img.astro";
+import { slug } from "@/utils/slug.ts";
+import type { Option } from "@/lib/configurator.ts";
+
+interface Props {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** The option and its choices. */
+  option: Option;
+  /** Shown when the page first loads. */
+  visible: boolean;
+  /** The product's pictures, for swatches and cropped previews. */
+  images: {
+    base?: ImageMetadata;
+    layers: Record<string, ImageMetadata>;
+    swatches: Record<string, ImageMetadata>;
+  };
+}
+
+const { render = true, option, visible, images } = Astro.props;
+
+const labelId = `${slug(option.name)}-label`;
+const { thumbnail, number } = option;
+const { base } = images;
+const hasPictures =
+  Boolean(thumbnail) || option.choices.some((choice) => choice.swatch);
+/* Rows of three, or four at a time when that leaves no card on its own. */
+const columns = option.choices.length % 3 === 0 ? "thirds" : "quarters";
+
+const cropStyle = thumbnail
+  ? `width: ${thumbnail.zoom * 100}%; transform: translate(${-thumbnail.x}%, ${-thumbnail.y}%)`
+  : undefined;
+---
+
+{render && (
+  <fieldset
+    class="configurator-option_wrap"
+    aria-labelledby={labelId}
+    data-option={option.name}
+    hidden={!visible}
+    disabled={!visible}
+    :hidden="!isVisible($el.dataset.option)"
+    :disabled="!isVisible($el.dataset.option)"
+  >
+    <div class="configurator-option_head">
+      <span class="configurator-option_label" id={labelId}>
+        {option.label}
+      </span>
+      {option.badge && (
+        <span class="configurator-option_badge">{option.badge}</span>
+      )}
+    </div>
+
+    {number && (
+      <div class="configurator-option_number">
+        {number.times && (
+          <Fragment>
+            <span class="configurator-option_times">{number.times}</span>
+            <span aria-label="by">×</span>
+          </Fragment>
+        )}
+        <input
+          class="configurator-option_input"
+          type="number"
+          id={slug(option.name)}
+          name={option.name}
+          aria-labelledby={labelId}
+          min={number.min}
+          max={number.max}
+          step="1"
+          required
+          value={number.value}
+          :value="picks[$el.name]"
+          @input="choose($el)"
+        />
+        <span class="configurator-option_unit">{number.unit}</span>
+      </div>
+    )}
+
+    <div
+      class:list={[
+        "configurator-option_choices",
+        hasPictures && ["has-pictures", columns],
+      ]}
+      hidden={Boolean(number)}
+    >
+      {option.choices.map((choice) => {
+        const id = slug(`${option.name}-${choice.label}`);
+        const swatch = choice.swatch && images.swatches[choice.swatch];
+        const layer = choice.layer && images.layers[choice.layer];
+        return (
+          <div class="configurator-option_choice">
+            <input
+              class="configurator-option_radio"
+              type="radio"
+              id={id}
+              name={option.name}
+              value={choice.label}
+              checked={choice.selected}
+              :checked="isChecked($el)"
+              :disabled="isLocked($el)"
+              @change="choose($el)"
+            />
+            <label class="configurator-option_card" for={id}>
+              {swatch && (
+                <span class="configurator-option_picture">
+                  <Img
+                    class="cover-absolute"
+                    src={swatch}
+                    variant="constrained"
+                    width={400}
+                  />
+                </span>
+              )}
+              {thumbnail && (
+                <span class="configurator-option_picture">
+                  <span class="configurator-option_crop" style={cropStyle}>
+                    {base && (
+                      <Img class="cover-absolute" src={base} transparent />
+                    )}
+                    {layer && (
+                      <Img class="cover-absolute" src={layer} transparent />
+                    )}
+                  </span>
+                </span>
+              )}
+              <span class="configurator-option_name">{choice.label}</span>
+            </label>
+          </div>
+        );
+      })}
+    </div>
+
+    <p
+      class="configurator-option_message"
+      role="status"
+      hidden
+      :hidden="!messageFor($el.parentElement.dataset.option)"
+      x-text="messageFor($el.parentElement.dataset.option)"
+    />
+
+    {option.woodDetails && (
+      <button
+        class="configurator-option_more"
+        type="button"
+        data-modal-open="compare-wood"
+      >
+        What’s the difference?
+      </button>
+    )}
+  </fieldset>
+)}
+
+<style is:global>
+  @layer components {
+    .configurator-option_wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+      padding: 1rem;
+      border: 0;
+      background-color: color-mix(in lab, var(--brand-500) 10%, transparent);
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    .configurator-option_head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .configurator-option_label {
+      font-family: var(--tertiary-family);
+      font-size: 0.75rem;
+      font-weight: var(--tertiary-semibold);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .configurator-option_badge {
+      padding: 0.0625rem 0.5rem;
+      background-color: var(--light-100);
+      font-size: 0.625rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .configurator-option_number {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-top: 0.25rem;
+      font-size: var(--text-small);
+    }
+
+    .configurator-option_times {
+      padding: 0.5rem 0.75rem;
+      border: var(--border-width) solid var(--border);
+      color: var(--text-2);
+    }
+
+    .configurator-option_input {
+      width: 6rem;
+      padding: 0.5rem 0.75rem;
+      border: var(--border-width) solid var(--border);
+      border-radius: var(--radius-small);
+      background-color: transparent;
+      color: inherit;
+      &:focus-visible {
+        border-color: var(--brand-500);
+        outline-offset: var(--focus-offset-inner);
+      }
+    }
+
+    .configurator-option_unit {
+      font-size: var(--text-label);
+    }
+
+    .configurator-option_choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      &.has-pictures {
+        display: grid;
+        padding-top: 0.25rem;
+        grid-template-columns: repeat(var(--_cols, 3), minmax(0, 1fr));
+      }
+      &.quarters {
+        --_cols: 2;
+        @media (width >= 30rem) {
+          --_cols: 4;
+        }
+      }
+      &[hidden] {
+        display: none;
+      }
+    }
+
+    .configurator-option_choice {
+      position: relative;
+    }
+
+    .configurator-option_radio {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .configurator-option_card {
+      display: block;
+      height: 100%;
+      border: var(--border-width) solid var(--border);
+      font-size: var(--text-small);
+      cursor: pointer;
+      transition:
+        background-color var(--hover-duration) var(--hover-ease),
+        border-color var(--hover-duration) var(--hover-ease),
+        color var(--hover-duration) var(--hover-ease);
+      .configurator-option_choices:not(.has-pictures) & {
+        padding: 0.5rem 0.75rem;
+      }
+      @media (hover: hover) {
+        &:hover {
+          border-color: var(--brand-500);
+        }
+      }
+      .configurator-option_radio:checked + & {
+        border-color: var(--brand-500);
+        background-color: var(--brand-500);
+        color: var(--brand-text);
+      }
+      .configurator-option_radio:focus-visible + & {
+        outline: var(--focus-width) solid var(--brand-500);
+        outline-offset: var(--focus-offset);
+      }
+      .configurator-option_radio:disabled + & {
+        cursor: not-allowed;
+        opacity: 0.4;
+      }
+    }
+
+    .configurator-option_picture {
+      position: relative;
+      display: block;
+      aspect-ratio: 3 / 2;
+      overflow: hidden;
+      background-color: var(--light-200);
+    }
+
+    .configurator-option_crop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      aspect-ratio: 1;
+      max-width: none;
+    }
+
+    .configurator-option_name {
+      .has-pictures & {
+        display: block;
+        padding: 0.5rem;
+        font-size: 0.8125rem;
+        @media (width >= 30rem) {
+          font-size: var(--text-label);
+        }
+      }
+    }
+
+    .configurator-option_message {
+      padding-top: 0.25rem;
+      color: var(--brand-500);
+      font-size: 0.875rem;
+      line-height: var(--line-height-large);
+    }
+
+    .configurator-option_more {
+      align-self: start;
+      font-size: 0.875rem;
+      font-style: italic;
+      text-decoration: underline;
+    }
+  }
+</style>

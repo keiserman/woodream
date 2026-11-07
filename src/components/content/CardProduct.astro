@@ -1,0 +1,95 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Img from "@/components/media/Img.astro";
+import Button from "@/components/Button.astro";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Product name. */
+  name: string;
+  /** Configurator page. */
+  href: string;
+  /** Product cutout. */
+  image: ImageMetadata;
+  /** Button text. */
+  buttonLabel?: string;
+}
+
+const {
+  render = true,
+  name,
+  href,
+  image,
+  buttonLabel = "Customize now",
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{render && name && href && (
+  <div class:list={["card-product_wrap", className]} {...rest}>
+    <div class="card-product_visual">
+      <span class="card-product_frame">
+        <Img
+          class="cover-absolute object-fit-contain"
+          src={image}
+          transparent
+          draggable="false"
+        />
+      </span>
+    </div>
+    <p class="card-product_name">{name}</p>
+    <Button element="link" variant="link" href={href}>
+      {buttonLabel}
+    </Button>
+    <a class="card-product_link" href={href} aria-hidden="true" tabindex="-1" />
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .card-product_wrap {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--site-gutter);
+      padding-top: 0.25rem;
+      text-align: center;
+    }
+
+    .card-product_visual {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: var(--site-gutter);
+      border-right: var(--border-width) solid var(--border);
+      transition: background-color var(--hover-duration) var(--hover-ease);
+      .card-product_wrap:hover & {
+        background-color: var(--background-2);
+      }
+      @media (width < 30rem) {
+        border-left: var(--border-width) solid var(--border);
+      }
+    }
+
+    .card-product_frame {
+      position: relative;
+      width: 100%;
+      height: 12rem;
+    }
+
+    .card-product_name {
+      color: var(--brand-500);
+      opacity: 0.55;
+    }
+
+    .card-product_link {
+      position: absolute;
+      inset: 0;
+    }
+  }
+</style>

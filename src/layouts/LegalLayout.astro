@@ -1,19 +1,22 @@
 ---
-import Layout from './Layout.astro';
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import HeroMain from "@/components/content/HeroMain.astro";
+import RichText from "@/components/typography/RichText.astro";
 
-/** The legal pages, written in Markdown at src/pages/legal/. */
+/** Layout for the Markdown pages in `src/pages/legal/`. */
 interface Props {
-  frontmatter: { title: string };
+  frontmatter: { title: string; description?: string };
 }
 
-const { title } = Astro.props.frontmatter;
+const { title, description } = Astro.props.frontmatter;
 ---
 
-<Layout title={`${title} | Woodream`}>
-  <section class="relative flex justify-center px-site pt-[250px] pb-20 max-lg:pt-[200px] max-md:pt-[150px] max-md:pb-[50px]">
-    <div class="flex w-full max-w-(--container-site) flex-col items-start gap-5">
-      <h1 class="text-[80px] max-md:text-[60px] max-sm:text-[40px]">{title}</h1>
-      <div class="rich-text"><slot /></div>
-    </div>
-  </section>
-</Layout>
+<BaseLayout title={title} description={description}>
+  <Section paddingTop="navoverlap" gap="5">
+    <HeroMain line1={title} size="compact" />
+    <RichText maxWidth={72}>
+      <slot />
+    </RichText>
+  </Section>
+</BaseLayout>

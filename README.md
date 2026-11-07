@@ -1,43 +1,45 @@
-# Astro Starter Kit: Minimal
+<p align="center">
+  <img src=".github/assets/banner.png" alt="Lumos For Astro" width="720">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/create-lumos"><img alt="npm version" src="https://img.shields.io/npm/v/create-lumos?labelColor=1E1E1E&color=C6FB50"></a>
+  <a href="LICENSE"><img alt="license" src="https://img.shields.io/npm/l/create-lumos?labelColor=1E1E1E&color=C6FB50"></a>
+  <a href="https://github.com/lumosframework/lumos-for-astro/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/lumosframework/lumos-for-astro/actions/workflows/ci.yml/badge.svg"></a>
+</p>
+
+A component and styling framework for building Astro sites, designed around
+efficiency, scalability and accessibility.
+
+Documentation lives at **[lumosframework.com](https://lumosframework.com)**.
+
+## Getting started
 
 ```sh
-npm create astro@latest -- --template minimal
+npm create lumos@latest my-site
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+That scaffolds a new site from this repository and installs its dependencies
+with whichever package manager you ran it with. Then:
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+cd my-site
+npm run dev
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+| Script            | What it does                      |
+| ----------------- | --------------------------------- |
+| `npm run dev`     | Starts the dev server             |
+| `npm run build`   | Builds the site to `dist/`        |
+| `npm run preview` | Serves the built site             |
+| `npm run check`   | Type-checks every `.astro` file   |
+| `npm run format`  | Formats the project with Prettier |
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Documentation
 
-Any static assets, like images, can be placed in the `public/` directory.
+Component reference, styling guides and examples are at
+[lumosframework.com](https://lumosframework.com).
 
-## 🧞 Commands
+## License
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+[MIT](LICENSE)

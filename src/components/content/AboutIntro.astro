@@ -1,0 +1,107 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Img from "@/components/media/Img.astro";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Small photo above the perks. */
+  photo: ImageMetadata;
+  /** Alt text for the small photo. */
+  photoAlt?: string;
+  /** Large photo beside the perks. */
+  image: ImageMetadata;
+  /** Alt text for the large photo. */
+  imageAlt?: string;
+  /** Short selling points, each a title and a note. */
+  perks: { title: string; note: string }[];
+}
+
+const {
+  render = true,
+  photo,
+  photoAlt,
+  image,
+  imageAlt,
+  perks,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{render && image && (
+  <div class:list={["about-intro_wrap", className]} {...rest}>
+    <div class="about-intro_side">
+      <div class="about-intro_photo">
+        <Img
+          src={photo}
+          alt={photoAlt}
+          variant="constrained"
+          width={240}
+          sizes="(max-width: 479px) 100vw, 240px"
+        />
+      </div>
+      <ul class="about-intro_perks">
+        {perks.map((perk) => (
+          <li>
+            <p>{perk.title}</p>
+            <p class="text-style-small">{perk.note}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="about-intro_visual">
+      <Img class="cover-absolute" src={image} alt={imageAlt} />
+    </div>
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .about-intro_wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--site-gutter);
+      @media (width >= 30rem) {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .about-intro_side {
+      display: flex;
+      flex-direction: column;
+      gap: 3.125rem;
+      @media (width >= 30rem) {
+        width: 40%;
+        flex: none;
+      }
+    }
+
+    .about-intro_photo {
+      @media (width >= 30rem) {
+        max-width: 15rem;
+      }
+    }
+
+    .about-intro_perks {
+      display: flex;
+      flex-direction: column;
+      gap: 1.875rem;
+      & > li {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+      }
+    }
+
+    .about-intro_visual {
+      position: relative;
+      min-height: 18.75rem;
+      @media (width >= 30rem) {
+        flex: 1;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,375 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Img from "@/components/media/Img.astro";
+import Icon from "@/components/media/Icon.astro";
+import Button from "@/components/Button.astro";
+import arrowDiagonal from "@/assets/icons/arrow-diagonal.svg";
+
+type Base = HTMLAttributes<"li"> & {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Row title. */
+  title: string;
+  /** Row text. */
+  text: string;
+};
+
+type Props = Base &
+  (
+    | {
+        /** Row layout. */
+        variant?: "step";
+        /** Step number, shown before the title. */
+        number: number;
+        image?: never;
+        hoverImage?: never;
+        note?: never;
+        buttonLabel?: never;
+        buttonHref?: never;
+      }
+    | {
+        variant: "feature";
+        number?: never;
+        /** Picture beside the text. */
+        image: ImageMetadata;
+        hoverImage?: never;
+        note?: never;
+        /** Button text. */
+        buttonLabel?: string;
+        /** Button destination. */
+        buttonHref?: string;
+      }
+    | {
+        variant: "wood";
+        number?: never;
+        /** Wood sample beside the text. */
+        image: ImageMetadata;
+        /** Photo shown in place of the sample on hover. */
+        hoverImage?: ImageMetadata;
+        /** Underlined line under the text. */
+        note?: string;
+        buttonLabel?: never;
+        buttonHref?: never;
+      }
+    | {
+        /** The text stays hidden until the row is hovered or focused. */
+        variant: "approach";
+        number?: never;
+        image?: never;
+        hoverImage?: never;
+        note?: never;
+        buttonLabel?: never;
+        buttonHref?: never;
+      }
+  );
+
+type AllProps = Base & {
+  variant?: "step" | "feature" | "wood" | "approach";
+  number?: number;
+  image?: ImageMetadata;
+  hoverImage?: ImageMetadata;
+  note?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+};
+
+const {
+  render = true,
+  title,
+  text,
+  variant = "step",
+  number,
+  image,
+  hoverImage,
+  note,
+  buttonLabel,
+  buttonHref,
+  class: className,
+  ...rest
+} = Astro.props as AllProps;
+---
+
+{render && title && (
+  <li
+    class:list={["list-row_wrap", variant, className]}
+    tabindex={variant === "approach" ? 0 : undefined}
+    {...rest}
+  >
+    {variant === "step" && (
+      <Fragment>
+        <div class="list-row_lead">
+          <span class="list-row_number">{String(number).padStart(2, "0")}</span>
+          <span>{title}</span>
+        </div>
+        <p class="list-row_text">{text}</p>
+      </Fragment>
+    )}
+    {variant === "feature" && (
+      <Fragment>
+        <div class="list-row_lead">
+          <h3 class="list-row_title text-style-large">{title}</h3>
+          <p>{text}</p>
+          {buttonLabel && buttonHref && (
+            <Button
+              class="margin-top-4"
+              element="link"
+              variant="link"
+              href={buttonHref}
+            >
+              {buttonLabel}
+            </Button>
+          )}
+        </div>
+        {image && (
+          <div class="list-row_media">
+            <Img
+              src={image}
+              variant="constrained"
+              width={362}
+              sizes="(max-width: 479px) 100vw, 362px"
+            />
+          </div>
+        )}
+      </Fragment>
+    )}
+    {variant === "wood" && (
+      <Fragment>
+        <div class="list-row_lead">
+          <h3 class="list-row_title text-style-large">{title}</h3>
+          <p>{text}</p>
+          {note && <p class="list-row_note">{note}</p>}
+        </div>
+        {image && (
+          <div class="list-row_swap">
+            {hoverImage && <Img class="cover-absolute" src={hoverImage} />}
+            <span class="list-row_sample">
+              <Img class="cover-absolute" src={image} alt={`${title} sample`} />
+            </span>
+          </div>
+        )}
+      </Fragment>
+    )}
+    {variant === "approach" && (
+      <Fragment>
+        <div>
+          <p>{title}</p>
+          <div class="list-row_reveal">
+            <div class="list-row_hidden">
+              <p class="text-style-small">{text}</p>
+            </div>
+          </div>
+        </div>
+        <span class="list-row_arrow">
+          <Icon src={arrowDiagonal} />
+        </span>
+      </Fragment>
+    )}
+  </li>
+)}
+
+<script>
+  const rows = document.querySelectorAll(".list-row_wrap");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("is-revealed");
+        observer.unobserve(entry.target);
+      }
+    },
+    { rootMargin: "100000px 0px -10% 0px" },
+  );
+  rows.forEach((row) => observer.observe(row));
+</script>
+
+<style is:global>
+  @layer components {
+    .list-row_wrap {
+      --_ease: 500ms ease-out;
+      display: flex;
+      justify-content: space-between;
+      gap: var(--site-gutter);
+      padding: 2.5rem var(--site-gutter);
+      border-top: var(--border-width) solid var(--border);
+      outline: none;
+      transition:
+        opacity 0.8s ease,
+        transform 0.8s ease,
+        background-color 0.75s;
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: var(--background-2);
+        }
+      }
+      &:focus-visible {
+        background-color: var(--background-2);
+      }
+      @media (scripting: enabled) {
+        &:not(.is-revealed) {
+          opacity: 0;
+          transform: translateY(1.25rem);
+        }
+      }
+      @media (width >= 30rem) {
+        padding-inline: 1.875rem;
+      }
+      @media (width >= 48rem) {
+        padding-inline: 2.5rem;
+      }
+
+      &.step {
+        flex-direction: column;
+        align-items: start;
+        gap: 2.8125rem;
+        @media (width >= 64rem) {
+          flex-direction: row;
+          align-items: center;
+          gap: var(--site-gutter);
+        }
+      }
+
+      &.feature,
+      &.wood {
+        flex-direction: column;
+        align-items: start;
+        @media (width >= 30rem) {
+          flex-direction: row;
+          align-items: center;
+          gap: 2.8125rem;
+        }
+        @media (width >= 64rem) {
+          gap: var(--site-gutter);
+        }
+      }
+      &.wood {
+        @media (width >= 30rem) {
+          align-items: stretch;
+        }
+      }
+
+      &.approach {
+        align-items: start;
+        gap: var(--site-gutter);
+        padding: 1.75rem 0.9375rem;
+        @media (width >= 30rem) {
+          gap: 3.125rem;
+          padding-left: 1.875rem;
+        }
+        @media (width >= 64rem) {
+          gap: 6.25rem;
+        }
+      }
+    }
+
+    .list-row_lead {
+      display: flex;
+      .step > & {
+        align-items: center;
+        gap: var(--site-gutter);
+        @media (width >= 30rem) {
+          gap: 6.25rem;
+        }
+        @media (width >= 64rem) {
+          width: 43%;
+          flex: none;
+          gap: 10rem;
+        }
+        @media (width >= 80rem) {
+          gap: 11.25rem;
+        }
+      }
+      .feature > & {
+        flex-direction: column;
+        align-items: start;
+        gap: var(--space-5);
+        @media (width >= 30rem) {
+          width: 50%;
+        }
+      }
+      .wood > & {
+        flex-direction: column;
+        align-items: start;
+        gap: 1.875rem;
+        @media (width >= 30rem) {
+          width: 60%;
+        }
+      }
+    }
+
+    .list-row_number {
+      @media (width >= 30rem) {
+        min-width: 9%;
+      }
+    }
+
+    .list-row_text {
+      @media (width >= 64rem) {
+        width: 45%;
+      }
+    }
+
+    .list-row_title {
+      font-weight: inherit;
+    }
+
+    .list-row_media {
+      width: 100%;
+      @media (width >= 30rem) {
+        width: 50%;
+        max-width: 22.625rem;
+      }
+    }
+
+    .list-row_note {
+      text-decoration: underline;
+    }
+
+    /* Wood sample that fades to a room photo on hover. */
+    .list-row_swap {
+      position: relative;
+      width: 100%;
+      min-height: 15rem;
+      @media (width >= 30rem) {
+        width: 40%;
+        flex: none;
+      }
+    }
+
+    .list-row_sample {
+      position: absolute;
+      inset: 0;
+      transition: opacity var(--_ease);
+      .list-row_wrap:hover & {
+        opacity: 0;
+      }
+    }
+
+    /* Approach rows: the text opens on hover or keyboard focus. */
+    .list-row_reveal {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows var(--_ease);
+      .list-row_wrap:is(:hover, :focus-within) & {
+        grid-template-rows: 1fr;
+      }
+    }
+
+    .list-row_hidden {
+      min-height: 0;
+      overflow: hidden;
+      & > p {
+        padding-top: 1.875rem;
+      }
+    }
+
+    .list-row_arrow {
+      flex: none;
+      display: flex;
+      transition: transform var(--_ease);
+      .list-row_wrap:is(:hover, :focus-within) & {
+        transform: rotate(90deg);
+      }
+    }
+  }
+</style>

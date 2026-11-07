@@ -1,0 +1,73 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /**
+   * Step number, shown above the card.
+   *
+   * @min 1
+   * @int
+   */
+  number: number;
+  /** Step title. */
+  title: string;
+  /** Step text. */
+  text: string;
+}
+
+const {
+  render = true,
+  number,
+  title,
+  text,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{render && title && (
+  <div class:list={["card-step_wrap", className]} {...rest}>
+    <p class="card-step_number text-style-h4">
+      {String(number).padStart(2, "0")}
+    </p>
+    <div class="card-step_box">
+      <h3 class="text-style-h4">{title}</h3>
+      <p>{text}</p>
+    </div>
+  </div>
+)}
+
+<style is:global>
+  @layer components {
+    .card-step_wrap {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .card-step_number {
+      font-family: var(--primary-family);
+    }
+
+    .card-step_box {
+      flex: 1;
+      min-height: 20rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--site-gutter);
+      border-right: var(--border-width) solid var(--border);
+      transition: background-color var(--hover-duration) var(--hover-ease);
+      & h3 {
+        font-family: var(--primary-family);
+      }
+      &:hover {
+        background-color: var(--background-2);
+      }
+    }
+  }
+</style>
