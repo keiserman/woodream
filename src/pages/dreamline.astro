@@ -93,7 +93,12 @@ const steps = [
         Choose your materials, style, and finishes with live pricing as you
         build. Submit your design and we’ll make it a reality.
       </Fragment>
-      <Slider label="Products to customize" variant="contained" large={3}>
+      <Slider
+        label="Products to customize"
+        variant="contained"
+        autoplay={3}
+        large={3}
+      >
         {products.map((product) => (
           <CardProduct
             name={product.name}
@@ -116,6 +121,7 @@ const steps = [
       <Slider
         label="What makes Dreamline different"
         variant="contained"
+        autoplay={3}
         large={2}
       >
         {steps.map((step, i) => (

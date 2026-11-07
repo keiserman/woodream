@@ -120,7 +120,10 @@ anything an upgrade should preserve or reconsider. New files are listed under
   a full-width segmented progress bar filled up to the current slide (1.5rem
   hit area, 0.25rem bar), and the steps are `Prev` / `Next` link buttons
   aligned right under it. Scrolling, dragging and keyboard behavior are
-  unchanged.
+  unchanged. Added an `autoplay` prop (seconds per slide, off by default;
+  Dreamline uses 3): starts once half in view, pauses on hover, stops at the
+  last slide and for good on any drag, scroll, tap, key or focus. Skipped
+  with reduced motion.
 - `src/components/form/Form.astro` — field gap reduced to `--space-2`; every
   form on this site is compact.
 - `src/components/form/Textarea.astro` — `labelHidden` prop added, matching

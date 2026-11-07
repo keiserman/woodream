@@ -30,6 +30,10 @@ type Props = HTMLAttributes<"div"> & {
    * @min 1
    * @max 12 */
   large?: number;
+  /** Seconds between slides when autoplaying. Omit to turn autoplay off.
+   *
+   * @min 1 */
+  autoplay?: number;
 };
 
 const {
@@ -40,6 +44,7 @@ const {
   small,
   medium,
   large,
+  autoplay,
   class: className,
   ...rest
 } = Astro.props;
@@ -76,6 +81,7 @@ const slides = await slotContent(Astro.slots);
   <div
     class:list={["slider_wrap", variant !== "bleed" && variant, className]}
     style={visible}
+    data-autoplay={autoplay && autoplay > 0 ? autoplay : undefined}
     {...rest}
   >
     <div class="slider_list" role="group" aria-label={label} tabindex="0">
@@ -272,6 +278,60 @@ const slides = await slotContent(Astro.slots);
       },
       { passive: true },
     );
+
+    /* Autoplay: starts once the slider is half in view, pauses on hover,
+       stops at the last slide, and ends for good once someone takes over. */
+    const delay = Number(slider.dataset.autoplay) * 1000;
+    if (delay > 0 && !reduced.matches) {
+      let timer = 0;
+      let inView = false;
+      let hovering = false;
+      let stopped = false;
+
+      const stop = () => clearInterval(timer);
+      const start = () => {
+        stop();
+        if (!inView || hovering || stopped) return;
+        timer = window.setInterval(() => {
+          if (current() >= pages() - 1) return stop();
+          list.scrollTo({
+            left: (current() + 1) * stride(),
+            behavior: behavior(),
+          });
+        }, delay);
+      };
+
+      new IntersectionObserver(
+        ([entry]) => {
+          inView = entry.isIntersecting;
+          start();
+        },
+        { threshold: 0.5 },
+      ).observe(list);
+
+      slider.addEventListener("pointerenter", () => {
+        hovering = true;
+        stop();
+      });
+      slider.addEventListener("pointerleave", () => {
+        hovering = false;
+        start();
+      });
+
+      const takeOver = () => {
+        stopped = true;
+        stop();
+      };
+      for (const type of [
+        "pointerdown",
+        "wheel",
+        "touchstart",
+        "keydown",
+        "focusin",
+      ]) {
+        slider.addEventListener(type, takeOver, { passive: true });
+      }
+    }
 
     slider.classList.add("is-ready");
 
